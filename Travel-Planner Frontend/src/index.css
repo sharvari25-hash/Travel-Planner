@@ -1,1 +1,25 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbar for a polished look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(113, 42, 133);
+  border-radius: 4px;
+}
+
+body {
+  @apply font-secondary text-dark antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-primary font-semibold;
+}

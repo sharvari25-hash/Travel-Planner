@@ -1,0 +1,252 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingBag, Menu, X, ChevronDown, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { cn } from '../lib/utils';
+
+const navItems = [
+  { name: 'Home', path: '/' },
+  { name: 'About Us', path: '/about-us' },
+  {
+    name: 'Our Services',
+    path: '/our-services',
+    dropdown: [
+      { name: 'Crew Transfers', path: '/crew-transfers' },
+      { name: 'Charter Services', path: '/charter-services' },
+      { name: 'School Bus Services', path: '/school-bus-services' },
+      { name: 'Custom Transportation', path: '/custom-transportation' },
+    ]
+  },
+  {
+    name: 'Tours',
+    path: '/tours',
+    dropdown: [
+      { name: 'Luxury SUV Tour in Banff', path: '/luxury-suv-banff-tour' },
+      { name: 'Waterton Lakes National Park', path: '/waterton-lakes-day-tour' },
+      { name: 'Lake Louise and Banff Trip', path: '/lake-louise-and-banff-trip' },
+      { name: 'Private Badland Tour', path: '/drumheller-tour' },
+      { name: 'Private Banff Full Day', path: '/banff-luxury-tour' },
+      { name: 'Calgary to Banff Transfer', path: '/shuttle-transfer-calgary-to-banff' },
+    ]
+  },
+  { name: 'Contact Us', path: '/contact-us' },
+  { 
+    name: 'Legal & Policy', 
+    path: '/legal-and-policy',
+    dropdown: [
+        { name: 'Privacy Policy', path: '/privacy-policy' },
+        { name: 'Terms & Conditions', path: '/terms-conditions' },
+        { name: 'Refund Policy', path: '/refund-policy' }
+    ]
+  },
+  { name: 'FAQ', path: '/faq' },
+  { name: 'Blog', path: '/blog-list' },
+];
+
+const Header = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleDropdown = (index) => {
+    if (openDropdown === index) setOpenDropdown(null);
+    else setOpenDropdown(index);
+  };
+
+  return (
+    <header className={cn(
+      "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+      isScrolled ? "bg-primary shadow-lg py-4" : "bg-primary/90 py-6"
+    )}>
+      <div className="max-w-[1240px] mx-auto px-4 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex-shrink-0">
+           {/* Rebranded Logo Text/Placeholder */}
+           <div className="text-white font-primary font-bold text-3xl tracking-tight">
+             Wander<span className="text-accent">Wise</span>
+           </div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex items-center gap-8">
+          {navItems.map((item, idx) => (
+            <div key={idx} className="relative group">
+              <Link 
+                to={item.path} 
+                className="text-white hover:text-accent font-secondary text-base flex items-center gap-1 transition-colors"
+              >
+                {item.name}
+                {item.dropdown && <ChevronDown size={14} />}
+              </Link>
+              
+              {/* Desktop Dropdown */}
+              {item.dropdown && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="py-2">
+                    {item.dropdown.map((subItem, subIdx) => (
+                      <Link 
+                        key={subIdx} 
+                        to={subItem.path}
+                        className="block px-4 py-2 text-dark hover:bg-gray-100 hover:text-primary transition-colors"
+                      >
+                        {subItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        {/* Right Side Icons */}
+        <div className="flex items-center gap-6">
+          <button className="text-white hover:text-accent transition-colors relative">
+            <ShoppingBag size={24} />
+          </button>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="lg:hidden text-white"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      <div className={cn(
+        "lg:hidden fixed inset-0 top-[70px] bg-primary z-40 transition-transform duration-300 overflow-y-auto",
+        mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+      )}>
+        <div className="flex flex-col p-6 gap-4">
+          {navItems.map((item, idx) => (
+            <div key={idx} className="border-b border-white/10 pb-4">
+              <div className="flex justify-between items-center">
+                <Link 
+                  to={item.path} 
+                  className="text-white text-xl font-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+                {item.dropdown && (
+                  <button onClick={() => toggleDropdown(idx)} className="text-white p-2">
+                    <ChevronDown size={20} className={cn("transition-transform", openDropdown === idx && "rotate-180")} />
+                  </button>
+                )}
+              </div>
+              
+              {/* Mobile Dropdown */}
+              {item.dropdown && (
+                <div className={cn(
+                  "pl-4 mt-2 flex flex-col gap-3 overflow-hidden transition-all duration-300",
+                  openDropdown === idx ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                )}>
+                  {item.dropdown.map((subItem, subIdx) => (
+                    <Link 
+                      key={subIdx} 
+                      to={subItem.path}
+                      className="text-gray-300 hover:text-white"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-[#1F2130] text-white pt-16 pb-8">
+      <div className="max-w-[1240px] mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Col 1 */}
+        <div className="space-y-4">
+          <h5 className="font-primary font-semibold text-lg">Explore</h5>
+          <p className="text-gray-300 text-sm">Discover amazing tours with exclusive offers today!</p>
+          <div className="pt-4">
+            <p className="text-sm font-bold uppercase mb-2">Contact</p>
+            <p>info@wanderwise.com</p>
+            <p>+1 587-997-3169</p>
+          </div>
+        </div>
+
+        {/* Col 2 */}
+        <div className="space-y-4">
+          <h5 className="font-primary font-semibold text-lg">Quick Links</h5>
+          <ul className="space-y-2 text-sm underline decoration-white/30 hover:decoration-white">
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
+            <li><Link to="/our-services">Our Services</Link></li>
+            <li><Link to="/tours">Tours</Link></li>
+            <li><Link to="/contact-us">Contact Us</Link></li>
+          </ul>
+        </div>
+
+        {/* Col 3 */}
+        <div className="space-y-4">
+          <h5 className="font-primary font-semibold text-lg">Legal</h5>
+          <ul className="space-y-2 text-sm underline decoration-white/30 hover:decoration-white">
+            <li><Link to="/legal-and-policy">Legal & Policy</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
+          </ul>
+          <div className="pt-4">
+             <a href="#" className="font-bold underline text-sm">Give us a review!!</a>
+          </div>
+        </div>
+
+        {/* Col 4 - Newsletter */}
+        <div>
+          <form className="flex flex-col gap-4">
+             <label className="text-sm">Subscribe for tour updates</label>
+             <input 
+               type="email" 
+               placeholder="Your email address" 
+               className="px-4 py-3 rounded-full bg-white text-dark focus:outline-none"
+             />
+             <button className="bg-primary hover:bg-primary/80 text-white py-3 rounded-full transition-colors font-medium text-sm">
+                Subscribe
+             </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="max-w-[1240px] mx-auto px-4 mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p className="text-sm">© 2026 WanderWise. All rights reserved.</p>
+        <div className="flex gap-6">
+          <Facebook size={20} className="hover:text-accent cursor-pointer" />
+          <Instagram size={20} className="hover:text-accent cursor-pointer" />
+          <Linkedin size={20} className="hover:text-accent cursor-pointer" />
+          <Twitter size={20} className="hover:text-accent cursor-pointer" />
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+const Layout = ({ children }) => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Layout;
