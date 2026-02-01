@@ -86,7 +86,7 @@ const HotDealsSection = () => {
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {tours.map((tour, idx) => (
+          {tours.slice(0, 3).map((tour, idx) => (
             <FadeIn key={idx} delay={idx * 0.1} className="group flex flex-col overflow-hidden rounded-[20px] bg-white shadow-lg">
               <div className="relative overflow-hidden w-full aspect-[4/5] md:aspect-[400/424]">
                 <img 

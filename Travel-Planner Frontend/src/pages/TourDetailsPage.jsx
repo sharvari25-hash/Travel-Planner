@@ -1,14 +1,58 @@
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { tours } from '../lib/tours';
-import { Clock, Users, MapPin } from 'lucide-react';
+import { Clock, Users, MapPin, PlusCircle, XCircle } from 'lucide-react';
+
+const bookingSchema = yup.object({
+  date: yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
+  transportation: yup.string().required('Transportation is required'),
+  travelers: yup.array().of(
+    yup.object({
+      name: yup.string().required('Name is required'),
+      age: yup.number().typeError('Age must be a number').required('Age is required').min(1).max(120),
+      gender: yup.string().required('Gender is required'),
+    })
+  ).min(1, 'At least one traveler is required'),
+}).required();
+
 
 const TourDetailsPage = () => {
   const { slug } = useParams();
   const tour = tours.find((tour) => tour.slug === slug);
+  
+  const [subtotal, setSubtotal] = useState(tour ? tour.price : 0);
+
+  const { register, control, handleSubmit, watch, formState: { errors } } = useForm({
+    resolver: yupResolver(bookingSchema),
+    defaultValues: {
+      travelers: [{ name: '', age: '', gender: '' }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'travelers',
+  });
+
+  const watchTravelers = watch('travelers');
+
+  useEffect(() => {
+    const travelerCount = watchTravelers ? watchTravelers.length : 0;
+    setSubtotal(travelerCount * (tour ? tour.price : 0));
+  }, [watchTravelers, tour]);
+
 
   if (!tour) {
     return <div className="h-screen flex items-center justify-center">Tour not found!</div>;
   }
+
+  const onSubmit = (data) => {
+    console.log(data);
+    alert('Booking submitted! Check the console for the data.');
+  };
 
   return (
     <div className="bg-white">
@@ -38,7 +82,7 @@ const TourDetailsPage = () => {
           <div className="flex flex-col items-center">
             <MapPin className="w-8 h-8 text-primary mb-2" />
             <span className="font-semibold">Location</span>
-            <span className="text-gray-600">Banff, Canada</span>
+            <span className="text-gray-600">Canada</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl font-bold text-primary">${tour.price}</span>
@@ -73,16 +117,84 @@ const TourDetailsPage = () => {
           <div className="md:col-span-1">
             <div className="bg-gray-50 p-8 rounded-lg shadow-lg sticky top-24">
               <h3 className="text-2xl font-primary font-semibold mb-6">Book This Tour</h3>
-              <form className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
                   <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
-                  <input type="date" id="date" name="date" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" />
+                  <input type="date" id="date" {...register("date")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" />
+                  {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date.message}</p>}
                 </div>
+
                 <div>
-                  <label htmlFor="travelers" className="block text-sm font-medium text-gray-700">Number of Travelers</label>
-                  <input type="number" id="travelers" name="travelers" min="1" max={tour.maxGroupSize} defaultValue="1" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" />
+                  <label htmlFor="transportation" className="block text-sm font-medium text-gray-700">Mode of Transportation</label>
+                  <select id="transportation" {...register("transportation")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+                    <option value="">Select a mode</option>
+                    <option value="suv">Luxury SUV</option>
+                    <option value="van">Comfort Van</option>
+                    <option value="bus">Shuttle Bus</option>
+                  </select>
+                  {errors.transportation && <p className="text-red-500 text-sm mt-1">{errors.transportation.message}</p>}
                 </div>
-                <button type="submit" className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-primary-dark transition-colors">
+
+                <hr />
+
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium text-gray-800">Travelers</h4>
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="p-4 border rounded-md bg-white space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h5 className="font-semibold">Traveler {index + 1}</h5>
+                        {fields.length > 1 && (
+                          <button type="button" onClick={() => remove(index)} className="text-red-500 hover:text-red-700">
+                            <XCircle size={20} />
+                          </button>
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-600">Name</label>
+                        <input {...register(`travelers.${index}.name`)} placeholder="Full Name" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                        {errors.travelers?.[index]?.name && <p className="text-red-500 text-sm mt-1">{errors.travelers[index].name.message}</p>}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm text-gray-600">Age</label>
+                          <input type="number" {...register(`travelers.${index}.age`)} placeholder="Age" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                          {errors.travelers?.[index]?.age && <p className="text-red-500 text-sm mt-1">{errors.travelers[index].age.message}</p>}
+                        </div>
+                        <div>
+                          <label className="text-sm text-gray-600">Gender</label>
+                          <select {...register(`travelers.${index}.gender`)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                          </select>
+                          {errors.travelers?.[index]?.gender && <p className="text-red-500 text-sm mt-1">{errors.travelers[index].gender.message}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {fields.length < tour.maxGroupSize && (
+                    <button type="button" onClick={() => append({ name: '', age: '', gender: '' })} className="flex items-center gap-2 text-sm text-primary hover:underline">
+                      <PlusCircle size={16} />
+                      Add Traveler
+                    </button>
+                  )}
+                </div>
+
+                <hr />
+
+                <div className="space-y-2 text-lg">
+                  <div className="flex justify-between">
+                    <span>Sub-total</span>
+                    <span className="font-bold">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>Taxes & Fees</span>
+                    <span>Calculated at checkout</span>
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold">
                   Book Now
                 </button>
               </form>
@@ -95,3 +207,4 @@ const TourDetailsPage = () => {
 };
 
 export default TourDetailsPage;
+
