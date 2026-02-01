@@ -5,25 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 // --- Data & Config ---
-const tours = [
-  {
-    title: "Full Day Private Luxury SUV Tour in Banff",
-    img: "https://images.unsplash.com/photo-1501114676295-bbbcc7a12466?auto=format&fit=crop&w=400&h=424",
-    link: "/luxury-suv-banff-tour"
-  },
-  {
-    title: "1 Day Waterton Lakes National Park Tour",
-    img: "https://images.unsplash.com/photo-1531111885760-8e729bba027b?auto=format&fit=crop&w=400&h=424",
-    desc: "Start your tour with a boat on Upper Waterton Lake.",
-    link: "/waterton-lakes-day-tour"
-  },
-  {
-    title: "Lake Louise and Banff Trip",
-    img: "https://images.unsplash.com/photo-1602519958552-07eb454c9a78?auto=format&fit=crop&w=400&h=424",
-    desc: "Spend the day exploring the incredible scenery of the Canadian Rockies",
-    link: "/lake-louise-and-banff-trip"
-  }
-];
+import { tours } from '../lib/tours';
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1533094692971-5f4c56ec1339?auto=format&fit=crop&w=300",

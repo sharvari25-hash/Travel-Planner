@@ -19,14 +19,6 @@ const navItems = [
   {
     name: 'Tours',
     path: '/tours',
-    dropdown: [
-      { name: 'Luxury SUV Tour in Banff', path: '/luxury-suv-banff-tour' },
-      { name: 'Waterton Lakes National Park', path: '/waterton-lakes-day-tour' },
-      { name: 'Lake Louise and Banff Trip', path: '/lake-louise-and-banff-trip' },
-      { name: 'Private Badland Tour', path: '/drumheller-tour' },
-      { name: 'Private Banff Full Day', path: '/banff-luxury-tour' },
-      { name: 'Calgary to Banff Transfer', path: '/shuttle-transfer-calgary-to-banff' },
-    ]
   },
   { name: 'Contact Us', path: '/contact-us' },
   { 
