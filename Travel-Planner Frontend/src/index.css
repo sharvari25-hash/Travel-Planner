@@ -1,25 +1,53 @@
+/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;600&display=swap');
 
+/* Tailwind v4 */
+@import "tailwindcss";
+
+/* Theme tokens */
+@theme {
+  /* Fonts */
+  --font-primary: "Outfit", sans-serif;
+  --font-secondary: "Inter", sans-serif;
+
+  /* Colors */
+  --color-dark: #0f172a;        /* slate-900 */
+  --color-primary: #712a85;     /* purple */
+  --color-muted: #64748b;       /* slate-500 */
+}
+
+/* Tailwind layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar for a polished look */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgb(113, 42, 133);
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
+/* Base styles */
 body {
-  @apply font-secondary text-dark antialiased;
+  font-family: var(--font-secondary);
+  @apply text-dark antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  @apply font-primary font-semibold;
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary);
+  @apply font-semibold;
 }
