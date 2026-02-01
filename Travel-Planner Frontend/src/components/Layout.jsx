@@ -38,8 +38,6 @@ const navItems = [
         { name: 'Refund Policy', path: '/refund-policy' }
     ]
   },
-  { name: 'FAQ', path: '/faq' },
-  { name: 'Blog', path: '/blog-list' },
 ];
 
 const Header = () => {
@@ -104,8 +102,14 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Right Side Icons */}
+        {/* Right Side Icons & Auth */}
         <div className="flex items-center gap-6">
+          {/* Desktop Auth Links */}
+          <div className="hidden lg:flex items-center gap-6">
+            <Link to="/login-customer" className="text-white hover:text-accent font-secondary text-base transition-colors">Login</Link>
+            <Link to="/signup-customer" className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors">Sign Up</Link>
+          </div>
+
           <button className="text-white hover:text-accent transition-colors relative">
             <ShoppingBag size={24} />
           </button>
@@ -163,6 +167,24 @@ const Header = () => {
               )}
             </div>
           ))}
+          
+          {/* Mobile Auth Links */}
+          <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
+            <Link 
+              to="/login-customer" 
+              className="text-white text-xl font-secondary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Login
+            </Link>
+            <Link 
+              to="/signup-customer" 
+              className="text-white text-xl font-secondary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Sign Up
+            </Link>
+          </div>
         </div>
       </div>
     </header>
@@ -201,7 +223,6 @@ const Footer = () => {
           <h5 className="font-primary font-semibold text-lg">Legal</h5>
           <ul className="space-y-2 text-sm underline decoration-white/30 hover:decoration-white">
             <li><Link to="/legal-and-policy">Legal & Policy</Link></li>
-            <li><Link to="/faq">FAQ</Link></li>
           </ul>
           <div className="pt-4">
              <a href="#" className="font-bold underline text-sm">Give us a review!!</a>

@@ -1,10 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { cn } from '../lib/utils';
 
 // --- Data & Config ---
 const tours = [
@@ -72,12 +70,12 @@ const HeroSection = () => {
       >
         <source src="https://videos.pexels.com/video-files/16506193/16506193-uhd_2560_1440_30fps.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-hero-overlay z-10 opacity-45"></div>
+      <div className="absolute inset-0 bg-black/50 z-10"></div>
       
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-20">
         <FadeIn>
           <p className="text-white text-2xl md:text-3xl font-medium mb-4">★★★★★</p>
-          <p className="text-white text-xl md:text-2xl font-body mb-8">Rated 5 stars by customers</p>
+          <p className="text-white text-xl md:text-2xl font-secondary mb-8">Rated 5 stars by customers</p>
           <h1 className="text-white font-primary font-bold text-5xl md:text-7xl leading-tight mb-8">
             Explore Amazing Tours with Us
           </h1>
@@ -107,25 +105,26 @@ const HotDealsSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {tours.map((tour, idx) => (
-            <FadeIn key={idx} delay={idx * 0.1} className="flex flex-col items-center group">
-              <div className="relative overflow-hidden rounded-[20px] mb-6 w-full aspect-[4/5] md:aspect-[400/424]">
-                {/* Purple rectangle outline effect simulated via absolute positioning or SVG */}
+            <FadeIn key={idx} delay={idx * 0.1} className="group flex flex-col overflow-hidden rounded-[20px] bg-white shadow-lg">
+              <div className="relative overflow-hidden w-full aspect-[4/5] md:aspect-[400/424]">
                 <img 
                   src={tour.img} 
                   alt={tour.title} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <h5 className="text-2xl font-primary font-semibold text-center mb-4 max-w-xs">{tour.title}</h5>
-              {tour.desc && (
-                <p className="text-center text-gray-600 mb-6 px-4">{tour.desc}</p>
-              )}
-              <a 
-                href={tour.link}
-                className="mt-auto px-8 py-3 rounded-full border border-dark text-dark hover:bg-dark hover:text-white transition-colors"
-              >
-                See more
-              </a>
+              <div className="p-6 flex flex-col items-center flex-grow">
+                <h5 className="text-2xl font-primary font-semibold text-center mb-4 max-w-xs">{tour.title}</h5>
+                {tour.desc && (
+                  <p className="text-center text-gray-600 mb-6 px-4">{tour.desc}</p>
+                )}
+                <a 
+                  href={tour.link}
+                  className="mt-auto px-8 py-3 rounded-full border border-dark text-dark hover:bg-dark hover:text-white transition-colors"
+                >
+                  See more
+                </a>
+              </div>
             </FadeIn>
           ))}
         </div>
@@ -263,7 +262,7 @@ const ContactSection = () => {
           alt="Contact Background" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-hero-overlay opacity-45"></div>
+        <div className="absolute inset-0 bg-black/50"></div>
       </div>
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
