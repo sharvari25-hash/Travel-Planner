@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { tours } from '../lib/tours';
-import { Clock, Users, MapPin, PlusCircle, XCircle } from 'lucide-react';
+import { allToursData } from '../lib/AllToursData';
+import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const bookingSchema = yup.object({
   date: yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
@@ -20,10 +20,10 @@ const bookingSchema = yup.object({
 
 
 const TourDetailsPage = () => {
-  const { slug } = useParams();
-  const tour = tours.find((tour) => tour.slug === slug);
+  const { destination } = useParams();
+  const tour = allToursData.find((tour) => tour.destination.toLowerCase().replace(/\s/g, "-") === destination);
   
-  const [subtotal, setSubtotal] = useState(tour ? tour.price : 0);
+  const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
 
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
@@ -37,20 +37,19 @@ const TourDetailsPage = () => {
     name: 'travelers',
   });
 
-  const watchTravelers = watch('travelers');
-
-  useEffect(() => {
-    const travelerCount = watchTravelers ? watchTravelers.length : 0;
-    setSubtotal(travelerCount * (tour ? tour.price : 0));
-  }, [watchTravelers, tour]);
-
-
   if (!tour) {
     return <div className="h-screen flex items-center justify-center">Tour not found!</div>;
   }
 
   const onSubmit = (data) => {
-    console.log(data);
+    const bookingData = {
+      tour: {
+        destination: tour.destination,
+        country: tour.country,
+      },
+      ...data
+    }
+    console.log(bookingData);
     alert('Booking submitted! Check the console for the data.');
   };
 
@@ -58,11 +57,11 @@ const TourDetailsPage = () => {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="relative h-[60vh] w-full flex items-center justify-center text-center text-white">
-        <img src={tour.img} alt={tour.title} className="absolute inset-0 w-full h-full object-cover" />
+        <img src={tour.img} alt={tour.destination} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative z-10 max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-primary font-bold mb-4">{tour.title}</h1>
-          <p className="text-lg md:text-2xl max-w-2xl mx-auto">{tour.desc}</p>
+          <h1 className="text-5xl md:text-7xl font-primary font-bold mb-4">{tour.destination}, {tour.country}</h1>
+          <p className="text-lg md:text-2xl max-w-2xl mx-auto">{tour.description}</p>
         </div>
       </section>
 
@@ -70,22 +69,22 @@ const TourDetailsPage = () => {
       <section className="bg-gray-100 py-8">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="flex flex-col items-center">
-            <Clock className="w-8 h-8 text-primary mb-2" />
+            <Calendar className="w-8 h-8 text-primary mb-2" />
             <span className="font-semibold">Duration</span>
-            <span className="text-gray-600">{tour.duration}</span>
+            <span className="text-gray-600">{tour.duration} Days</span>
           </div>
           <div className="flex flex-col items-center">
             <Users className="w-8 h-8 text-primary mb-2" />
-            <span className="font-semibold">Group Size</span>
-            <span className="text-gray-600">{tour.maxGroupSize} people</span>
+            <span className="font-semibold">Category</span>
+            <span className="text-gray-600">{tour.category}</span>
           </div>
           <div className="flex flex-col items-center">
-            <MapPin className="w-8 h-8 text-primary mb-2" />
+            <Globe className="w-8 h-8 text-primary mb-2" />
             <span className="font-semibold">Location</span>
-            <span className="text-gray-600">Canada</span>
+            <span className="text-gray-600">{tour.country}</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-primary">${tour.price}</span>
+            <span className="text-3xl font-bold text-primary">${randomPrice}</span>
             <span className="font-semibold">per person</span>
           </div>
         </div>
@@ -98,15 +97,14 @@ const TourDetailsPage = () => {
           <div className="md:col-span-2">
             <h2 className="text-4xl font-primary font-semibold mb-8">Tour Details</h2>
             <div className="prose max-w-none">
-              <p className="text-lg mb-6">{tour.overview}</p>
+              <p className="text-lg mb-6">{tour.description}</p>
               
-              <h3 className="text-3xl font-primary font-semibold mt-12 mb-6">Itinerary</h3>
-              <div className="space-y-8 border-l-2 border-gray-200 ml-2">
-                {tour.itinerary.map((day, index) => (
+              <h3 className="text-3xl font-primary font-semibold mt-12 mb-6">Itinerary ({tour.duration} Days)</h3>
+              <div className="space-y-4 border-l-2 border-gray-200 ml-2">
+                {tour.plan.map((day, index) => (
                   <div key={index} className="relative pl-8">
-                    <div className="absolute -left-2.5 top-1.5 w-5 h-5 bg-primary rounded-full"></div>
-                    <h4 className="text-2xl font-semibold mb-2">Day {day.day}: {day.title}</h4>
-                    <p className="text-gray-700">{day.description}</p>
+                    <div className="absolute -left-2 top-2 w-4 h-4 bg-primary rounded-full"></div>
+                    <p className="text-gray-700">{day}</p>
                   </div>
                 ))}
               </div>
@@ -173,7 +171,7 @@ const TourDetailsPage = () => {
                       </div>
                     </div>
                   ))}
-                  {fields.length < tour.maxGroupSize && (
+                  {fields.length < 10 && (
                     <button type="button" onClick={() => append({ name: '', age: '', gender: '' })} className="flex items-center gap-2 text-sm text-primary hover:underline">
                       <PlusCircle size={16} />
                       Add Traveler
@@ -182,17 +180,6 @@ const TourDetailsPage = () => {
                 </div>
 
                 <hr />
-
-                <div className="space-y-2 text-lg">
-                  <div className="flex justify-between">
-                    <span>Sub-total</span>
-                    <span className="font-bold">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>Taxes & Fees</span>
-                    <span>Calculated at checkout</span>
-                  </div>
-                </div>
 
                 <button type="submit" className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold">
                   Book Now
@@ -207,4 +194,3 @@ const TourDetailsPage = () => {
 };
 
 export default TourDetailsPage;
-
