@@ -98,7 +98,7 @@ const Header = () => {
         <div className="flex items-center gap-6">
           {/* Desktop Auth Links */}
           <div className="hidden lg:flex items-center gap-6">
-            <Link to="/login-customer" className="text-white hover:text-accent font-secondary text-base transition-colors">Login</Link>
+            <Link to="/login" className="text-white hover:text-accent font-secondary text-base transition-colors">Login</Link>
             <Link to="/signup-customer" className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors">Sign Up</Link>
           </div>
 
@@ -163,7 +163,7 @@ const Header = () => {
           {/* Mobile Auth Links */}
           <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
             <Link 
-              to="/login-customer" 
+              to="/login" 
               className="text-white text-xl font-secondary"
               onClick={() => setMobileMenuOpen(false)}
             >

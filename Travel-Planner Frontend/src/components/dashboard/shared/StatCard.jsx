@@ -1,26 +1,21 @@
 import React from 'react';
-import { cn } from '../../../lib/utils';
+import { motion } from 'framer-motion';
 
-const StatCard = ({ title, value, icon, color = 'primary' }) => {
-  const colorVariants = {
-    primary: 'bg-primary/10 text-primary',
-    accent: 'bg-accent/10 text-accent',
-    success: 'bg-green-500/10 text-green-600',
-    warning: 'bg-yellow-500/10 text-yellow-600',
-    danger: 'bg-red-500/10 text-red-600',
-  };
-
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md flex items-center gap-6">
-      <div className={cn("w-14 h-14 rounded-full flex items-center justify-center", colorVariants[color])}>
-        {icon}
-      </div>
+const StatCard = ({ title, value, subtext, icon: Icon, color }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between"
+  >
+    <div className="flex justify-between items-start">
       <div>
         <p className="text-gray-500 text-sm font-medium">{title}</p>
-        <p className="text-3xl font-bold text-gray-800">{value}</p>
+        <h3 className="text-2xl font-bold text-gray-800 mt-1">{value}</h3>
       </div>
+      {Icon && <div className={`p-2 rounded-lg ${color} bg-opacity-10 text-xl`}>{Icon}</div>}
     </div>
-  );
-};
+    <div className="mt-4 text-xs text-gray-400">{subtext}</div>
+  </motion.div>
+);
 
 export default StatCard;

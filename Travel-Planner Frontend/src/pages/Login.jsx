@@ -23,9 +23,9 @@ const Login = () => {
     if (success) {
       const user = JSON.parse(localStorage.getItem('user'));
       if (user.role === 'ADMIN') {
-        navigate('/admin');
+        navigate('/admin/dashboard');
       } else {
-        navigate('/dashboard');
+        navigate('/user/dashboard');
       }
     } else {
       setLoginError('Invalid email or password');
@@ -56,7 +56,7 @@ const Login = () => {
             <input
               {...register("password")}
               type="password"
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full px-3 py-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
           </div>

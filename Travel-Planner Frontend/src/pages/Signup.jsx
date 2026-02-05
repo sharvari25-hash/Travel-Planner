@@ -2,36 +2,31 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const schema = yup.object({
   name: yup.string().required('Name is required'),
   email: yup.string().email('Please enter a valid email').required('Email is required'),
-  phone: yup.string().required('Phone number is required'),
-  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
-  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
-  role: yup.string().required('Role is required'),
+  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required('Confirm Password is required'),
+  mobileNumber: yup.string().required('Mobile Number is required'),
+  role: yup.string().oneOf(['USER', 'ADMIN'], 'Invalid role').required('Role is required'),
 }).required();
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
-  const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    console.log(data);
-    if (data.role === 'admin') {
-      navigate('/dashboard');
-    } else {
-      navigate('/');
-    }
+    console.log('Signup successful', data);
+    // Handle signup logic here
   };
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -43,6 +38,15 @@ const Signup = () => {
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
+            <input
+              {...register("mobileNumber")}
+              type="text"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            />
+            {errors.mobileNumber && <p className="text-red-500 text-sm mt-1">{errors.mobileNumber.message}</p>}
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               {...register("email")}
@@ -50,15 +54,6 @@ const Signup = () => {
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <input
-              {...register("phone")}
-              type="text"
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-            />
-            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Password</label>
@@ -85,8 +80,8 @@ const Signup = () => {
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             >
               <option value="">Select Role</option>
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
             </select>
             {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
           </div>
@@ -98,7 +93,7 @@ const Signup = () => {
           </button>
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
-          Already have an account? <Link to="/login-customer" className="text-primary hover:underline">Login</Link>
+          Already have an account? <Link to="/login" className="text-primary hover:underline">Login</Link>
         </p>
       </div>
     </div>

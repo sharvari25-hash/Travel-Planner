@@ -11,7 +11,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login-customer');
+    navigate('/login');
   };
 
   if (!user) {

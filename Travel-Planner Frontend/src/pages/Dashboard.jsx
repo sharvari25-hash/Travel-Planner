@@ -1,27 +1,25 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    navigate('/login-customer');
-  };
+  if (!user) {
+    // This should be handled by ProtectedRoute, but as a fallback
+    return <Navigate to="/login" />;
+  }
 
-  return (
-    <div className="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-6">Welcome to the Admin Dashboard</h2>
-        <button
-          onClick={handleLogout}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition-colors"
-        >
-          Logout
-        </button>
-      </div>
-    </div>
-  );
+  if (user.role === 'ADMIN') {
+    return <Navigate to="/admin/dashboard" />;
+  }
+
+  if (user.role === 'USER') {
+    return <Navigate to="/user/dashboard" />;
+  }
+
+  // Fallback for any other role or if role is not defined
+  return <div>Invalid user role.</div>;
 };
 
 export default Dashboard;

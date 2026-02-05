@@ -8,18 +8,21 @@ import TourDetailsPage from './pages/TourDetailsPage';
 import AllTours from './pages/AllTours';
 import TravelerDashboard from './pages/TravelerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import SettingsPage from './pages/Settings';
+
 import ProtectedRoute from './components/ProtectedRoute';
 
 import MyTrips from './pages/MyTrips';
 
 import TripDetails from './pages/TripDetails';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
-        <Route path="/login-customer" element={<Layout><Login /></Layout>} />
+        <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/signup-customer" element={<Layout><Signup /></Layout>} />
         <Route 
           path="/profile" 
@@ -32,9 +35,11 @@ function App() {
         <Route path="/tours" element={<Layout><AllTours /></Layout>} />
         <Route path="/tours/:destination" element={<Layout><TourDetailsPage /></Layout>} />
         
+
+
         {/* Protected Dashboard Routes */}
         <Route 
-          path="/dashboard" 
+          path="/user/dashboard" 
           element={
             <ProtectedRoute role="USER">
               <TravelerDashboard />
@@ -42,7 +47,7 @@ function App() {
           } 
         />
         <Route 
-          path="/dashboard/my-trips" 
+          path="/user/dashboard/my-trips" 
           element={
             <ProtectedRoute role="USER">
               <MyTrips />
@@ -50,7 +55,7 @@ function App() {
           } 
         />
         <Route 
-          path="/dashboard/my-trips/:id" 
+          path="/user/dashboard/my-trips/:id" 
           element={
             <ProtectedRoute role="USER">
               <TripDetails />
@@ -58,16 +63,26 @@ function App() {
           } 
         />
         <Route 
-          path="/admin" 
+          path="/admin/dashboard" 
           element={
             <ProtectedRoute role="ADMIN">
               <AdminDashboard />
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/user/settings"
+          element={
+            <ProtectedRoute role="USER">
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Placeholder for other main layout routes */}
-        <Route path="*" element={<Layout><div className="h-[50vh] flex items-center justify-center">Page Under Construction</div></Layout>} />
+        import NotFound from './pages/NotFound';
+// ...
+        <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </Router>
   );

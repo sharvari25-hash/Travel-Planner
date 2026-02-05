@@ -1,0 +1,42 @@
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { motion } from 'framer-motion';
+import SectionTitle from '../shared/SectionTitle';
+
+const chartData = [
+  { name: 'Jan', bookings: 6000 },
+  { name: 'Feb', bookings: 3500 },
+  { name: 'Mar', bookings: 4200 },
+  { name: 'Apr', bookings: 7500 },
+  { name: 'May', bookings: 4000 },
+  { name: 'Jun', bookings: 7800 },
+  { name: 'Jul', bookings: 4500 },
+  { name: 'Aug', bookings: 8500 },
+  { name: 'Sep', bookings: 6000 },
+  { name: 'Oct', bookings: 3000 },
+  { name: 'Nov', bookings: 6500 },
+  { name: 'Dec', bookings: 9000 },
+];
+
+const BookingsOverviewChart = () => (
+  <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+  >
+      <SectionTitle title="Bookings Overview" />
+      <div className="h-64 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} />
+                  <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} />
+                  <Bar dataKey="bookings" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+          </ResponsiveContainer>
+      </div>
+  </motion.div>
+);
+
+export default BookingsOverviewChart;
