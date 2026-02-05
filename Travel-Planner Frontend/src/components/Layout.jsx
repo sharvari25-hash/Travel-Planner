@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X, ChevronDown, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Menu, X, ChevronDown, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const navItems = [
@@ -102,9 +102,7 @@ const Header = () => {
             <Link to="/signup-customer" className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors">Sign Up</Link>
           </div>
 
-          <button className="text-white hover:text-accent transition-colors relative">
-            <ShoppingBag size={24} />
-          </button>
+
           
           {/* Mobile Menu Button */}
           <button 
