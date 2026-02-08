@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 // --- Data & Config ---
-import { tours } from '../lib/tours';
+import { allToursData } from '../lib/AllToursData';
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1533094692971-5f4c56ec1339?auto=format&fit=crop&w=300",
@@ -86,22 +86,22 @@ const HotDealsSection = () => {
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {tours.slice(0, 3).map((tour, idx) => (
+          {allToursData.slice(0, 3).map((tour, idx) => (
             <FadeIn key={idx} delay={idx * 0.1} className="group flex flex-col overflow-hidden rounded-[20px] bg-white shadow-lg">
               <div className="relative overflow-hidden w-full aspect-[4/5] md:aspect-[400/424]">
                 <img 
                   src={tour.img} 
-                  alt={tour.title} 
+                  alt={tour.destination} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
               <div className="p-6 flex flex-col items-center flex-grow">
-                <h5 className="text-2xl font-primary font-semibold text-center mb-4 max-w-xs">{tour.title}</h5>
-                {tour.desc && (
-                  <p className="text-center text-gray-600 mb-6 px-4">{tour.desc}</p>
+                <h5 className="text-2xl font-primary font-semibold text-center mb-4 max-w-xs">{tour.destination}, {tour.country}</h5>
+                {tour.description && (
+                  <p className="text-center text-gray-600 mb-6 px-4">{tour.description}</p>
                 )}
                 <a 
-                  href={tour.link}
+                  href={`/tours/${tour.destination.toLowerCase().replace(/\s/g, "-")}`}
                   className="mt-auto px-8 py-3 rounded-full border border-dark text-dark hover:bg-dark hover:text-white transition-colors"
                 >
                   See more

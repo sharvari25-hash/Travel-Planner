@@ -4,6 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { allToursData } from '../lib/AllToursData';
+import { getWeather } from '../lib/weatherService';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const bookingSchema = yup.object({
@@ -24,6 +25,7 @@ const TourDetailsPage = () => {
   const tour = allToursData.find((tour) => tour.destination.toLowerCase().replace(/\s/g, "-") === destination);
   
   const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
+  const [weather, setWeather] = useState(null);
 
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
@@ -36,6 +38,12 @@ const TourDetailsPage = () => {
     control,
     name: 'travelers',
   });
+
+  useEffect(() => {
+    if (tour) {
+      setWeather(getWeather(tour.destination));
+    }
+  }, [tour]);
 
   if (!tour) {
     return <div className="h-screen flex items-center justify-center">Tour not found!</div>;
@@ -95,6 +103,34 @@ const TourDetailsPage = () => {
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Left Side - Itinerary */}
           <div className="md:col-span-2">
+            
+            {/* Weather Widget */}
+            {weather && (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+                <h3 className="text-2xl font-primary font-semibold mb-4">Local Weather Forecast</h3>
+                <div className="flex items-center gap-6 mb-6">
+                  <div className="text-5xl">{weather.current.icon}</div>
+                  <div>
+                    <div className="text-3xl font-bold">{weather.current.temp}°C</div>
+                    <div className="text-gray-600">{weather.current.condition}</div>
+                  </div>
+                  <div className="ml-auto text-sm text-gray-500 space-y-1">
+                    <div>Humidity: {weather.current.humidity}%</div>
+                    <div>Wind: {weather.current.windSpeed} km/h</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 text-center border-t pt-4">
+                  {weather.forecast.map((day, idx) => (
+                    <div key={idx}>
+                      <div className="text-sm font-semibold text-gray-500">{day.day}</div>
+                      <div className="text-2xl my-1">{day.icon}</div>
+                      <div className="font-medium">{day.temp}°C</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <h2 className="text-4xl font-primary font-semibold mb-8">Tour Details</h2>
             <div className="prose max-w-none">
               <p className="text-lg mb-6">{tour.description}</p>
