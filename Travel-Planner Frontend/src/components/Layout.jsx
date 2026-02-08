@@ -9,12 +9,6 @@ const navItems = [
   {
     name: 'Our Services',
     path: '/our-services',
-    dropdown: [
-      { name: 'Crew Transfers', path: '/crew-transfers' },
-      { name: 'Charter Services', path: '/charter-services' },
-      { name: 'School Bus Services', path: '/school-bus-services' },
-      { name: 'Custom Transportation', path: '/custom-transportation' },
-    ]
   },
   {
     name: 'Tours',

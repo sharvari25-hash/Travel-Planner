@@ -9,6 +9,9 @@ import AllTours from './pages/AllTours';
 import TravelerDashboard from './pages/TravelerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import SettingsPage from './pages/Settings';
+import AboutUs from './pages/AboutUs';
+import OurServices from './pages/OurServices';
+import ContactUs from './pages/ContactUs';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -24,6 +27,12 @@ function App() {
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/signup-customer" element={<Layout><Signup /></Layout>} />
+        <Route path="/about-us" element={<Layout><AboutUs /></Layout>} />
+        <Route path="/our-services" element={<Layout><OurServices /></Layout>} />
+        
+        {/* Contact Page */}
+        <Route path="/contact-us" element={<Layout><ContactUs /></Layout>} />
+        
         <Route 
           path="/profile" 
           element={
@@ -79,9 +88,6 @@ function App() {
           }
         />
 
-        {/* Placeholder for other main layout routes */}
-        import NotFound from './pages/NotFound';
-// ...
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </Router>
