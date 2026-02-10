@@ -108,3 +108,31 @@ export const getPaymentHistory = () => {
 
   return sortByDateDesc(parsed);
 };
+
+const createPaymentId = () => `PMT-${String(Date.now()).slice(-6)}`;
+
+export const createPaymentRecord = ({
+  bookingId,
+  travelerName,
+  travelerEmail,
+  method = 'CARD',
+  amount = 0,
+  currency = 'USD',
+  status = 'SUCCESS',
+}) => {
+  const current = getPaymentHistory();
+  const payment = {
+    id: createPaymentId(),
+    bookingId,
+    travelerName,
+    travelerEmail,
+    method,
+    amount: Number(amount) || 0,
+    currency,
+    status,
+    paidAt: new Date().toISOString(),
+  };
+
+  writePaymentHistory([payment, ...current]);
+  return payment;
+};

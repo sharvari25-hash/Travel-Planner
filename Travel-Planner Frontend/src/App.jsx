@@ -19,6 +19,7 @@ import MyTrips from './pages/MyTrips';
 
 import TripDetails from './pages/TripDetails';
 import NotFound from './pages/NotFound';
+import DemoPayment from './pages/DemoPayment';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
         />
         <Route path="/tours" element={<Layout><AllTours /></Layout>} />
         <Route path="/tours/:destination" element={<Layout><TourDetailsPage /></Layout>} />
+        <Route
+          path="/user/payment/demo"
+          element={
+            <ProtectedRoute role="USER">
+              <Layout><DemoPayment /></Layout>
+            </ProtectedRoute>
+          }
+        />
         
 
 
@@ -60,6 +69,22 @@ function App() {
           element={
             <ProtectedRoute role="USER">
               <MyTrips />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/user/dashboard/my-trips/upcoming" 
+          element={
+            <ProtectedRoute role="USER">
+              <MyTrips statusFilter="Upcoming" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/user/dashboard/my-trips/completed" 
+          element={
+            <ProtectedRoute role="USER">
+              <MyTrips statusFilter="Completed" />
             </ProtectedRoute>
           } 
         />

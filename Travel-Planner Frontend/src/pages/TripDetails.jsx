@@ -6,14 +6,14 @@ import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaDollarSign } fro
 
 const TripDetails = () => {
   const { id } = useParams();
-  const trip = myTrips.find((t) => t.id === parseInt(id));
+  const trip = myTrips.find((t) => t.id === parseInt(id, 10));
 
   if (!trip) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-700 mb-4">Trip not found</h2>
-          <Link to="/dashboard/my-trips" className="text-blue-600 hover:underline">
+          <Link to="/user/dashboard/my-trips" className="text-blue-600 hover:underline">
             &larr; Back to My Trips
           </Link>
         </div>
@@ -29,7 +29,7 @@ const TripDetails = () => {
           <h1 className="text-5xl font-bold text-white text-center">{trip.destination}</h1>
         </div>
         <div className="absolute top-4 left-4">
-          <Link to="/dashboard/my-trips" className="flex items-center text-white bg-black/50 px-4 py-2 rounded-full hover:bg-black/75 transition-colors">
+          <Link to="/user/dashboard/my-trips" className="flex items-center text-white bg-black/50 px-4 py-2 rounded-full hover:bg-black/75 transition-colors">
             <FaArrowLeft className="mr-2" />
             Back to Trips
           </Link>

@@ -41,7 +41,7 @@ export const allToursData = [
     category: "Family",
     description: "The theme park capital of the world (Disney & Universal).",
     duration: 6,
-    img: "https://images.unsplash.com/photo-1597466599227-9ee496952358?auto=format&fit=crop&w=800&q=60",
+    img: "https://media.istockphoto.com/id/176980317/photo/a-depiction-of-orlando-florida-at-nighttime-lights.jpg?s=612x612&w=0&k=20&c=bXAPXmSI69Rkzo-puNCSs7FmqxRShn4h7pEcpHVUrFs=",
     plan: [
       "Day 1: Arrival & Disney Springs",
       "Day 2: Magic Kingdom",
@@ -58,7 +58,7 @@ export const allToursData = [
     category: "Family",
     description: "The home of LEGO—The original Legoland and LEGO House.",
     duration: 4,
-    img: "https://images.unsplash.com/photo-1558269839-a8585c1575a8?auto=format&fit=crop&w=800&q=60",
+    img: "https://media.istockphoto.com/id/1893621320/photo/a-walt-disney-world-arch-gate-on-the-street-in-orlando-florida-usa.jpg?s=612x612&w=0&k=20&c=IErii-wlN2ZVhEum1vKZGXUBf04Mce38Ti4vsU-3mzA=",
     plan: [
       "Day 1: Arrival in Billund & LEGO House Experience",
       "Day 2: Full day at LEGOLAND Billund",

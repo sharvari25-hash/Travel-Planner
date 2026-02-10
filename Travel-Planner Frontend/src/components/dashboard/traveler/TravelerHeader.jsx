@@ -1,15 +1,24 @@
 import React from 'react';
 import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const TravelerHeader = () => (
   <header className="bg-white px-8 py-5 flex justify-between items-center border-b border-gray-100 shrink-0">
-    <div className="relative w-96">
-      <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-      <input 
-        type="text" 
-        placeholder="Search for flights, hotels, activities..." 
-        className="w-full bg-gray-50 pl-12 pr-4 py-2.5 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all border border-transparent focus:border-blue-200"
-      />
+    <div className="flex items-center gap-4 w-[40rem] max-w-full">
+      <div className="relative flex-1">
+        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <input 
+          type="text" 
+          placeholder="Search for flights, hotels, activities..." 
+          className="w-full bg-gray-50 pl-12 pr-4 py-2.5 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all border border-transparent focus:border-blue-200"
+        />
+      </div>
+      <Link
+        to="/"
+        className="px-3 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors whitespace-nowrap"
+      >
+        Home Page
+      </Link>
     </div>
     
     <div className="flex items-center gap-6">

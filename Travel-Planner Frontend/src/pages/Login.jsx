@@ -15,7 +15,7 @@ const Login = () => {
     resolver: yupResolver(schema)
   });
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated, logout } = useAuth();
   const [loginError, setLoginError] = useState(null);
 
   const onSubmit = (data) => {
@@ -31,6 +31,46 @@ const Login = () => {
       setLoginError('Invalid email or password');
     }
   };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  if (isAuthenticated && user) {
+    const dashboardPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/user/dashboard';
+
+    return (
+      <div className="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-4 text-center">Already Logged In</h2>
+          <p className="text-sm text-gray-600 text-center mb-6">
+            You are signed in as {user.name}.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link
+              to={dashboardPath}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-full text-center transition-colors"
+            >
+              Go to Dashboard
+            </Link>
+            <Link
+              to="/"
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full text-center transition-colors"
+            >
+              Go to Home
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-2 px-4 rounded-full transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -68,9 +108,11 @@ const Login = () => {
             Login
           </button>
         </form>
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account? <Link to="/signup-customer" className="text-primary hover:underline">Sign up</Link>
-        </p>
+        {!isAuthenticated && (
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Don't have an account? <Link to="/signup-customer" className="text-primary hover:underline">Sign up</Link>
+          </p>
+        )}
       </div>
     </div>
   );

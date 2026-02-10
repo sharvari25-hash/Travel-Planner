@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useAuth } from '../lib/AuthContext';
 
 const navItems = [
   { name: 'Home', path: '/' },
@@ -27,9 +28,14 @@ const navItems = [
 ];
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+
+  const dashboardPath = user?.role === 'ADMIN' ? '/admin/dashboard' : '/user/dashboard';
+  const dashboardLabel = user?.role === 'ADMIN' ? 'Admin Dashboard' : 'Traveler Dashboard';
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -40,6 +46,12 @@ const Header = () => {
   const toggleDropdown = (index) => {
     if (openDropdown === index) setOpenDropdown(null);
     else setOpenDropdown(index);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setMobileMenuOpen(false);
+    navigate('/');
   };
 
   return (
@@ -92,8 +104,32 @@ const Header = () => {
         <div className="flex items-center gap-6">
           {/* Desktop Auth Links */}
           <div className="hidden lg:flex items-center gap-6">
-            <Link to="/login" className="text-white hover:text-accent font-secondary text-base transition-colors">Login</Link>
-            <Link to="/signup-customer" className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors">Sign Up</Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to={dashboardPath}
+                  className="text-white hover:text-accent font-secondary text-base transition-colors"
+                >
+                  {dashboardLabel}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-white hover:text-accent font-secondary text-base transition-colors">
+                  Login
+                </Link>
+                <Link to="/signup-customer" className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-full font-secondary text-base transition-colors">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
 
@@ -154,20 +190,41 @@ const Header = () => {
           
           {/* Mobile Auth Links */}
           <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
-            <Link 
-              to="/login" 
-              className="text-white text-xl font-secondary"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup-customer" 
-              className="text-white text-xl font-secondary"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Sign Up
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to={dashboardPath}
+                  className="text-white text-xl font-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {dashboardLabel}
+                </Link>
+                <button
+                  type="button"
+                  className="text-left text-white text-xl font-secondary"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="text-white text-xl font-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup-customer" 
+                  className="text-white text-xl font-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { getWeather } from '../lib/weatherService';
-import { createBookingRequest } from '../lib/bookingRequests';
 import { useAuth } from '../lib/AuthContext';
 import { useToursCatalog } from '../lib/toursCatalog';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
+
+const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
 
 const bookingSchema = yup.object({
   date: yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
@@ -25,6 +26,7 @@ const bookingSchema = yup.object({
 const TourDetailsPage = () => {
   const { destination } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const toursCatalog = useToursCatalog();
   const tour = useMemo(
@@ -37,9 +39,9 @@ const TourDetailsPage = () => {
   
   const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
   const [weather, setWeather] = useState(null);
-  const [bookingMessage, setBookingMessage] = useState(null);
+  const canBookAsTraveler = isAuthenticated && user?.role === 'USER';
 
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm({
+  const { register, control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
     defaultValues: {
       travelers: [{ name: '', age: '', gender: '' }],
@@ -63,15 +65,11 @@ const TourDetailsPage = () => {
 
   const onSubmit = (data) => {
     if (!isAuthenticated || user?.role !== 'USER') {
-      setBookingMessage({
-        type: 'error',
-        text: 'Please login as a traveler account to place a booking request.',
-      });
-      navigate('/login');
+      navigate('/login', { state: { from: location } });
       return;
     }
 
-    const bookingRequest = createBookingRequest({
+    const pendingBooking = {
       travelerName: user.name,
       travelerEmail: user.email,
       destination: tour.destination,
@@ -79,18 +77,26 @@ const TourDetailsPage = () => {
       travelDate: data.date,
       transportation: data.transportation,
       travelers: data.travelers,
-    });
+      amountPerTraveler: randomPrice,
+      currency: 'USD',
+      submittedAt: new Date().toISOString(),
+    };
 
-    reset({
-      date: '',
-      transportation: '',
-      travelers: [{ name: '', age: '', gender: '' }],
-    });
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      window.sessionStorage.setItem(PENDING_BOOKING_STORAGE_KEY, JSON.stringify(pendingBooking));
+    }
 
-    setBookingMessage({
-      type: 'success',
-      text: `Booking request ${bookingRequest.id} submitted. Waiting for admin approval.`,
-    });
+    navigate('/user/payment/demo', { state: { pendingBooking } });
+  };
+
+  const handleFormSubmit = (event) => {
+    if (!canBookAsTraveler) {
+      event.preventDefault();
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    handleSubmit(onSubmit)(event);
   };
 
   return (
@@ -183,7 +189,7 @@ const TourDetailsPage = () => {
           <div className="md:col-span-1">
             <div className="bg-gray-50 p-8 rounded-lg shadow-lg sticky top-24">
               <h3 className="text-2xl font-primary font-semibold mb-6">Book This Tour</h3>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
                   <input type="date" id="date" {...register("date")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" />
@@ -249,18 +255,12 @@ const TourDetailsPage = () => {
 
                 <hr />
 
-                <button type="submit" className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold">
+                <button
+                  type="submit"
+                  className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold"
+                >
                   Book Now
                 </button>
-                {bookingMessage && (
-                  <p
-                    className={`text-sm ${
-                      bookingMessage.type === 'success' ? 'text-green-700' : 'text-red-600'
-                    }`}
-                  >
-                    {bookingMessage.text}
-                  </p>
-                )}
               </form>
             </div>
           </div>

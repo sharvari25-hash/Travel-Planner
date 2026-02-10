@@ -7,6 +7,42 @@ import SidebarItem from '../shared/SidebarItem';
 const TravelerSidebar = () => {
   const location = useLocation();
 
+  const normalizePath = (path) => {
+    if (!path || path === '/') {
+      return path;
+    }
+
+    return path.endsWith('/') ? path.slice(0, -1) : path;
+  };
+
+  const currentPath = normalizePath(location.pathname);
+
+  const navItems = [
+    { icon: MdDashboard, text: 'Dashboard', to: '/user/dashboard', exact: true },
+    {
+      icon: FaSuitcase,
+      text: 'My Trips',
+      to: '/user/dashboard/my-trips',
+      submenu: [
+        { text: 'All Trips', to: '/user/dashboard/my-trips', exact: true },
+        { text: 'Upcoming', to: '/user/dashboard/my-trips/upcoming' },
+        { text: 'Completed', to: '/user/dashboard/my-trips/completed' },
+      ],
+    },
+    { icon: MdExplore, text: 'Explore', to: '/tours', exact: true },
+    { icon: FaBell, text: 'Notifications' },
+    { icon: FaCog, text: 'Settings', to: '/user/settings', exact: true },
+  ];
+
+  const isActive = ({ to, exact }) => {
+    if (!to) {
+      return false;
+    }
+
+    const targetPath = normalizePath(to);
+    return exact ? currentPath === targetPath : currentPath.startsWith(targetPath);
+  };
+
   return (
     <aside className="w-64 bg-[#1E3A8A] text-white flex-shrink-0 flex flex-col hidden md:flex">
       <div className="p-8 flex items-center gap-3">
@@ -17,11 +53,41 @@ const TravelerSidebar = () => {
       </div>
       
       <nav className="flex-1 mt-2 space-y-1">
-        <SidebarItem icon={MdDashboard} text="Dashboard" to="/user/dashboard" active={location.pathname === '/user/dashboard'} />
-        <SidebarItem icon={FaSuitcase} text="My Trips" to="/user/dashboard/my-trips" hasSubmenu active={location.pathname.startsWith('/user/dashboard/my-trips')} />
-        <SidebarItem icon={MdExplore} text="Explore" to="/tours" active={location.pathname === '/tours'} />
-        <SidebarItem icon={FaBell} text="Notifications" />
-        <SidebarItem icon={FaCog} text="Settings" to="/user/settings" active={location.pathname === '/user/settings'} />
+        {navItems.map((item) => {
+          const itemActive = isActive(item);
+
+          return (
+            <div key={item.text}>
+              <SidebarItem
+                icon={item.icon}
+                text={item.text}
+                to={item.to}
+                hasSubmenu={Boolean(item.submenu?.length)}
+                active={itemActive}
+              />
+              {item.submenu?.length ? (
+                <div className={`pl-10 pr-4 pb-2 space-y-1 ${itemActive ? 'block' : 'hidden'}`}>
+                  {item.submenu.map((subItem) => {
+                    const subActive = isActive(subItem);
+                    return (
+                      <Link
+                        key={subItem.text}
+                        to={subItem.to}
+                        className={`block text-xs rounded px-3 py-2 transition-colors ${
+                          subActive
+                            ? 'bg-blue-700 text-white font-medium'
+                            : 'text-blue-100 hover:bg-blue-800/60 hover:text-white'
+                        }`}
+                      >
+                        {subItem.text}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </nav>
 
       <div className="p-6">
