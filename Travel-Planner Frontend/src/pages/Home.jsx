@@ -3,9 +3,9 @@ import { useInView } from 'react-intersection-observer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useToursCatalog } from '../lib/toursCatalog';
 
 // --- Data & Config ---
-import { allToursData } from '../lib/AllToursData';
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1533094692971-5f4c56ec1339?auto=format&fit=crop&w=300",
@@ -76,7 +76,7 @@ const HeroSection = () => {
   );
 };
 
-const HotDealsSection = () => {
+const HotDealsSection = ({ tours }) => {
   return (
     <section className="bg-[#f0eef2] py-20">
       <div className="max-w-[1240px] mx-auto px-4">
@@ -86,7 +86,7 @@ const HotDealsSection = () => {
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {allToursData.slice(0, 3).map((tour, idx) => (
+          {tours.slice(0, 3).map((tour, idx) => (
             <FadeIn key={idx} delay={idx * 0.1} className="group flex flex-col overflow-hidden rounded-[20px] bg-white shadow-lg">
               <div className="relative overflow-hidden w-full aspect-[4/5] md:aspect-[400/424]">
                 <img 
@@ -299,10 +299,12 @@ const ContactSection = () => {
 };
 
 const Home = () => {
+  const toursCatalog = useToursCatalog();
+
   return (
     <div className="overflow-hidden">
       <HeroSection />
-      <HotDealsSection />
+      <HotDealsSection tours={toursCatalog} />
       <ExploreSection />
       <GallerySection />
       <ReviewsSection />

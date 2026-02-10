@@ -1,11 +1,25 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
-import { allToursData } from '../../../lib/AllToursData';
+import {
+  createTourInCatalog,
+  updateTourInCatalog,
+  useToursCatalog,
+} from '../../../lib/toursCatalog';
+
+const categoryOptions = ['Family', 'Couple', 'Adventure', 'Culture'];
+
+const emptyTourForm = {
+  destination: '',
+  country: '',
+  category: 'Adventure',
+  duration: 5,
+  description: '',
+  img: '',
+  planText: '',
+};
 
 const getTourSlug = (tour) => tour.destination.toLowerCase().replace(/\s/g, '-');
-const getTourKey = (tour) =>
-  `${getTourSlug(tour)}-${tour.country.toLowerCase().replace(/\s/g, '-')}`;
 
 const getCategoryFromRoute = (tab) => {
   if (tab === 'family') {
@@ -27,24 +41,44 @@ const getCategoryFromRoute = (tab) => {
   return 'All';
 };
 
+const mapTourToForm = (tour) => ({
+  destination: tour.destination,
+  country: tour.country,
+  category: tour.category,
+  duration: tour.duration,
+  description: tour.description,
+  img: tour.img,
+  planText: Array.isArray(tour.plan) ? tour.plan.join('\n') : '',
+});
+
+const parsePlanText = (text) =>
+  String(text)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
 const AdminTripsItinerariesPanel = () => {
   const { user } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
 
+  const tours = useToursCatalog();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
-  const [selectedTourKey, setSelectedTourKey] = useState('');
+  const [selectedTourId, setSelectedTourId] = useState('');
+  const [editorMode, setEditorMode] = useState('view');
+  const [tourForm, setTourForm] = useState(emptyTourForm);
+  const [saveMessage, setSaveMessage] = useState('');
 
   const routeCategory = getCategoryFromRoute(tab);
   const activeCategoryFilter = routeCategory === 'All' ? categoryFilter : routeCategory;
 
   const summary = useMemo(() => {
-    const totalTours = allToursData.length;
-    const totalDays = allToursData.reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
+    const totalTours = tours.length;
+    const totalDays = tours.reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
     const averageDuration = totalTours > 0 ? (totalDays / totalTours).toFixed(1) : '0.0';
-    const uniqueCountries = new Set(allToursData.map((entry) => entry.country)).size;
-    const categories = new Set(allToursData.map((entry) => entry.category)).size;
+    const uniqueCountries = new Set(tours.map((entry) => entry.country)).size;
+    const categories = new Set(tours.map((entry) => entry.category)).size;
 
     return {
       totalTours,
@@ -52,12 +86,12 @@ const AdminTripsItinerariesPanel = () => {
       categories,
       averageDuration,
     };
-  }, []);
+  }, [tours]);
 
   const filteredTours = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return allToursData.filter((entry) => {
+    return tours.filter((entry) => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
         entry.destination.toLowerCase().includes(normalizedSearch) ||
@@ -69,18 +103,100 @@ const AdminTripsItinerariesPanel = () => {
 
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, activeCategoryFilter]);
+  }, [tours, searchTerm, activeCategoryFilter]);
 
-  const selectedTour = useMemo(() => {
+  useEffect(() => {
     if (filteredTours.length === 0) {
-      return null;
+      setSelectedTourId('');
+      return;
     }
 
-    return (
-      filteredTours.find((entry) => getTourKey(entry) === selectedTourKey) ||
-      filteredTours[0]
-    );
-  }, [filteredTours, selectedTourKey]);
+    const selectedExists = filteredTours.some((entry) => entry.id === selectedTourId);
+    if (!selectedTourId || !selectedExists) {
+      setSelectedTourId(filteredTours[0].id);
+    }
+  }, [filteredTours, selectedTourId]);
+
+  const selectedTour = useMemo(
+    () => filteredTours.find((entry) => entry.id === selectedTourId) || null,
+    [filteredTours, selectedTourId]
+  );
+
+  const setFormField = (key, value) => {
+    setTourForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const startCreateTour = () => {
+    setEditorMode('create');
+    setTourForm({
+      ...emptyTourForm,
+      category: routeCategory === 'All' ? 'Adventure' : routeCategory,
+    });
+    setSaveMessage('');
+  };
+
+  const startEditTour = () => {
+    if (!selectedTour) {
+      return;
+    }
+
+    setEditorMode('edit');
+    setTourForm(mapTourToForm(selectedTour));
+    setSaveMessage('');
+  };
+
+  const cancelEditor = () => {
+    setEditorMode('view');
+    setTourForm(emptyTourForm);
+  };
+
+  const handleSave = () => {
+    const destination = tourForm.destination.trim();
+    const country = tourForm.country.trim();
+    const description = tourForm.description.trim();
+    const category = tourForm.category.trim();
+    const img = tourForm.img.trim();
+    const duration = Math.max(1, Number(tourForm.duration) || 1);
+    const plan = parsePlanText(tourForm.planText);
+
+    if (!destination || !country || !description || !img) {
+      setSaveMessage('Please fill destination, country, description, and image URL.');
+      return;
+    }
+
+    if (!categoryOptions.includes(category)) {
+      setSaveMessage('Please select a valid category.');
+      return;
+    }
+
+    if (plan.length === 0) {
+      setSaveMessage('Please provide itinerary lines (one day per line).');
+      return;
+    }
+
+    const payload = {
+      destination,
+      country,
+      category,
+      duration,
+      description,
+      img,
+      plan,
+    };
+
+    if (editorMode === 'create') {
+      const createdTour = createTourInCatalog(payload);
+      setSelectedTourId(createdTour.id);
+      setSaveMessage('New trip created successfully.');
+    }
+
+    if (editorMode === 'edit' && selectedTour) {
+      updateTourInCatalog(selectedTour.id, payload);
+      setSaveMessage('Trip updated successfully.');
+    }
+
+    setEditorMode('view');
+  };
 
   if (!isAdmin) {
     return (
@@ -95,11 +211,30 @@ const AdminTripsItinerariesPanel = () => {
 
   return (
     <section className="space-y-6 min-w-0">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Trips & Itineraries</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Synced with existing tour mock data. Browse tours and review day-by-day plans.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Trips & Itineraries</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Edit existing tours or add a new trip. Changes sync across the project.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={startCreateTour}
+            className="px-3 py-2 rounded-lg text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          >
+            Add New Trip
+          </button>
+          <button
+            type="button"
+            onClick={startEditTour}
+            disabled={!selectedTour}
+            className="px-3 py-2 rounded-lg text-xs font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Edit Selected
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -138,23 +273,23 @@ const AdminTripsItinerariesPanel = () => {
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white disabled:bg-gray-100 disabled:text-gray-400"
             >
               <option value="All">All Categories</option>
-              <option value="Family">Family</option>
-              <option value="Couple">Couple</option>
-              <option value="Adventure">Adventure</option>
-              <option value="Culture">Culture</option>
+              {categoryOptions.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="space-y-3 max-h-[640px] overflow-y-auto pr-1">
             {filteredTours.map((tour) => {
-              const key = getTourKey(tour);
-              const isActive = selectedTour && getTourKey(selectedTour) === key;
+              const isActive = selectedTour && selectedTour.id === tour.id;
 
               return (
                 <button
-                  key={key}
+                  key={tour.id}
                   type="button"
-                  onClick={() => setSelectedTourKey(key)}
+                  onClick={() => setSelectedTourId(tour.id)}
                   className={`w-full text-left rounded-lg border p-3 transition-colors ${
                     isActive
                       ? 'border-blue-500 bg-blue-50'
@@ -183,7 +318,7 @@ const AdminTripsItinerariesPanel = () => {
         </div>
 
         <div className="xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5 min-w-0">
-          {selectedTour ? (
+          {editorMode === 'view' && selectedTour ? (
             <div className="space-y-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -228,7 +363,7 @@ const AdminTripsItinerariesPanel = () => {
                 <div className="space-y-2">
                   {selectedTour.plan.map((dayPlan, index) => (
                     <div
-                      key={`${getTourKey(selectedTour)}-${index + 1}`}
+                      key={`${selectedTour.id}-${index + 1}`}
                       className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700"
                     >
                       {dayPlan}
@@ -237,9 +372,121 @@ const AdminTripsItinerariesPanel = () => {
                 </div>
               </div>
             </div>
-          ) : (
-            <p className="text-sm text-gray-500">Select a tour to view itinerary details.</p>
+          ) : null}
+
+          {(editorMode === 'edit' || editorMode === 'create') && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold text-gray-800">
+                  {editorMode === 'create' ? 'Add New Trip' : 'Edit Trip'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={cancelEditor}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-gray-600">Destination</span>
+                  <input
+                    type="text"
+                    value={tourForm.destination}
+                    onChange={(event) => setFormField('destination', event.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-gray-600">Country</span>
+                  <input
+                    type="text"
+                    value={tourForm.country}
+                    onChange={(event) => setFormField('country', event.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-gray-600">Category</span>
+                  <select
+                    value={tourForm.category}
+                    onChange={(event) => setFormField('category', event.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {categoryOptions.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-gray-600">Duration (days)</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={tourForm.duration}
+                    onChange={(event) => setFormField('duration', event.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </label>
+              </div>
+
+              <label className="space-y-1 block">
+                <span className="text-xs font-medium text-gray-600">Image URL</span>
+                <input
+                  type="text"
+                  value={tourForm.img}
+                  onChange={(event) => setFormField('img', event.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+
+              <label className="space-y-1 block">
+                <span className="text-xs font-medium text-gray-600">Description</span>
+                <textarea
+                  rows={3}
+                  value={tourForm.description}
+                  onChange={(event) => setFormField('description', event.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+
+              <label className="space-y-1 block">
+                <span className="text-xs font-medium text-gray-600">
+                  Itinerary Plan (one day per line)
+                </span>
+                <textarea
+                  rows={8}
+                  value={tourForm.planText}
+                  onChange={(event) => setFormField('planText', event.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-green-700">{saveMessage}</p>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                >
+                  {editorMode === 'create' ? 'Create Trip' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
           )}
+
+          {!selectedTour && editorMode === 'view' ? (
+            <p className="text-sm text-gray-500">Select a tour to view details.</p>
+          ) : null}
+
+          {saveMessage && editorMode === 'view' ? (
+            <p className="text-xs text-green-700 mt-4">{saveMessage}</p>
+          ) : null}
         </div>
       </div>
     </section>

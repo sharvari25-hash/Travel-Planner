@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { allToursData } from '../lib/AllToursData';
 import { getWeather } from '../lib/weatherService';
 import { createBookingRequest } from '../lib/bookingRequests';
 import { useAuth } from '../lib/AuthContext';
+import { useToursCatalog } from '../lib/toursCatalog';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const bookingSchema = yup.object({
@@ -26,7 +26,14 @@ const TourDetailsPage = () => {
   const { destination } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const tour = allToursData.find((tour) => tour.destination.toLowerCase().replace(/\s/g, "-") === destination);
+  const toursCatalog = useToursCatalog();
+  const tour = useMemo(
+    () =>
+      toursCatalog.find(
+        (entry) => entry.destination.toLowerCase().replace(/\s/g, '-') === destination
+      ),
+    [toursCatalog, destination]
+  );
   
   const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
   const [weather, setWeather] = useState(null);

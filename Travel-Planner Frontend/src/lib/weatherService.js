@@ -1,7 +1,7 @@
 // Mock Weather Service
 // Returns mock data based on the static profiles defined in AllToursData.js
 
-import { allToursData } from './AllToursData';
+import { getToursCatalog } from './toursCatalog';
 
 const weatherConditions = [
   { condition: 'Sunny', icon: '☀️' },
@@ -66,9 +66,10 @@ const getCondition = (val, temp, defaultCondName) => {
 
 export const getWeather = (destination) => {
   const hash = getHash(destination);
+  const tours = getToursCatalog();
 
   // Find the tour data to get the specific weather profile
-  const tour = allToursData.find((t) => t.destination === destination);
+  const tour = tours.find((t) => t.destination === destination);
 
   // Default fallback if tour not found
   const profile = tour?.weatherProfile || {

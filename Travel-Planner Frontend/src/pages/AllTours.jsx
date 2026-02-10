@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { allToursData } from '../lib/AllToursData';
 import { Link } from 'react-router-dom';
+import { useToursCatalog } from '../lib/toursCatalog';
 
 const AllTours = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeCategory, setActiveCategory] = useState('All');
+  const toursCatalog = useToursCatalog();
   const toursPerPage = 9;
 
   const categories = ['All', 'Family', 'Couple', 'Adventure', 'Culture'];
 
   const filteredTours = activeCategory === 'All' 
-    ? allToursData 
-    : allToursData.filter(tour => tour.category === activeCategory);
+    ? toursCatalog
+    : toursCatalog.filter((tour) => tour.category === activeCategory);
 
   const indexOfLastTour = currentPage * toursPerPage;
   const indexOfFirstTour = indexOfLastTour - toursPerPage;
