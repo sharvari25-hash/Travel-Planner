@@ -63,8 +63,31 @@ const AdminSidebar = () => {
       ],
     },
     { icon: FaChartBar, text: 'Recommendations', to: '/admin/dashboard/recommendations', hasSubmenu: true },
-    { icon: FaBell, text: 'Notifications', to: '/admin/dashboard/notifications', hasSubmenu: true },
-    { icon: FaChartBar, text: 'Reports', to: '/admin/dashboard/reports', hasSubmenu: true },
+    {
+      icon: FaBell,
+      text: 'Notifications',
+      to: '/admin/dashboard/notifications',
+      submenu: [
+        { text: 'All Alerts', to: '/admin/dashboard/notifications', exact: true },
+        { text: 'Unread', to: '/admin/dashboard/notifications/unread' },
+        { text: 'Bookings', to: '/admin/dashboard/notifications/bookings' },
+        { text: 'Payments', to: '/admin/dashboard/notifications/payments' },
+        { text: 'Users', to: '/admin/dashboard/notifications/users' },
+        { text: 'Security', to: '/admin/dashboard/notifications/security' },
+        { text: 'System', to: '/admin/dashboard/notifications/system' },
+      ],
+    },
+    {
+      icon: FaChartBar,
+      text: 'Reports',
+      to: '/admin/dashboard/reports',
+      submenu: [
+        { text: 'Overview', to: '/admin/dashboard/reports', exact: true },
+        { text: 'Revenue', to: '/admin/dashboard/reports/revenue' },
+        { text: 'Bookings', to: '/admin/dashboard/reports/bookings' },
+        { text: 'Users', to: '/admin/dashboard/reports/users' },
+      ],
+    },
     { icon: FaCog, text: 'Settings', to: '/admin/dashboard/settings' },
   ];
 

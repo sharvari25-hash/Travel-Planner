@@ -11,6 +11,11 @@ const defaultWeatherProfile = {
   defaultCondition: 'Partly Cloudy',
 };
 
+const IMAGE_OVERRIDES = {
+  'orlando, fl|usa':
+    'https://images.pexels.com/photos/34936498/pexels-photo-34936498.jpeg?auto=compress&cs=tinysrgb&w=1600',
+};
+
 const slugify = (value = '') =>
   String(value)
     .toLowerCase()
@@ -22,6 +27,9 @@ const toSafeNumber = (value, fallback) => {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
 };
+
+const buildLocationKey = (destination, country) =>
+  `${String(destination || '').trim().toLowerCase()}|${String(country || '').trim().toLowerCase()}`;
 
 const buildFallbackPlan = (duration, destination = 'Destination') =>
   Array.from({ length: duration }, (_item, index) => `Day ${index + 1}: Explore ${destination}`);
@@ -44,6 +52,8 @@ const normalizeTour = (tour, index = 0) => {
   const country = String(tour?.country || '').trim();
   const category = String(tour?.category || 'Adventure').trim();
   const duration = Math.max(1, toSafeNumber(tour?.duration, 5));
+  const locationKey = buildLocationKey(destination, country);
+  const imageOverride = IMAGE_OVERRIDES[locationKey];
   const id =
     tour?.id ||
     `tour-${slugify(destination)}-${slugify(country)}-${String(index + 1).padStart(2, '0')}`;
@@ -55,7 +65,7 @@ const normalizeTour = (tour, index = 0) => {
     category,
     description: String(tour?.description || '').trim(),
     duration,
-    img: String(tour?.img || '').trim(),
+    img: imageOverride || String(tour?.img || '').trim(),
     plan: normalizePlan(tour?.plan, duration, destination),
     weatherProfile: {
       ...defaultWeatherProfile,

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -21,12 +21,30 @@ import TripDetails from './pages/TripDetails';
 import NotFound from './pages/NotFound';
 import DemoPayment from './pages/DemoPayment';
 import TravelerNotifications from './pages/TravelerNotifications';
+import { useAuth } from './lib/AuthContext';
+
+const AdminLandingGuard = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (isAuthenticated && user?.role === 'ADMIN') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout><Home /></Layout>} />
+        <Route
+          path="/"
+          element={
+            <AdminLandingGuard>
+              <Layout><Home /></Layout>
+            </AdminLandingGuard>
+          }
+        />
         <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/signup-customer" element={<Layout><Signup /></Layout>} />
         <Route path="/about-us" element={<Layout><AboutUs /></Layout>} />

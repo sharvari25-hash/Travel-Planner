@@ -41,7 +41,7 @@ export const allToursData = [
     category: "Family",
     description: "The theme park capital of the world (Disney & Universal).",
     duration: 6,
-    img: "https://media.istockphoto.com/id/176980317/photo/a-depiction-of-orlando-florida-at-nighttime-lights.jpg?s=612x612&w=0&k=20&c=bXAPXmSI69Rkzo-puNCSs7FmqxRShn4h7pEcpHVUrFs=",
+    img: "https://images.pexels.com/photos/34936498/pexels-photo-34936498.jpeg?auto=compress&cs=tinysrgb&w=1600",
     plan: [
       "Day 1: Arrival & Disney Springs",
       "Day 2: Magic Kingdom",

@@ -8,6 +8,8 @@ import AdminSettingsPanel from '../components/dashboard/admin/AdminSettingsPanel
 import AdminBookingsPanel from '../components/dashboard/admin/AdminBookingsPanel';
 import AdminPaymentsPanel from '../components/dashboard/admin/AdminPaymentsPanel';
 import AdminTripsItinerariesPanel from '../components/dashboard/admin/AdminTripsItinerariesPanel';
+import AdminReportsPanel from '../components/dashboard/admin/AdminReportsPanel';
+import AdminNotificationsPanel from '../components/dashboard/admin/AdminNotificationsPanel';
 
 export default function TravelAdminDashboard() {
   return (
@@ -26,6 +28,10 @@ export default function TravelAdminDashboard() {
             <Route path="bookings/:tab" element={<AdminBookingsPanel />} />
             <Route path="budget-payments" element={<AdminPaymentsPanel />} />
             <Route path="budget-payments/:tab" element={<AdminPaymentsPanel />} />
+            <Route path="notifications" element={<AdminNotificationsPanel />} />
+            <Route path="notifications/:tab" element={<AdminNotificationsPanel />} />
+            <Route path="reports" element={<AdminReportsPanel />} />
+            <Route path="reports/:tab" element={<AdminReportsPanel />} />
             <Route path="settings" element={<AdminSettingsPanel />} />
             <Route path="*" element={<AdminOverviewContent />} />
           </Routes>
