@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UserProfile from './pages/UserProfile';
 import TourDetailsPage from './pages/TourDetailsPage';
+import TourBookingPage from './pages/TourBookingPage';
 import AllTours from './pages/AllTours';
 import TravelerDashboard from './pages/TravelerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -64,6 +65,8 @@ function App() {
           } 
         />
         <Route path="/tours" element={<Layout><AllTours /></Layout>} />
+        <Route path="/tours/:destination/book" element={<Layout><TourBookingPage /></Layout>} />
+        <Route path="/tours/:destination/:subDestination/book" element={<Layout><TourBookingPage /></Layout>} />
         <Route path="/tours/:destination" element={<Layout><TourDetailsPage /></Layout>} />
         <Route path="/tours/:destination/:subDestination" element={<Layout><TourDetailsPage /></Layout>} />
         <Route
