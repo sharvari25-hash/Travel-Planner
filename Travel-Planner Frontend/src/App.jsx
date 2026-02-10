@@ -63,6 +63,7 @@ function App() {
         />
         <Route path="/tours" element={<Layout><AllTours /></Layout>} />
         <Route path="/tours/:destination" element={<Layout><TourDetailsPage /></Layout>} />
+        <Route path="/tours/:destination/:subDestination" element={<Layout><TourDetailsPage /></Layout>} />
         <Route
           path="/user/payment/demo"
           element={

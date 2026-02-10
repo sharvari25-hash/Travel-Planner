@@ -40,6 +40,8 @@ const IMAGE_OVERRIDES = {
     'https://upload.wikimedia.org/wikipedia/commons/0/0d/Sagrada_Familia_03.jpg',
   'cappadocia|turkey':
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Cappadocia_Balloon_Inflating_Wikimedia_Commons.JPG',
+  'giza/cairo|egypt':
+    'https://upload.wikimedia.org/wikipedia/commons/a/af/All_Gizah_Pyramids.jpg',
 };
 
 const slugify = (value = '') =>

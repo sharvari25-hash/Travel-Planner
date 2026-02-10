@@ -295,7 +295,7 @@ export const allToursData = [
     category: "Culture",
     description: "The Great Pyramids and incredible Nile River cruises.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1569031419332-690a58699a46?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/a/af/All_Gizah_Pyramids.jpg",
     plan: [
       "Day 1: Arrival in Cairo",
       "Day 2: Pyramids of Giza & Sphinx",

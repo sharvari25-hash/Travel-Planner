@@ -24,17 +24,21 @@ const bookingSchema = yup.object({
 }).required();
 
 const TourDetailsPage = () => {
-  const { destination } = useParams();
+  const { destination, subDestination } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const toursCatalog = useToursCatalog();
+  const requestedTourPath = useMemo(
+    () => [destination, subDestination].filter(Boolean).join('/'),
+    [destination, subDestination]
+  );
   const tour = useMemo(
     () =>
       toursCatalog.find(
-        (entry) => entry.destination.toLowerCase().replace(/\s/g, '-') === destination
+        (entry) => entry.destination.toLowerCase().replace(/\s/g, '-') === requestedTourPath
       ),
-    [toursCatalog, destination]
+    [toursCatalog, requestedTourPath]
   );
   
   const [weather, setWeather] = useState(null);
