@@ -22,11 +22,11 @@ const BookingsOverviewChart = () => (
   <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+      className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 min-w-0"
   >
       <SectionTitle title="Bookings Overview" />
-      <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
+      <div className="h-64 w-full min-w-0 min-h-[256px]">
+          <ResponsiveContainer width="100%" height={256} minWidth={280} minHeight={256}>
               <BarChart data={chartData} barSize={20}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />

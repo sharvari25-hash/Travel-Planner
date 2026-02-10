@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const SidebarItem = ({ icon: Icon, text, active, hasSubmenu, to }) => {
@@ -8,7 +9,7 @@ const SidebarItem = ({ icon: Icon, text, active, hasSubmenu, to }) => {
         <Icon size={18} />
         <span className="font-medium text-sm">{text}</span>
       </div>
-      {hasSubmenu && <span className="text-xs">▼</span>}
+      {hasSubmenu && <FaChevronDown className="text-[10px] opacity-70" aria-hidden="true" />}
     </div>
   );
 

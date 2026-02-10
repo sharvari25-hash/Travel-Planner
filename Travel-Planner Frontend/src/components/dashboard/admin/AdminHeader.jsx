@@ -15,7 +15,7 @@ const AdminHeader = () => {
   return (
     <header className="bg-white px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
       <div className="flex items-center gap-2 text-gray-700">
-         <h2 className="font-bold text-xl">Travel Planner Admin</h2>
+         <h2 className="font-bold text-xl">Wanderwise Admin</h2>
       </div>
       <div className="flex items-center gap-6">
         <div className="relative">
