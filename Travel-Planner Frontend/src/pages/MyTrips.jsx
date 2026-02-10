@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { myTrips } from '../lib/my-trips';
+import React, { useEffect, useMemo, useState } from 'react';
+import { getMyTrips } from '../lib/my-trips';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaCheckCircle, FaHourglassHalf, FaPlaneDeparture, FaUsers } from 'react-icons/fa';
 import TravelerSidebar from '../components/dashboard/traveler/TravelerSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
+import { useAuth } from '../lib/AuthContext';
 
 const statusStyles = {
   Upcoming: 'bg-blue-100 text-blue-700',
@@ -34,20 +35,69 @@ const formatAmount = (amount) =>
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(Number(amount || 0));
 
 const MyTrips = ({ statusFilter = 'All' }) => {
+  const { token, user } = useAuth();
+  const isTraveler = user?.role === 'USER';
+
+  const [trips, setTrips] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('startDateDesc');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadTrips = async () => {
+      if (!isTraveler || !token) {
+        if (isMounted) {
+          setTrips([]);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      setIsLoading(true);
+      setFetchError('');
+
+      try {
+        const payload = await getMyTrips(token);
+        if (isMounted) {
+          setTrips(payload);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setFetchError(error?.message || 'Unable to load trips.');
+          setTrips([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadTrips();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isTraveler, token]);
 
   const filteredTrips = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    const base = myTrips.filter((trip) => {
+    const base = trips.filter((trip) => {
+      const destination = String(trip.destination || '');
+      const country = String(trip.country || '');
       const matchesStatus = statusFilter === 'All' || trip.status === statusFilter;
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        trip.destination.toLowerCase().includes(normalizedSearch);
+        destination.toLowerCase().includes(normalizedSearch) ||
+        country.toLowerCase().includes(normalizedSearch) ||
+        String(trip.bookingId || '').toLowerCase().includes(normalizedSearch);
 
       return matchesStatus && matchesSearch;
     });
@@ -63,20 +113,20 @@ const MyTrips = ({ statusFilter = 'All' }) => {
     }
 
     if (sortBy === 'budgetHigh') {
-      sorted.sort((a, b) => b.budget.total - a.budget.total);
+      sorted.sort((a, b) => Number(b.budget.total || 0) - Number(a.budget.total || 0));
     }
 
     return sorted;
-  }, [searchTerm, sortBy, statusFilter]);
+  }, [trips, searchTerm, sortBy, statusFilter]);
 
   const summary = useMemo(
     () => ({
-      total: myTrips.length,
-      upcoming: myTrips.filter((trip) => trip.status === 'Upcoming').length,
-      completed: myTrips.filter((trip) => trip.status === 'Completed').length,
-      spent: myTrips.reduce((sum, trip) => sum + trip.budget.spent, 0),
+      total: trips.length,
+      upcoming: trips.filter((trip) => trip.status === 'Upcoming').length,
+      completed: trips.filter((trip) => trip.status === 'Completed').length,
+      spent: trips.reduce((sum, trip) => sum + Number(trip.budget?.spent || 0), 0),
     }),
-    []
+    [trips]
   );
 
   return (
@@ -112,12 +162,17 @@ const MyTrips = ({ statusFilter = 'All' }) => {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            {fetchError ? (
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+                {fetchError}
+              </p>
+            ) : null}
             <div className="flex flex-wrap gap-3">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search by destination"
+                placeholder="Search by destination, country, or booking ID"
                 className="w-full md:flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <select
@@ -133,7 +188,11 @@ const MyTrips = ({ statusFilter = 'All' }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredTrips.map((trip) => (
+            {isLoading ? (
+              <div className="col-span-full bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
+                Loading trips...
+              </div>
+            ) : filteredTrips.map((trip) => (
               <article
                 key={trip.id}
                 className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
@@ -153,7 +212,11 @@ const MyTrips = ({ statusFilter = 'All' }) => {
                 </div>
 
                 <div className="p-5">
-                  <h2 className="text-lg font-bold text-gray-800">{trip.destination}</h2>
+                  <h2 className="text-lg font-bold text-gray-800">
+                    {trip.destination}, {trip.country}
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">Booking ID: {trip.bookingId}</p>
+                  <p className="text-xs text-gray-500 mt-1">Booking Status: {trip.bookingStatus}</p>
 
                   <div className="mt-3 space-y-2 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
@@ -164,7 +227,7 @@ const MyTrips = ({ statusFilter = 'All' }) => {
                     </div>
                     <div className="flex items-center gap-2">
                       <FaUsers className="text-gray-400" />
-                      <span>{trip.collaborators.length} collaborators</span>
+                      <span>{Number(trip.travelersCount || trip.collaborators?.length || 0)} travelers</span>
                     </div>
                   </div>
 
@@ -172,13 +235,20 @@ const MyTrips = ({ statusFilter = 'All' }) => {
                     <div className="flex justify-between text-xs">
                       <span className="font-medium text-gray-500">Budget Used</span>
                       <span className="font-semibold text-gray-700">
-                        {formatAmount(trip.budget.spent)} / {formatAmount(trip.budget.total)}
+                        {formatAmount(trip.budget?.spent)} / {formatAmount(trip.budget?.total)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${Math.min(100, (trip.budget.spent / trip.budget.total) * 100)}%` }}
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            Number(trip.budget?.total || 0) === 0
+                              ? 0
+                              : (Number(trip.budget?.spent || 0) / Number(trip.budget?.total || 1)) * 100
+                          )}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -194,7 +264,7 @@ const MyTrips = ({ statusFilter = 'All' }) => {
             ))}
           </div>
 
-          {filteredTrips.length === 0 ? (
+          {!isLoading && filteredTrips.length === 0 ? (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
               No trips found for this view.
             </div>

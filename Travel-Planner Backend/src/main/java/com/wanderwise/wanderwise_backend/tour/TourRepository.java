@@ -8,4 +8,6 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     List<Tour> findAllByOrderByDestinationAsc();
 
     Optional<Tour> findBySlug(String slug);
+
+    Optional<Tour> findByDestinationIgnoreCaseAndCountryIgnoreCase(String destination, String country);
 }

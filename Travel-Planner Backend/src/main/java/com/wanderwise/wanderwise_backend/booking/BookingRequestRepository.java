@@ -12,4 +12,6 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequest, 
     List<BookingRequest> findAllByOrderByRequestedAtDesc();
 
     List<BookingRequest> findAllByUserEmailOrderByRequestedAtDesc(String userEmail);
+
+    Optional<BookingRequest> findByIdAndUserEmail(Long id, String userEmail);
 }
