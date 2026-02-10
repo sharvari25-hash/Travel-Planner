@@ -1,13 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
-import {
-  deleteBookingRequest,
-  getBookingRequests,
-  updateBookingRequestStatus,
-} from '../../../lib/bookingRequests';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const statusStyles = {
+  PENDING_PAYMENT: 'bg-orange-100 text-orange-700',
   PENDING: 'bg-yellow-100 text-yellow-700',
   APPROVED: 'bg-green-100 text-green-700',
   REJECTED: 'bg-red-100 text-red-700',
@@ -42,12 +40,24 @@ const formatDate = (dateValue) =>
     day: 'numeric',
   });
 
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
 const AdminBookingsPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
 
-  const [bookingRequests, setBookingRequests] = useState(() => getBookingRequests());
+  const [bookingRequests, setBookingRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [activeActionKey, setActiveActionKey] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [actionSelections, setActionSelections] = useState({});
@@ -81,22 +91,113 @@ const AdminBookingsPanel = () => {
     });
   }, [bookingRequests, searchTerm, activeStatusFilter]);
 
-  const handleStatusUpdate = (requestId, status) => {
+  const fetchBookings = useCallback(async () => {
+    if (!isAdmin || !token) {
+      setBookingRequests([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setFetchError(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/admin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        setFetchError(payload?.message || 'Unable to load booking requests.');
+        return;
+      }
+
+      if (!Array.isArray(payload)) {
+        setFetchError('Invalid booking response from backend.');
+        return;
+      }
+
+      setBookingRequests(payload);
+    } catch (_error) {
+      setFetchError('Unable to connect to backend server.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAdmin, token]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
+
+  const handleStatusUpdate = async (bookingRecordId, status) => {
     const note =
       status === 'REJECTED'
         ? window.prompt('Optional note for rejection:', 'Please update travel date and submit again.') || ''
         : '';
 
-    const updated = updateBookingRequestStatus(requestId, status, note);
-    setBookingRequests(updated);
+    setActionError(null);
+    setActiveActionKey(`status-${bookingRecordId}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/admin/${bookingRecordId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status,
+          adminNote: note,
+        }),
+      });
+
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        setActionError(payload?.message || 'Unable to update booking status.');
+        return;
+      }
+
+      setBookingRequests((current) =>
+        current.map((entry) => (entry.bookingRecordId === bookingRecordId ? payload : entry))
+      );
+    } catch (_error) {
+      setActionError('Unable to connect to backend server.');
+    } finally {
+      setActiveActionKey(null);
+    }
   };
 
-  const handleDelete = (requestId) => {
-    const updated = deleteBookingRequest(requestId);
-    setBookingRequests(updated);
+  const handleDelete = async (bookingRecordId) => {
+    setActionError(null);
+    setActiveActionKey(`delete-${bookingRecordId}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/admin/${bookingRecordId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        setActionError(payload?.message || 'Unable to delete booking.');
+        return;
+      }
+
+      setBookingRequests((current) =>
+        current.filter((entry) => entry.bookingRecordId !== bookingRecordId)
+      );
+    } catch (_error) {
+      setActionError('Unable to connect to backend server.');
+    } finally {
+      setActiveActionKey(null);
+    }
   };
 
-  const handleActionChange = (requestId, action) => {
+  const handleActionChange = (bookingRecordId, action) => {
     if (!action) {
       return;
     }
@@ -109,12 +210,12 @@ const AdminBookingsPanel = () => {
 
     const nextStatus = statusByAction[action];
     if (nextStatus) {
-      handleStatusUpdate(requestId, nextStatus);
+      handleStatusUpdate(bookingRecordId, nextStatus);
     }
 
     setActionSelections((current) => ({
       ...current,
-      [requestId]: '',
+      [bookingRecordId]: '',
     }));
   };
 
@@ -140,7 +241,7 @@ const AdminBookingsPanel = () => {
         </div>
         <button
           type="button"
-          onClick={() => setBookingRequests(getBookingRequests())}
+          onClick={fetchBookings}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           Refresh
@@ -167,6 +268,17 @@ const AdminBookingsPanel = () => {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+        {fetchError ? (
+          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+            {fetchError}
+          </p>
+        ) : null}
+        {actionError ? (
+          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+            {actionError}
+          </p>
+        ) : null}
+
         <div className="flex flex-wrap gap-3 mb-4">
           <input
             type="text"
@@ -182,6 +294,7 @@ const AdminBookingsPanel = () => {
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white disabled:bg-gray-100 disabled:text-gray-400"
           >
             <option value="ALL">All Statuses</option>
+            <option value="PENDING_PAYMENT">Pending Payment</option>
             <option value="PENDING">Pending</option>
             <option value="APPROVED">Approved</option>
             <option value="REJECTED">Rejected</option>
@@ -202,8 +315,14 @@ const AdminBookingsPanel = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredRequests.map((entry) => (
-                <tr key={entry.id} className="hover:bg-gray-50">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-sm text-gray-500">
+                    Loading bookings...
+                  </td>
+                </tr>
+              ) : filteredRequests.map((entry) => (
+                <tr key={entry.bookingRecordId} className="hover:bg-gray-50">
                   <td className="py-3">
                     <p className="font-semibold text-gray-800">{entry.id}</p>
                     <p className="text-xs text-gray-500">
@@ -235,14 +354,15 @@ const AdminBookingsPanel = () => {
                   <td className="py-3">
                     <div className="flex items-center gap-2">
                       <select
-                        value={actionSelections[entry.id] || ''}
+                        value={actionSelections[entry.bookingRecordId] || ''}
+                        disabled={Boolean(activeActionKey)}
                         onChange={(event) => {
                           const selectedAction = event.target.value;
                           setActionSelections((current) => ({
                             ...current,
-                            [entry.id]: selectedAction,
+                            [entry.bookingRecordId]: selectedAction,
                           }));
-                          handleActionChange(entry.id, selectedAction);
+                          handleActionChange(entry.bookingRecordId, selectedAction);
                         }}
                         className="px-2 py-1 rounded-md text-xs border border-gray-200 bg-white text-gray-700"
                       >
@@ -253,8 +373,9 @@ const AdminBookingsPanel = () => {
                       </select>
                       <button
                         type="button"
-                        onClick={() => handleDelete(entry.id)}
-                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700"
+                        disabled={Boolean(activeActionKey)}
+                        onClick={() => handleDelete(entry.bookingRecordId)}
+                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Delete
                       </button>
@@ -266,7 +387,7 @@ const AdminBookingsPanel = () => {
           </table>
         </div>
 
-        {filteredRequests.length === 0 ? (
+        {!isLoading && filteredRequests.length === 0 ? (
           <p className="text-sm text-gray-500 py-6 text-center">No booking requests found.</p>
         ) : null}
       </div>

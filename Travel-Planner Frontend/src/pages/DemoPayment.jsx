@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
-import { createBookingRequest } from '../lib/bookingRequests';
-import { createPaymentRecord } from '../lib/paymentHistory';
 
 const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const paymentMethodLabels = {
   CARD: 'Card',
@@ -32,6 +31,14 @@ const formatAmount = (amount, currency) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
 const readPendingBooking = (stateValue) => {
   if (stateValue) {
     return stateValue;
@@ -57,11 +64,16 @@ const readPendingBooking = (stateValue) => {
 const DemoPayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState('CARD');
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [cardHolderName, setCardHolderName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [upiId, setUpiId] = useState('');
+  const [bankReference, setBankReference] = useState('');
 
   const pendingBooking = useMemo(
     () => readPendingBooking(location.state?.pendingBooking),
@@ -89,49 +101,86 @@ const DemoPayment = () => {
 
   const travelersCount = Array.isArray(pendingBooking.travelers)
     ? pendingBooking.travelers.length
-    : 1;
+    : Math.max(1, Number(pendingBooking.travelersCount || 1));
 
-  const totalAmount =
-    Math.max(1, travelersCount) * (Number(pendingBooking.amountPerTraveler) || 0);
+  const totalAmount = Number(pendingBooking.totalAmount || 0);
 
-  const handlePayNow = () => {
-    if (!user || user.role !== 'USER') {
+  const validatePaymentInput = () => {
+    if (paymentMethod === 'CARD') {
+      if (!cardHolderName.trim() || !cardNumber.trim()) {
+        return 'Card holder name and card number are required.';
+      }
+    }
+
+    if (paymentMethod === 'UPI' && !upiId.trim()) {
+      return 'UPI ID is required.';
+    }
+
+    return null;
+  };
+
+  const handlePayNow = async () => {
+    if (!user || user.role !== 'USER' || !token) {
       navigate('/login');
       return;
     }
 
-    setIsProcessing(true);
-    setMessage('');
-
-    const bookingRequest = createBookingRequest({
-      travelerName: pendingBooking.travelerName,
-      travelerEmail: pendingBooking.travelerEmail,
-      destination: pendingBooking.destination,
-      country: pendingBooking.country,
-      travelDate: pendingBooking.travelDate,
-      transportation: pendingBooking.transportation,
-      travelers: pendingBooking.travelers,
-    });
-
-    createPaymentRecord({
-      bookingId: bookingRequest.id,
-      travelerName: pendingBooking.travelerName,
-      travelerEmail: pendingBooking.travelerEmail,
-      method: paymentMethod,
-      amount: totalAmount,
-      currency: 'INR',
-      status: 'SUCCESS',
-    });
-
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      window.sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
+    const inputError = validatePaymentInput();
+    if (inputError) {
+      setErrorMessage(inputError);
+      setMessage('');
+      return;
     }
 
-    setMessage(`Payment successful. Booking ${bookingRequest.id} sent for admin approval.`);
-    window.setTimeout(() => {
-      navigate('/user/dashboard/my-trips');
-    }, 1000);
+    setIsProcessing(true);
+    setErrorMessage('');
+    setMessage('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          bookingRecordId: pendingBooking.bookingRecordId,
+          method: paymentMethod,
+          cardHolderName: paymentMethod === 'CARD' ? cardHolderName : null,
+          cardNumber: paymentMethod === 'CARD' ? cardNumber : null,
+          upiId: paymentMethod === 'UPI' ? upiId : null,
+          bankReference: paymentMethod === 'BANK_TRANSFER' ? bankReference : null,
+        }),
+      });
+
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        setErrorMessage(payload?.message || 'Unable to process payment.');
+        return;
+      }
+
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
+      }
+
+      setMessage(`Payment successful. Booking ${pendingBooking.id} is now pending admin approval.`);
+      window.setTimeout(() => {
+        navigate('/user/dashboard/my-trips');
+      }, 1000);
+    } catch (_error) {
+      setErrorMessage('Unable to connect to backend server.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  const showCardFields = paymentMethod === 'CARD';
+  const showUpiField = paymentMethod === 'UPI';
+  const showBankReferenceField = paymentMethod === 'BANK_TRANSFER';
+
+  const backToTourPath = `/tours/${String(pendingBooking.destination || '')
+    .toLowerCase()
+    .replace(/\s/g, '-')}`;
 
   return (
     <div className="bg-gray-100 min-h-screen pt-28 pb-16">
@@ -159,21 +208,65 @@ const DemoPayment = () => {
                 </select>
               </label>
 
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">Name on Payment</span>
-                <input
-                  type="text"
-                  defaultValue={pendingBooking.travelerName}
-                  className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                />
-              </label>
+              {showCardFields ? (
+                <>
+                  <label className="block">
+                    <span className="text-sm font-medium text-gray-700">Card Holder Name</span>
+                    <input
+                      type="text"
+                      value={cardHolderName}
+                      onChange={(event) => setCardHolderName(event.target.value)}
+                      placeholder="Full Name"
+                      className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="text-sm font-medium text-gray-700">Card Number</span>
+                    <input
+                      type="text"
+                      value={cardNumber}
+                      onChange={(event) => setCardNumber(event.target.value)}
+                      placeholder="XXXX XXXX XXXX XXXX"
+                      className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    />
+                  </label>
+                </>
+              ) : null}
+
+              {showUpiField ? (
+                <label className="block">
+                  <span className="text-sm font-medium text-gray-700">UPI ID</span>
+                  <input
+                    type="text"
+                    value={upiId}
+                    onChange={(event) => setUpiId(event.target.value)}
+                    placeholder="example@upi"
+                    className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </label>
+              ) : null}
+
+              {showBankReferenceField ? (
+                <label className="block">
+                  <span className="text-sm font-medium text-gray-700">Bank Reference (Optional)</span>
+                  <input
+                    type="text"
+                    value={bankReference}
+                    onChange={(event) => setBankReference(event.target.value)}
+                    placeholder="Reference number"
+                    className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                </label>
+              ) : null}
 
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Reference Email</span>
                 <input
                   type="email"
-                  defaultValue={pendingBooking.travelerEmail}
-                  className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  value={pendingBooking.travelerEmail || ''}
+                  readOnly
+                  className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50"
                 />
               </label>
 
@@ -183,9 +276,10 @@ const DemoPayment = () => {
                 onClick={handlePayNow}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-70"
               >
-                {isProcessing ? 'Processing...' : `Pay ${formatAmount(totalAmount, 'INR')}`}
+                {isProcessing ? 'Processing...' : `Pay ${formatAmount(totalAmount, pendingBooking.currency || 'INR')}`}
               </button>
 
+              {errorMessage ? <p className="text-sm text-red-700">{errorMessage}</p> : null}
               {message ? <p className="text-sm text-green-700">{message}</p> : null}
             </div>
           </div>
@@ -193,6 +287,9 @@ const DemoPayment = () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 h-fit">
             <h2 className="text-lg font-bold text-gray-800">Booking Summary</h2>
             <div className="space-y-2 mt-4 text-sm text-gray-600">
+              <p>
+                <span className="font-medium text-gray-800">Booking ID:</span> {pendingBooking.id}
+              </p>
               <p>
                 <span className="font-medium text-gray-800">Tour:</span> {pendingBooking.destination},{' '}
                 {pendingBooking.country}
@@ -211,13 +308,13 @@ const DemoPayment = () => {
               <p className="pt-2 border-t border-gray-100">
                 <span className="font-medium text-gray-800">Amount:</span>{' '}
                 <span className="font-bold text-gray-900">
-                  {formatAmount(totalAmount, 'INR')}
+                  {formatAmount(totalAmount, pendingBooking.currency || 'INR')}
                 </span>
               </p>
             </div>
 
             <Link
-              to={`/tours/${pendingBooking.destination.toLowerCase().replace(/\s/g, '-')}`}
+              to={backToTourPath}
               className="inline-block mt-5 text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               Back to Tour

@@ -34,11 +34,13 @@ const TourBookingPage = () => {
   const { destination, subDestination } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, token } = useAuth();
 
   const [toursCatalog, setToursCatalog] = useState([]);
   const [isTourLoading, setIsTourLoading] = useState(true);
   const [tourFetchError, setTourFetchError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   const requestedTourPath = useMemo(
     () => [destination, subDestination].filter(Boolean).join('/'),
@@ -102,29 +104,50 @@ const TourBookingPage = () => {
   }, []);
 
   const onSubmit = (data) => {
-    if (!isAuthenticated || user?.role !== 'USER') {
+    if (!isAuthenticated || user?.role !== 'USER' || !token) {
       navigate('/login', { state: { from: location } });
       return;
     }
 
-    const pendingBooking = {
-      travelerName: user.name,
-      travelerEmail: user.email,
-      destination: tour.destination,
-      country: tour.country,
-      travelDate: data.date,
-      transportation: data.transportation,
-      travelers: data.travelers,
-      amountPerTraveler: tourPricePerTraveler,
-      currency: 'INR',
-      submittedAt: new Date().toISOString(),
-    };
+    setSubmitError(null);
+    setIsSubmittingBooking(true);
 
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      window.sessionStorage.setItem(PENDING_BOOKING_STORAGE_KEY, JSON.stringify(pendingBooking));
-    }
+    fetch(`${API_BASE_URL}/api/bookings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        destination: tour.destination,
+        country: tour.country,
+        travelDate: data.date,
+        transportation: data.transportation,
+        travelers: data.travelers,
+        amountPerTraveler: tourPricePerTraveler,
+        currency: 'INR',
+      }),
+    })
+      .then(async (response) => {
+        const payload = await parseJsonSafe(response);
 
-    navigate('/user/payment/demo', { state: { pendingBooking } });
+        if (!response.ok) {
+          setSubmitError(payload?.message || 'Unable to create booking');
+          return;
+        }
+
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          window.sessionStorage.setItem(PENDING_BOOKING_STORAGE_KEY, JSON.stringify(payload));
+        }
+
+        navigate('/user/payment/demo', { state: { pendingBooking: payload } });
+      })
+      .catch(() => {
+        setSubmitError('Unable to connect to backend server.');
+      })
+      .finally(() => {
+        setIsSubmittingBooking(false);
+      });
   };
 
   const handleFormSubmit = (event) => {
@@ -262,10 +285,12 @@ const TourBookingPage = () => {
 
             <button
               type="submit"
+              disabled={isSubmittingBooking}
               className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold"
             >
-              Book Now
+              {isSubmittingBooking ? 'Creating Booking...' : 'Book Now'}
             </button>
+            {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
           </form>
         </div>
       </section>

@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
-import { getPaymentHistory } from '../../../lib/paymentHistory';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const statusStyles = {
   SUCCESS: 'bg-green-100 text-green-700',
@@ -46,17 +47,67 @@ const formatAmount = (amount, currency) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
 const AdminPaymentsPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
 
-  const [payments] = useState(() => getPaymentHistory());
+  const [payments, setPayments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const routeStatusFilter = getRouteStatusFilter(tab);
   const activeStatusFilter = routeStatusFilter === 'ALL' ? statusFilter : routeStatusFilter;
+
+  const fetchPayments = useCallback(async () => {
+    if (!isAdmin || !token) {
+      setPayments([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setFetchError(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/admin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        setFetchError(payload?.message || 'Unable to load payments.');
+        return;
+      }
+
+      if (!Array.isArray(payload)) {
+        setFetchError('Invalid payments response from backend.');
+        return;
+      }
+
+      setPayments(payload);
+    } catch (_error) {
+      setFetchError('Unable to connect to backend server.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAdmin, token]);
+
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
   const filteredPayments = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -96,11 +147,20 @@ const AdminPaymentsPanel = () => {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Payment History</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Review all traveler payment transactions from the admin dashboard.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Payment History</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Review all traveler payment transactions from the admin dashboard.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={fetchPayments}
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Refresh
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -123,6 +183,12 @@ const AdminPaymentsPanel = () => {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+        {fetchError ? (
+          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+            {fetchError}
+          </p>
+        ) : null}
+
         <div className="flex flex-wrap gap-3 mb-4">
           <input
             type="text"
@@ -159,8 +225,14 @@ const AdminPaymentsPanel = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredPayments.map((entry) => (
-                <tr key={entry.id} className="hover:bg-gray-50">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-sm text-gray-500">
+                    Loading payments...
+                  </td>
+                </tr>
+              ) : filteredPayments.map((entry) => (
+                <tr key={entry.paymentRecordId} className="hover:bg-gray-50">
                   <td className="py-3 font-semibold text-gray-800">{entry.id}</td>
                   <td className="py-3 text-gray-700">{entry.bookingId}</td>
                   <td className="py-3">
@@ -169,7 +241,7 @@ const AdminPaymentsPanel = () => {
                   </td>
                   <td className="py-3 text-gray-700">{methodLabels[entry.method] || entry.method}</td>
                   <td className="py-3 text-gray-700">{formatDate(entry.paidAt)}</td>
-                  <td className="py-3 text-gray-800 font-semibold">{formatAmount(entry.amount, 'INR')}</td>
+                  <td className="py-3 text-gray-800 font-semibold">{formatAmount(entry.amount, entry.currency || 'INR')}</td>
                   <td className="py-3">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -185,7 +257,7 @@ const AdminPaymentsPanel = () => {
           </table>
         </div>
 
-        {filteredPayments.length === 0 ? (
+        {!isLoading && filteredPayments.length === 0 ? (
           <p className="text-sm text-gray-500 py-6 text-center">No payment history found for this filter.</p>
         ) : null}
       </div>
