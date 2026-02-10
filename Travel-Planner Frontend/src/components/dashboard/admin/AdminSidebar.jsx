@@ -62,7 +62,17 @@ const AdminSidebar = () => {
         { text: 'Refunded', to: '/admin/dashboard/budget-payments/refunded' },
       ],
     },
-    { icon: FaChartBar, text: 'Recommendations', to: '/admin/dashboard/recommendations', hasSubmenu: true },
+    {
+      icon: FaChartBar,
+      text: 'Recommendations',
+      to: '/admin/dashboard/recommendations',
+      submenu: [
+        { text: 'All Suggestions', to: '/admin/dashboard/recommendations', exact: true },
+        { text: 'Destinations', to: '/admin/dashboard/recommendations/destinations' },
+        { text: 'Pricing', to: '/admin/dashboard/recommendations/pricing' },
+        { text: 'Travel Timing', to: '/admin/dashboard/recommendations/timing' },
+      ],
+    },
     {
       icon: FaBell,
       text: 'Notifications',
