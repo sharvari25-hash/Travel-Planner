@@ -14,6 +14,18 @@ const defaultWeatherProfile = {
 const IMAGE_OVERRIDES = {
   'orlando, fl|usa':
     'https://images.pexels.com/photos/34936498/pexels-photo-34936498.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'billund|denmark':
+    'https://upload.wikimedia.org/wikipedia/commons/c/c4/Legoland_Billund_Denmark_2012.JPG',
+  'gold coast|australia':
+    'https://upload.wikimedia.org/wikipedia/commons/5/5e/Surfers_Paradise_Beach%2C_Gold_Coast%2C_Queensland%2C_Australia.jpg',
+  'santorini|greece':
+    'https://upload.wikimedia.org/wikipedia/commons/6/6d/Panoramic_view_of_Oia%2C_Santorini_island_%28Thira%29%2C_Greece.jpg',
+  'baa atoll|maldives':
+    'https://upload.wikimedia.org/wikipedia/commons/a/a5/Reethi_Beach_Maldives.jpg',
+  'paris|france':
+    'https://upload.wikimedia.org/wikipedia/commons/a/af/Tour_eiffel_at_sunrise_from_the_trocadero.jpg',
+  'amalfi coast|italy':
+    'https://upload.wikimedia.org/wikipedia/commons/1/12/Atrani_%28Costiera_Amalfitana%2C_23-8-2011%29.jpg',
 };
 
 const slugify = (value = '') =>

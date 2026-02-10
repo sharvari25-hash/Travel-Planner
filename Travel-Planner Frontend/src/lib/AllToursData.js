@@ -58,7 +58,7 @@ export const allToursData = [
     category: "Family",
     description: "The home of LEGO—The original Legoland and LEGO House.",
     duration: 4,
-    img: "https://media.istockphoto.com/id/1893621320/photo/a-walt-disney-world-arch-gate-on-the-street-in-orlando-florida-usa.jpg?s=612x612&w=0&k=20&c=IErii-wlN2ZVhEum1vKZGXUBf04Mce38Ti4vsU-3mzA=",
+    img: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Legoland_Billund_Denmark_2012.JPG",
     plan: [
       "Day 1: Arrival in Billund & LEGO House Experience",
       "Day 2: Full day at LEGOLAND Billund",
@@ -89,7 +89,7 @@ export const allToursData = [
     category: "Family",
     description: "Great surf schools and numerous wildlife sanctuaries.",
     duration: 8,
-    img: "https://images.unsplash.com/photo-1523482284999-568b5abe1611?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Surfers_Paradise_Beach%2C_Gold_Coast%2C_Queensland%2C_Australia.jpg",
     plan: [
       "Day 1: Arrival & Surfers Paradise Beach",
       "Day 2: Currumbin Wildlife Sanctuary",
@@ -109,7 +109,7 @@ export const allToursData = [
     category: "Couple",
     description: "Iconic blue domes, sunset cruises, and wine tasting.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1563789031959-4c02bcb40312?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Panoramic_view_of_Oia%2C_Santorini_island_%28Thira%29%2C_Greece.jpg",
     plan: [
       "Day 1: Arrival in Oia & Sunset viewing",
       "Day 2: Catamaran Cruise around the Caldera",
@@ -125,7 +125,7 @@ export const allToursData = [
     category: "Couple",
     description: "Private overwater villas and dining under the stars.",
     duration: 6,
-    img: "https://images.unsplash.com/photo-1516406742982-616d153735b8?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Reethi_Beach_Maldives.jpg",
     plan: [
       "Day 1: Seaplane transfer & Check-in to Overwater Villa",
       "Day 2: Snorkeling with Manta Rays",
@@ -142,7 +142,7 @@ export const allToursData = [
     category: "Couple",
     description: "The 'City of Love'—picnics by the Eiffel Tower and art.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1502602898657-3e91760c0337?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Tour_eiffel_at_sunrise_from_the_trocadero.jpg",
     plan: [
       "Day 1: Arrival & Eiffel Tower at night",
       "Day 2: Louvre Museum & Tuileries Garden",
@@ -158,7 +158,7 @@ export const allToursData = [
     category: "Couple",
     description: "Stunning cliffside towns and private boat tours.",
     duration: 6,
-    img: "https://images.unsplash.com/photo-1533105079780-52b9be462077?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/1/12/Atrani_%28Costiera_Amalfitana%2C_23-8-2011%29.jpg",
     plan: [
       "Day 1: Arrival in Positano",
       "Day 2: Private boat tour to Capri",
@@ -353,3 +353,4 @@ export const allToursData = [
     weatherProfile: { baseTemp: 30, baseHumidity: 80, baseWind: 5, defaultCondition: 'Sunny' }
   },
 ];
+
