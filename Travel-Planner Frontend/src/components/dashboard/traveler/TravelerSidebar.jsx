@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPlane, FaSuitcase, FaBell, FaCog, FaPlus } from 'react-icons/fa';
+import { FaPlane, FaSuitcase, FaBell, FaCog } from 'react-icons/fa';
 import { MdDashboard, MdExplore } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../shared/SidebarItem';
@@ -128,11 +128,6 @@ const TravelerSidebar = () => {
         })}
       </nav>
 
-      <div className="p-6">
-        <button className="w-full bg-accent hover:bg-accent/90 transition-colors text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-black/20">
-          <FaPlus size={12} /> New Trip
-        </button>
-      </div>
     </aside>
   );
 };

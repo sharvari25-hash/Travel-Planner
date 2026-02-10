@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaBell, FaCog, FaPowerOff } from 'react-icons/fa';
+import { FaBell, FaCog } from 'react-icons/fa';
 import { MdDashboard, MdExplore } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../dashboard/shared/SidebarItem';
@@ -24,21 +24,6 @@ const SettingsSidebar = () => {
         <SidebarItem icon={FaBell} text="Notifications" to="/user/dashboard/notifications" active={location.pathname.startsWith('/user/dashboard/notifications')} />
         <SidebarItem icon={FaCog} text="Settings" to="/user/settings" active={location.pathname === '/user/settings'} />
       </nav>
-
-      {/* Logout Section */}
-      <div className="p-6">
-          <div className="bg-white/5 rounded-xl p-4 border border-white/15 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-3 text-accent font-bold">
-                  <FaPowerOff /> Logout
-              </div>
-              <p className="text-xs text-white/75 mb-3 leading-relaxed">
-                  Sign out of your account securely.
-              </p>
-              <button className="w-full bg-accent hover:bg-accent/90 text-white py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
-                  Logout
-              </button>
-          </div>
-      </div>
     </aside>
   );
 };
