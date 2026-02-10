@@ -28,7 +28,18 @@ const AdminSidebar = () => {
         { text: 'Suspended', to: '/admin/dashboard/user-management/suspended' },
       ],
     },
-    { icon: FaSuitcase, text: 'Trips & Itineraries', to: '/admin/dashboard/trips-itineraries' },
+    {
+      icon: FaSuitcase,
+      text: 'Trips & Itineraries',
+      to: '/admin/dashboard/trips-itineraries',
+      submenu: [
+        { text: 'All Tours', to: '/admin/dashboard/trips-itineraries', exact: true },
+        { text: 'Family', to: '/admin/dashboard/trips-itineraries/family' },
+        { text: 'Couple', to: '/admin/dashboard/trips-itineraries/couple' },
+        { text: 'Adventure', to: '/admin/dashboard/trips-itineraries/adventure' },
+        { text: 'Culture', to: '/admin/dashboard/trips-itineraries/culture' },
+      ],
+    },
     {
       icon: MdReceipt,
       text: 'Bookings',
