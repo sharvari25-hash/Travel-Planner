@@ -1,13 +1,13 @@
 import React from 'react';
 import SectionTitle from '../shared/SectionTitle';
 
-const users = [
-  { name: 'John Smith', email: 'john@email.com', status: 'Active', img: 'https://i.pravatar.cc/150?img=11' },
-  { name: 'Anna Lee', email: 'anna@email.com', status: 'Suspended', img: 'https://i.pravatar.cc/150?img=5' },
-  { name: 'Michael Chen', email: 'michael@at.com', status: 'Active', img: 'https://i.pravatar.cc/150?img=3' },
-];
+const statusStyles = {
+  ACTIVE: 'bg-green-100 text-green-700',
+  SUSPENDED: 'bg-yellow-100 text-yellow-700',
+  DISABLED: 'bg-gray-200 text-gray-700',
+};
 
-const UserManagementTable = () => (
+const UserManagementTable = ({ users = [] }) => (
   <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
       <SectionTitle title="User Management" actions={
           <div className="flex gap-2 text-gray-400">
@@ -25,15 +25,15 @@ const UserManagementTable = () => (
               </tr>
           </thead>
           <tbody className="divide-y">
-              {users.map((user, i) => (
-                  <tr key={i} className="group hover:bg-gray-50">
+              {users.map((user) => (
+                  <tr key={user.id} className="group hover:bg-gray-50">
                       <td className="py-3 flex items-center gap-2">
-                          <img src={user.img} alt="" className="w-6 h-6 rounded-full" />
+                          <img src={user.avatar} alt="" className="w-6 h-6 rounded-full" />
                           <span className="font-medium text-gray-700">{user.name}</span>
                       </td>
                       <td className="py-3 text-gray-500 text-xs">{user.email}</td>
                       <td className="py-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${statusStyles[user.status] || 'bg-gray-100 text-gray-700'}`}>
                               {user.status}
                           </span>
                       </td>
@@ -44,6 +44,9 @@ const UserManagementTable = () => (
               ))}
           </tbody>
       </table>
+      {users.length === 0 ? (
+        <p className="text-xs text-gray-500 mt-3">No users found.</p>
+      ) : null}
   </div>
 );
 

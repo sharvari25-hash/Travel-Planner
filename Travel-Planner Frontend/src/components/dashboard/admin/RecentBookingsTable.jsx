@@ -1,17 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import SectionTitle from '../shared/SectionTitle';
-import { getBookingRequests } from '../../../lib/bookingRequests';
 
 const statusStyles = {
+  PENDING_PAYMENT: 'bg-orange-100 text-orange-700',
   PENDING: 'bg-yellow-100 text-yellow-700',
   APPROVED: 'bg-green-100 text-green-700',
   REJECTED: 'bg-red-100 text-red-700',
 };
 
-const RecentBookingsTable = () => {
-  const bookings = useMemo(() => getBookingRequests().slice(0, 4), []);
-
-  return (
+const RecentBookingsTable = ({ bookings = [] }) => (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
       <SectionTitle
         title="Recent Bookings"
@@ -52,6 +49,5 @@ const RecentBookingsTable = () => {
       ) : null}
     </div>
   );
-};
 
 export default RecentBookingsTable;

@@ -1,8 +1,20 @@
 import React from 'react';
-import { FaExclamationTriangle, FaCloudSun } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import SectionTitle from '../shared/SectionTitle';
 
-const SystemAlerts = () => (
+const severityStyles = {
+  HIGH: 'bg-red-50 border-red-100 text-red-800',
+  MEDIUM: 'bg-yellow-50 border-yellow-100 text-yellow-800',
+  INFO: 'bg-blue-50 border-blue-100 text-blue-800',
+};
+
+const severityIcons = {
+  HIGH: <FaExclamationTriangle className="text-red-500 mt-1" />,
+  MEDIUM: <FaExclamationTriangle className="text-yellow-500 mt-1" />,
+  INFO: <FaInfoCircle className="text-blue-500 mt-1" />,
+};
+
+const SystemAlerts = ({ alerts = [] }) => (
   <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
       <SectionTitle title="System Alerts" actions={
            <div className="flex gap-2 text-gray-400">
@@ -11,27 +23,26 @@ const SystemAlerts = () => (
            </div>
       } />
       <div className="space-y-4">
-          <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-              <FaExclamationTriangle className="text-yellow-500 mt-1" />
-              <div>
-                  <h4 className="text-sm font-semibold text-gray-800">API Rate Limit Warning</h4>
-                  <p className="text-xs text-gray-500 mt-1">Approaching 90% quota</p>
-              </div>
+        {alerts.length === 0 ? (
+          <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+            <FaCheckCircle className="text-green-500 mt-1" />
+            <div>
+              <h4 className="text-sm font-semibold text-green-800">All systems operational</h4>
+              <p className="text-xs text-green-700 mt-1">No active alerts right now.</p>
+            </div>
           </div>
-           <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-100">
-              <div className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">!</div>
-              <div>
-                  <h4 className="text-sm font-semibold text-red-800">2 Failed Bookings</h4>
-                  <p className="text-xs text-red-600 mt-1">Check logs immediately</p>
-              </div>
+        ) : alerts.map((entry, index) => (
+          <div
+            key={`${entry.title}-${index}`}
+            className={`flex items-start gap-3 p-3 rounded-lg border ${severityStyles[entry.severity] || 'bg-gray-50 border-gray-100 text-gray-800'}`}
+          >
+            {severityIcons[entry.severity] || <FaInfoCircle className="text-gray-500 mt-1" />}
+            <div>
+              <h4 className="text-sm font-semibold">{entry.title}</h4>
+              <p className="text-xs mt-1 opacity-90">{entry.message}</p>
+            </div>
           </div>
-          <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <FaCloudSun className="text-blue-500 mt-1" />
-              <div>
-                  <h4 className="text-sm font-semibold text-gray-800">Weather Alert: Storm in Tokyo</h4>
-                  <p className="text-xs text-gray-500 mt-1">Flight delays expected</p>
-              </div>
-          </div>
+        ))}
       </div>
   </div>
 );

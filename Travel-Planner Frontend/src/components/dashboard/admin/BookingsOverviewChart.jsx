@@ -3,22 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { motion } from 'framer-motion';
 import SectionTitle from '../shared/SectionTitle';
 
-const chartData = [
-  { name: 'Jan', bookings: 6000 },
-  { name: 'Feb', bookings: 3500 },
-  { name: 'Mar', bookings: 4200 },
-  { name: 'Apr', bookings: 7500 },
-  { name: 'May', bookings: 4000 },
-  { name: 'Jun', bookings: 7800 },
-  { name: 'Jul', bookings: 4500 },
-  { name: 'Aug', bookings: 8500 },
-  { name: 'Sep', bookings: 6000 },
-  { name: 'Oct', bookings: 3000 },
-  { name: 'Nov', bookings: 6500 },
-  { name: 'Dec', bookings: 9000 },
-];
-
-const BookingsOverviewChart = () => (
+const BookingsOverviewChart = ({ chartData = [] }) => (
   <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -27,7 +12,7 @@ const BookingsOverviewChart = () => (
       <SectionTitle title="Bookings Overview" />
       <div className="h-64 w-full min-w-0 min-h-[256px]">
           <ResponsiveContainer width="100%" height={256} minWidth={280} minHeight={256}>
-              <BarChart data={chartData} barSize={20}>
+              <BarChart data={chartData.length > 0 ? chartData : [{ name: 'N/A', bookings: 0 }]} barSize={20}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} />
