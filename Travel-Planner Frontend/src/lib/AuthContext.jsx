@@ -135,6 +135,22 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('authToken');
   };
 
+  const updateUserProfile = (updates) => {
+    setUser((currentUser) => {
+      if (!currentUser) {
+        return currentUser;
+      }
+
+      const nextUser = {
+        ...currentUser,
+        ...updates,
+      };
+
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      return nextUser;
+    });
+  };
+
   const value = {
     user,
     token,
@@ -142,6 +158,7 @@ export const AuthProvider = ({ children }) => {
     isAuthLoading,
     login,
     signup,
+    updateUserProfile,
     logout,
   };
 

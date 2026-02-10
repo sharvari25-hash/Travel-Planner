@@ -41,6 +41,24 @@ public class User {
     @Column(nullable = false, length = 20)
     private String mobileNumber;
 
+    @Column(length = 50)
+    private String preferredLanguage;
+
+    @Column(length = 10)
+    private String preferredCurrency;
+
+    @Column(length = 20)
+    private String timeFormat;
+
+    @Column(length = 50)
+    private String timeZone;
+
+    @Column
+    private Boolean emailNotificationsEnabled;
+
+    @Column
+    private Boolean smsNotificationsEnabled;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
@@ -67,6 +85,30 @@ public class User {
 
         if (tripsBooked == null) {
             tripsBooked = 0;
+        }
+
+        if (preferredLanguage == null || preferredLanguage.isBlank()) {
+            preferredLanguage = "English";
+        }
+
+        if (preferredCurrency == null || preferredCurrency.isBlank()) {
+            preferredCurrency = "INR";
+        }
+
+        if (timeFormat == null || timeFormat.isBlank()) {
+            timeFormat = "12_HOUR";
+        }
+
+        if (timeZone == null || timeZone.isBlank()) {
+            timeZone = "Asia/Kolkata";
+        }
+
+        if (emailNotificationsEnabled == null) {
+            emailNotificationsEnabled = true;
+        }
+
+        if (smsNotificationsEnabled == null) {
+            smsNotificationsEnabled = true;
         }
     }
 }
