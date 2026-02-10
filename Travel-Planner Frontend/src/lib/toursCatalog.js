@@ -26,6 +26,20 @@ const IMAGE_OVERRIDES = {
     'https://upload.wikimedia.org/wikipedia/commons/a/af/Tour_eiffel_at_sunrise_from_the_trocadero.jpg',
   'amalfi coast|italy':
     'https://upload.wikimedia.org/wikipedia/commons/1/12/Atrani_%28Costiera_Amalfitana%2C_23-8-2011%29.jpg',
+  'ubud, bali|indonesia':
+    'https://upload.wikimedia.org/wikipedia/commons/c/c7/Rice_terrace_Kadewatan_200507-1.jpg',
+  'reykjavik|iceland':
+    'https://upload.wikimedia.org/wikipedia/commons/b/b2/Bright_Lights_%284373695306%29.jpg',
+  'reykjavík|iceland':
+    'https://upload.wikimedia.org/wikipedia/commons/b/b2/Bright_Lights_%284373695306%29.jpg',
+  'lofoten islands|norway':
+    'https://upload.wikimedia.org/wikipedia/commons/3/30/Lofoten.landscapes1.jpg',
+  'rome|italy':
+    'https://upload.wikimedia.org/wikipedia/commons/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg',
+  'barcelona|spain':
+    'https://upload.wikimedia.org/wikipedia/commons/0/0d/Sagrada_Familia_03.jpg',
+  'cappadocia|turkey':
+    'https://upload.wikimedia.org/wikipedia/commons/8/89/Cappadocia_Balloon_Inflating_Wikimedia_Commons.JPG',
 };
 
 const slugify = (value = '') =>

@@ -175,7 +175,7 @@ export const allToursData = [
     category: "Couple",
     description: "Jungle swings, luxury spas, and spiritual retreats.",
     duration: 7,
-    img: "https://images.unsplash.com/photo-1559628233-eb1b1a4559a9?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Rice_terrace_Kadewatan_200507-1.jpg",
     plan: [
       "Day 1: Arrival & Villa check-in",
       "Day 2: Tegalalang Rice Terrace & Bali Swing",
@@ -211,7 +211,7 @@ export const allToursData = [
     category: "Adventure",
     description: "Northern Lights, Blue Lagoon, and massive waterfalls.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1500043357865-c6b88278f097?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/b/b2/Bright_Lights_%284373695306%29.jpg",
     plan: [
       "Day 1: Arrival & Blue Lagoon soak",
       "Day 2: Golden Circle Tour (Geysir, Gullfoss)",
@@ -245,7 +245,7 @@ export const allToursData = [
     category: "Adventure",
     description: "Hiking through fjords and seeing the Midnight Sun.",
     duration: 6,
-    img: "https://images.unsplash.com/photo-1519526238942-e6f10d3a5a3a?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/3/30/Lofoten.landscapes1.jpg",
     plan: [
       "Day 1: Arrival in Svolvær",
       "Day 2: Fishing village of Reine",
@@ -279,7 +279,7 @@ export const allToursData = [
     category: "Culture",
     description: "The Colosseum, Roman Forum, and world-class pasta.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1529181103339-634b36450382?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg",
     plan: [
       "Day 1: Arrival & Trevi Fountain",
       "Day 2: Colosseum & Roman Forum",
@@ -311,7 +311,7 @@ export const allToursData = [
     category: "Culture",
     description: "Gaudí’s architecture and vibrant night markets.",
     duration: 5,
-    img: "https://images.unsplash.com/photo-1523531294919-42fc7c6a1439?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Sagrada_Familia_03.jpg",
     plan: [
       "Day 1: Arrival & Las Ramblas",
       "Day 2: Sagrada Família & Park Güell",
@@ -327,7 +327,7 @@ export const allToursData = [
     category: "Culture",
     description: "Famous hot air balloon rides over ancient cave dwellings.",
     duration: 4,
-    img: "https://images.unsplash.com/photo-1544026122-fd37a01e65d2?auto=format&fit=crop&w=800&q=60",
+    img: "https://upload.wikimedia.org/wikipedia/commons/8/89/Cappadocia_Balloon_Inflating_Wikimedia_Commons.JPG",
     plan: [
       "Day 1: Arrival & Cave Hotel Check-in",
       "Day 2: Sunrise Hot Air Balloon Ride",
