@@ -2,7 +2,14 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { myTrips } from '../lib/my-trips';
-import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaDollarSign } from 'react-icons/fa';
+import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaRupeeSign } from 'react-icons/fa';
+
+const formatAmount = (amount) =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(amount);
 
 const TripDetails = () => {
   const { id } = useParams();
@@ -70,14 +77,14 @@ const TripDetails = () => {
           {/* Right Column - Budget & Collaborators */}
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><FaDollarSign className="mr-2 text-green-500"/>Budget Overview</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><FaRupeeSign className="mr-2 text-green-500"/>Budget Overview</h3>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Spent:</span>
-                <span className="font-bold text-lg text-red-500">${trip.budget.spent}</span>
+                <span className="font-bold text-lg text-red-500">{formatAmount(trip.budget.spent)}</span>
               </div>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-gray-600">Total:</span>
-                <span className="font-bold text-lg text-green-500">${trip.budget.total}</span>
+                <span className="font-bold text-lg text-green-500">{formatAmount(trip.budget.total)}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-4">
                 <div className="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full" style={{ width: `${(trip.budget.spent / trip.budget.total) * 100}%` }}></div>

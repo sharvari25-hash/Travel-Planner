@@ -6,6 +6,7 @@ import SidebarItem from '../shared/SidebarItem';
 
 const TravelerSidebar = () => {
   const location = useLocation();
+  const currentSearchParams = new URLSearchParams(location.search);
 
   const normalizePath = (path) => {
     if (!path || path === '/') {
@@ -29,7 +30,18 @@ const TravelerSidebar = () => {
         { text: 'Completed', to: '/user/dashboard/my-trips/completed' },
       ],
     },
-    { icon: MdExplore, text: 'Explore', to: '/tours', exact: true },
+    {
+      icon: MdExplore,
+      text: 'Explore',
+      to: '/tours',
+      submenu: [
+        { text: 'All Tours', to: '/tours', exact: true, query: { category: null } },
+        { text: 'Family', to: '/tours?category=Family', exact: true, query: { category: 'Family' } },
+        { text: 'Couple', to: '/tours?category=Couple', exact: true, query: { category: 'Couple' } },
+        { text: 'Adventure', to: '/tours?category=Adventure', exact: true, query: { category: 'Adventure' } },
+        { text: 'Culture', to: '/tours?category=Culture', exact: true, query: { category: 'Culture' } },
+      ],
+    },
     {
       icon: FaBell,
       text: 'Notifications',
@@ -44,22 +56,38 @@ const TravelerSidebar = () => {
     { icon: FaCog, text: 'Settings', to: '/user/settings', exact: true },
   ];
 
-  const isActive = ({ to, exact }) => {
+  const isActive = ({ to, exact, query }) => {
     if (!to) {
       return false;
     }
 
-    const targetPath = normalizePath(to);
-    return exact ? currentPath === targetPath : currentPath.startsWith(targetPath);
+    const targetPath = normalizePath(to.split('?')[0]);
+    const pathMatches = exact ? currentPath === targetPath : currentPath.startsWith(targetPath);
+
+    if (!pathMatches) {
+      return false;
+    }
+
+    if (!query) {
+      return true;
+    }
+
+    return Object.entries(query).every(([key, expectedValue]) => {
+      const value = currentSearchParams.get(key);
+      if (expectedValue === null) {
+        return value === null;
+      }
+      return value === expectedValue;
+    });
   };
 
   return (
-    <aside className="w-64 bg-[#1E3A8A] text-white flex-shrink-0 flex flex-col hidden md:flex">
+    <aside className="w-64 bg-primary text-white flex-shrink-0 flex flex-col hidden md:flex">
       <div className="p-8 flex items-center gap-3">
         <div className="bg-white/10 p-2 rounded-lg">
-          <FaPlane className="text-xl text-white" />
+          <FaPlane className="text-xl text-accent" />
         </div>
-        <span className="text-xl font-bold tracking-wide">Travel Planner</span>
+        <span className="text-xl font-bold tracking-wide">WanderWise</span>
       </div>
       
       <nav className="flex-1 mt-2 space-y-1">
@@ -85,8 +113,8 @@ const TravelerSidebar = () => {
                         to={subItem.to}
                         className={`block text-xs rounded px-3 py-2 transition-colors ${
                           subActive
-                            ? 'bg-blue-700 text-white font-medium'
-                            : 'text-blue-100 hover:bg-blue-800/60 hover:text-white'
+                            ? 'bg-accent text-white font-medium'
+                            : 'text-white/75 hover:bg-white/10 hover:text-white'
                         }`}
                       >
                         {subItem.text}
@@ -101,7 +129,7 @@ const TravelerSidebar = () => {
       </nav>
 
       <div className="p-6">
-        <button className="w-full bg-blue-500 hover:bg-blue-600 transition-colors text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
+        <button className="w-full bg-accent hover:bg-accent/90 transition-colors text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-black/20">
           <FaPlus size={12} /> New Trip
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../../../lib/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,12 +26,20 @@ const AdminHeader = () => {
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <span className="text-xs text-green-700 font-medium">API Status: All Systems Operational</span>
         </div>
-        <div className="flex items-center gap-3 pl-6 border-l cursor-pointer" onClick={handleLogout}>
-            <img src="https://i.pravatar.cc/150?img=68" alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-            <div className="text-sm">
-                <span className="font-semibold block text-gray-700">Admin</span>
-                <span className="text-gray-400 text-xs">Logout</span>
-            </div>
+        <div className="flex items-center gap-3 pl-6 border-l">
+          <img src="https://i.pravatar.cc/150?img=68" alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
+          <div className="text-sm hidden lg:block">
+            <span className="font-semibold block text-gray-700">Admin</span>
+            <span className="text-gray-400 text-xs">Dashboard</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors"
+          >
+            <FaSignOutAlt size={12} />
+            Logout
+          </button>
         </div>
       </div>
     </header>

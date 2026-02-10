@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle, FaSignOutAlt } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../lib/AuthContext';
 import {
   getTravelerNotifications,
   TRAVELER_NOTIFICATIONS_UPDATED_EVENT,
 } from '../../../lib/travelerNotifications';
 
 const TravelerHeader = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(() => getTravelerNotifications());
 
   useEffect(() => {
@@ -25,6 +28,11 @@ const TravelerHeader = () => {
     () => notifications.filter((entry) => !entry.read).length,
     [notifications]
   );
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="bg-white px-8 py-5 flex justify-between items-center border-b border-gray-100 shrink-0">
@@ -63,6 +71,14 @@ const TravelerHeader = () => {
           alt="Profile"
           className="w-9 h-9 rounded-full border-2 border-white shadow-sm cursor-pointer"
         />
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors"
+        >
+          <FaSignOutAlt size={12} />
+          Logout
+        </button>
       </div>
     </header>
   );

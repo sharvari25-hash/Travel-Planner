@@ -74,9 +74,9 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-[#1e3a8a] text-white flex-shrink-0 hidden md:block">
-      <div className="p-6 flex items-center gap-2 border-b border-blue-800">
-        <FaPlane className="text-2xl text-blue-400" />
+    <aside className="w-64 bg-primary text-white flex-shrink-0 hidden md:block">
+      <div className="p-6 flex items-center gap-2 border-b border-white/15">
+        <FaPlane className="text-2xl text-accent" />
         <span className="text-lg font-bold">Wanderwise</span>
       </div>
       
@@ -103,8 +103,8 @@ const AdminSidebar = () => {
                         to={subItem.to}
                         className={`block text-xs rounded px-3 py-2 transition-colors ${
                           subActive
-                            ? 'bg-blue-700 text-white font-medium'
-                            : 'text-blue-100 hover:bg-blue-800/60 hover:text-white'
+                            ? 'bg-accent text-white font-medium'
+                            : 'text-white/75 hover:bg-white/10 hover:text-white'
                         }`}
                       >
                         {subItem.text}

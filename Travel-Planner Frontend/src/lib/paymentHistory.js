@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'adminPaymentHistory';
+const STORAGE_VERSION_KEY = 'adminPaymentHistoryVersion';
+const STORAGE_VERSION = '2';
 
 const seedPaymentHistory = [
   {
@@ -7,8 +9,8 @@ const seedPaymentHistory = [
     travelerName: 'Demo Traveler',
     travelerEmail: 'traveler@demo.com',
     method: 'CARD',
-    amount: 1850,
-    currency: 'USD',
+    amount: 285000,
+    currency: 'INR',
     status: 'PENDING',
     paidAt: '2026-02-10T09:20:00.000Z',
   },
@@ -18,8 +20,8 @@ const seedPaymentHistory = [
     travelerName: 'Liam Carter',
     travelerEmail: 'liam.carter@demo.com',
     method: 'UPI',
-    amount: 2320,
-    currency: 'USD',
+    amount: 412000,
+    currency: 'INR',
     status: 'SUCCESS',
     paidAt: '2026-02-09T16:42:00.000Z',
   },
@@ -29,8 +31,8 @@ const seedPaymentHistory = [
     travelerName: 'Sophia Patel',
     travelerEmail: 'sophia.patel@demo.com',
     method: 'CARD',
-    amount: 910,
-    currency: 'USD',
+    amount: 198000,
+    currency: 'INR',
     status: 'REFUNDED',
     paidAt: '2026-02-08T12:10:00.000Z',
   },
@@ -40,8 +42,8 @@ const seedPaymentHistory = [
     travelerName: 'Noah Kim',
     travelerEmail: 'noah.kim@demo.com',
     method: 'BANK_TRANSFER',
-    amount: 1430,
-    currency: 'USD',
+    amount: 265000,
+    currency: 'INR',
     status: 'FAILED',
     paidAt: '2026-02-07T18:05:00.000Z',
   },
@@ -51,8 +53,8 @@ const seedPaymentHistory = [
     travelerName: 'Mia Rodriguez',
     travelerEmail: 'mia.rodriguez@demo.com',
     method: 'CARD',
-    amount: 2740,
-    currency: 'USD',
+    amount: 534000,
+    currency: 'INR',
     status: 'SUCCESS',
     paidAt: '2026-02-06T14:14:00.000Z',
   },
@@ -62,8 +64,8 @@ const seedPaymentHistory = [
     travelerName: 'Ethan Walker',
     travelerEmail: 'ethan.walker@demo.com',
     method: 'CARD',
-    amount: 1240,
-    currency: 'USD',
+    amount: 228000,
+    currency: 'INR',
     status: 'SUCCESS',
     paidAt: '2026-02-05T11:30:00.000Z',
   },
@@ -80,13 +82,22 @@ const parseStoredList = (rawValue) => {
   }
 };
 
+const normalizePaymentRecord = (entry) => ({
+  ...entry,
+  amount: Number(entry.amount) || 0,
+  currency: 'INR',
+});
+
 const sortByDateDesc = (list) =>
-  [...list].sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
+  [...list]
+    .map(normalizePaymentRecord)
+    .sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
 
 const writePaymentHistory = (list) => {
   const normalized = sortByDateDesc(list);
   if (canUseStorage()) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    window.localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION);
   }
   return normalized;
 };
@@ -94,6 +105,11 @@ const writePaymentHistory = (list) => {
 export const getPaymentHistory = () => {
   if (!canUseStorage()) {
     return sortByDateDesc(seedPaymentHistory);
+  }
+
+  const storedVersion = window.localStorage.getItem(STORAGE_VERSION_KEY);
+  if (storedVersion !== STORAGE_VERSION) {
+    return writePaymentHistory(seedPaymentHistory);
   }
 
   const storedValue = window.localStorage.getItem(STORAGE_KEY);
@@ -117,7 +133,7 @@ export const createPaymentRecord = ({
   travelerEmail,
   method = 'CARD',
   amount = 0,
-  currency = 'USD',
+  currency = 'INR',
   status = 'SUCCESS',
 }) => {
   const current = getPaymentHistory();

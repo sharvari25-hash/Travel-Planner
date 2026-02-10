@@ -9,7 +9,7 @@ const initialSettings = {
   general: {
     platformName: 'Wanderwise Admin',
     supportEmail: 'support@wanderwise.com',
-    defaultCurrency: 'USD',
+    defaultCurrency: 'INR',
     defaultTimezone: 'UTC-05:00',
     maintenanceMode: false,
     autoApproveUsers: true,
@@ -156,8 +156,6 @@ const AdminSettingsPanel = () => {
                   onChange={(event) => updateSection('general', 'defaultCurrency', event.target.value)}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
                   <option value="INR">INR</option>
                 </select>
               </label>

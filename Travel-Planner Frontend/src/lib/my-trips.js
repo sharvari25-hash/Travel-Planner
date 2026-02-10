@@ -12,8 +12,8 @@ export const myTrips = [
       { id: 2, name: "Bob", avatarUrl: "https://i.pravatar.cc/150?u=a042581f4e29026705d" },
     ],
     budget: {
-      total: 3000,
-      spent: 1200,
+      total: 420000,
+      spent: 168000,
     },
   },
   {
@@ -27,8 +27,8 @@ export const myTrips = [
       { id: 3, name: "Charlie", avatarUrl: "https://i.pravatar.cc/150?u=a042581f4e29026706d" },
     ],
     budget: {
-      total: 5000,
-      spent: 2500,
+      total: 510000,
+      spent: 296000,
     },
   },
   {
@@ -40,8 +40,8 @@ export const myTrips = [
     imageUrl: "https://images.unsplash.com/photo-1563789031959-4c02bcb40312?auto=format&fit=crop&w=800&q=60",
     collaborators: [],
      budget: {
-      total: 4000,
-      spent: 3800,
+      total: 360000,
+      spent: 341000,
     },
   },
     {
@@ -56,8 +56,8 @@ export const myTrips = [
       { id: 5, name: "Eve", avatarUrl: "https://i.pravatar.cc/150?u=a042581f4e29026708d" },
     ],
     budget: {
-      total: 3500,
-      spent: 1500,
+      total: 395000,
+      spent: 182000,
     },
   },
 ];

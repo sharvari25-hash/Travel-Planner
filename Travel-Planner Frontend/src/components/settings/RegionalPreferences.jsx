@@ -14,9 +14,9 @@ const RegionalPreferences = () => (
           <h3 className="text-lg font-bold text-gray-800 mb-6">Regional Preferences</h3>
           <div className="space-y-3">
              <SettingRow 
-                  icon="https://flagcdn.com/w40/us.png"
+                  icon="https://flagcdn.com/w40/in.png"
                   title="English"
-                  value="USD - United States Dollar"
+                  value="INR - Indian Rupee"
              />
              <SettingRow 
                   icon={FaClock}

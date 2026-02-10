@@ -1,14 +1,21 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useToursCatalog } from '../lib/toursCatalog';
+import { formatInr, getTourPricePerTraveler } from '../lib/pricing';
+
+const TOUR_CATEGORIES = ['All', 'Family', 'Couple', 'Adventure', 'Culture'];
 
 const AllTours = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
   const toursCatalog = useToursCatalog();
   const toursPerPage = 9;
+  const categoryFromQuery = searchParams.get('category');
+  const activeCategory = TOUR_CATEGORIES.includes(categoryFromQuery) ? categoryFromQuery : 'All';
 
-  const categories = ['All', 'Family', 'Couple', 'Adventure', 'Culture'];
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory]);
 
   const filteredTours = activeCategory === 'All' 
     ? toursCatalog
@@ -27,8 +34,15 @@ const AllTours = () => {
   };
 
   const handleCategoryClick = (category) => {
-    setActiveCategory(category);
-    setCurrentPage(1); // Reset to first page when category changes
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (category === 'All') {
+      nextParams.delete('category');
+    } else {
+      nextParams.set('category', category);
+    }
+
+    setSearchParams(nextParams);
   };
 
   return (
@@ -43,7 +57,7 @@ const AllTours = () => {
 
         {/* Category Filters */}
         <div className="flex justify-center flex-wrap gap-2 mb-12">
-          {categories.map(category => (
+          {TOUR_CATEGORIES.map(category => (
             <button
               key={category}
               onClick={() => handleCategoryClick(category)}
@@ -75,7 +89,9 @@ const AllTours = () => {
                   <p className="text-center text-gray-600 mb-5 px-4 text-sm">{tour.description}</p>
                 )}
                 <div className="mt-auto w-full flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">${Math.floor(Math.random() * 2000) + 1000}</p>
+                  <p className="text-lg font-bold text-primary">
+                    {formatInr(getTourPricePerTraveler(tour))}
+                  </p>
                   <Link 
                     to={`/tours/${tour.destination.toLowerCase().replace(/\s/g, "-")}`}
                     className="px-6 py-2 rounded-full border border-dark text-dark hover:bg-dark hover:text-white transition-colors text-sm"

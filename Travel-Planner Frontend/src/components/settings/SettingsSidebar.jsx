@@ -8,14 +8,14 @@ const SettingsSidebar = () => {
   const location = useLocation();
 
   return (
-    <aside className="w-64 bg-[#1E3A8A] text-white flex-shrink-0 flex flex-col hidden md:flex relative">
+    <aside className="w-64 bg-primary text-white flex-shrink-0 flex flex-col hidden md:flex relative">
       <div className="p-8 flex items-center gap-3">
          <div className="bg-white/10 p-2 rounded-lg">
            {/* Logo Icon */}
-           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+           <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
          </div>
-         <span className="text-xl font-bold tracking-wide">Travel Planner</span>
-      </div>
+         <span className="text-xl font-bold tracking-wide">WanderWise</span>
+       </div>
       
       <nav className="flex-1 mt-4 space-y-1">
         <SidebarItem icon={MdDashboard} text="Dashboard" to="/user/dashboard" active={location.pathname === '/user/dashboard'} />
@@ -27,14 +27,14 @@ const SettingsSidebar = () => {
 
       {/* Logout Section */}
       <div className="p-6">
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-3 text-orange-400 font-bold">
+          <div className="bg-white/5 rounded-xl p-4 border border-white/15 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-3 text-accent font-bold">
                   <FaPowerOff /> Logout
               </div>
-              <p className="text-xs text-blue-200 mb-3 leading-relaxed">
+              <p className="text-xs text-white/75 mb-3 leading-relaxed">
                   Sign out of your account securely.
               </p>
-              <button className="w-full bg-gray-100 hover:bg-white text-gray-800 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+              <button className="w-full bg-accent hover:bg-accent/90 text-white py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
                   Logout
               </button>
           </div>

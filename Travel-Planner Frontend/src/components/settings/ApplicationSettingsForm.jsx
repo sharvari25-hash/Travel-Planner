@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaGlobe, FaDollarSign, FaClock } from 'react-icons/fa';
+import { FaGlobe, FaRupeeSign, FaClock } from 'react-icons/fa';
 import SelectField from './SelectField';
 
 const ApplicationSettingsForm = () => (
@@ -20,9 +20,9 @@ const ApplicationSettingsForm = () => (
           />
            <SelectField 
               label="Currency" 
-              icon={FaDollarSign} 
-              options={['USD - United States Dollar', 'EUR - Euro', 'JPY - Japanese Yen']} 
-              defaultValue="USD - United States Dollar" 
+              icon={FaRupeeSign} 
+              options={['INR - Indian Rupee']} 
+              defaultValue="INR - Indian Rupee" 
           />
            <SelectField 
               label="Time Format" 

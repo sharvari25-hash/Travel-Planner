@@ -7,8 +7,14 @@ import BudgetSummary from './BudgetSummary';
 import SystemAlerts from './SystemAlerts';
 import PopularDestinations from './PopularDestinations';
 import SectionTitle from '../shared/SectionTitle';
+import { getPaymentHistory } from '../../../lib/paymentHistory';
+import { formatInr } from '../../../lib/pricing';
 
 const AdminOverviewContent = () => {
+  const totalRevenue = getPaymentHistory()
+    .filter((entry) => entry.status === 'SUCCESS')
+    .reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -20,7 +26,7 @@ const AdminOverviewContent = () => {
           subtext="Flights | Hotels | Activities"
           icon={<div className="flex gap-1 text-xs">F | H | A</div>}
         />
-        <StatCard title="Total Revenue" value="$156,780" subtext="Gross income" color="text-yellow-500" />
+        <StatCard title="Total Revenue" value={formatInr(totalRevenue)} subtext="Gross income" color="text-yellow-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

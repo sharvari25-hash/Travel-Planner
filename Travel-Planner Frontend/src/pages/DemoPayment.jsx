@@ -26,9 +26,9 @@ const formatDate = (value) =>
   });
 
 const formatAmount = (amount, currency) =>
-  new Intl.NumberFormat('en-US', {
+  new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: currency || 'USD',
+    currency: currency || 'INR',
     maximumFractionDigits: 0,
   }).format(amount);
 
@@ -119,7 +119,7 @@ const DemoPayment = () => {
       travelerEmail: pendingBooking.travelerEmail,
       method: paymentMethod,
       amount: totalAmount,
-      currency: pendingBooking.currency || 'USD',
+      currency: 'INR',
       status: 'SUCCESS',
     });
 
@@ -183,7 +183,7 @@ const DemoPayment = () => {
                 onClick={handlePayNow}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-70"
               >
-                {isProcessing ? 'Processing...' : `Pay ${formatAmount(totalAmount, pendingBooking.currency || 'USD')}`}
+                {isProcessing ? 'Processing...' : `Pay ${formatAmount(totalAmount, 'INR')}`}
               </button>
 
               {message ? <p className="text-sm text-green-700">{message}</p> : null}
@@ -211,7 +211,7 @@ const DemoPayment = () => {
               <p className="pt-2 border-t border-gray-100">
                 <span className="font-medium text-gray-800">Amount:</span>{' '}
                 <span className="font-bold text-gray-900">
-                  {formatAmount(totalAmount, pendingBooking.currency || 'USD')}
+                  {formatAmount(totalAmount, 'INR')}
                 </span>
               </p>
             </div>

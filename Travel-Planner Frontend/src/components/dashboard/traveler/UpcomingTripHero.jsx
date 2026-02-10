@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaPlane, FaSuitcase, FaWallet, FaHotel, FaPlus, FaCalendarAlt } from 'react-icons/fa';
+import { formatInr } from '../../../lib/pricing';
 
 const upcomingTrip = {
   destination: "Tokyo, Japan",
@@ -11,7 +12,7 @@ const upcomingTrip = {
     to: "Tokyo (HND)",
     departDate: "April 25",
     returnDate: "May 25",
-    price: "$1,560"
+    price: 148000
   }
 };
 
@@ -80,7 +81,7 @@ const UpcomingTripHero = () => (
            <span className="flex items-center gap-2 cursor-pointer hover:text-gray-800"><FaHotel /> Book Hotel</span>
            <span className="flex items-center gap-2 cursor-pointer hover:text-gray-800"><FaPlus /> Add Activity</span>
         </div>
-        <span className="text-xl font-bold text-gray-800">{upcomingTrip.flight.price}</span>
+        <span className="text-xl font-bold text-gray-800">{formatInr(upcomingTrip.flight.price)}</span>
       </div>
 
     </div>

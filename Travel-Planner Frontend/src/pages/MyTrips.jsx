@@ -29,6 +29,13 @@ const formatDate = (dateValue) =>
     day: 'numeric',
   });
 
+const formatAmount = (amount) =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(amount);
+
 const MyTrips = ({ statusFilter = 'All' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('startDateDesc');
@@ -100,7 +107,7 @@ const MyTrips = ({ statusFilter = 'All' }) => {
             </div>
             <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-gray-400">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">${summary.spent}</p>
+              <p className="text-2xl font-bold text-gray-800 mt-1">{formatAmount(summary.spent)}</p>
             </div>
           </div>
 
@@ -165,7 +172,7 @@ const MyTrips = ({ statusFilter = 'All' }) => {
                     <div className="flex justify-between text-xs">
                       <span className="font-medium text-gray-500">Budget Used</span>
                       <span className="font-semibold text-gray-700">
-                        ${trip.budget.spent} / ${trip.budget.total}
+                        {formatAmount(trip.budget.spent)} / {formatAmount(trip.budget.total)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">

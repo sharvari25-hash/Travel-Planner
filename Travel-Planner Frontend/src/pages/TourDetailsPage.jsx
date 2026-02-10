@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { getWeather } from '../lib/weatherService';
 import { useAuth } from '../lib/AuthContext';
 import { useToursCatalog } from '../lib/toursCatalog';
+import { formatInr, getTourPricePerTraveler } from '../lib/pricing';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
@@ -22,7 +23,6 @@ const bookingSchema = yup.object({
   ).min(1, 'At least one traveler is required'),
 }).required();
 
-
 const TourDetailsPage = () => {
   const { destination } = useParams();
   const navigate = useNavigate();
@@ -37,9 +37,9 @@ const TourDetailsPage = () => {
     [toursCatalog, destination]
   );
   
-  const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
   const [weather, setWeather] = useState(null);
   const canBookAsTraveler = isAuthenticated && user?.role === 'USER';
+  const tourPricePerTraveler = useMemo(() => getTourPricePerTraveler(tour), [tour]);
 
   const { register, control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
@@ -77,8 +77,8 @@ const TourDetailsPage = () => {
       travelDate: data.date,
       transportation: data.transportation,
       travelers: data.travelers,
-      amountPerTraveler: randomPrice,
-      currency: 'USD',
+      amountPerTraveler: tourPricePerTraveler,
+      currency: 'INR',
       submittedAt: new Date().toISOString(),
     };
 
@@ -130,7 +130,7 @@ const TourDetailsPage = () => {
             <span className="text-gray-600">{tour.country}</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-primary">${randomPrice}</span>
+            <span className="text-3xl font-bold text-primary">{formatInr(tourPricePerTraveler)}</span>
             <span className="font-semibold">per person</span>
           </div>
         </div>

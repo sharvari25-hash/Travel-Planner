@@ -40,9 +40,9 @@ const formatDate = (value) =>
   });
 
 const formatAmount = (amount, currency) =>
-  new Intl.NumberFormat('en-US', {
+  new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: currency || 'USD',
+    currency: currency || 'INR',
     maximumFractionDigits: 0,
   }).format(amount);
 
@@ -110,7 +110,7 @@ const AdminPaymentsPanel = () => {
         </div>
         <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
           <p className="text-xs uppercase tracking-wide text-gray-400">Gross Volume</p>
-          <p className="text-2xl font-bold text-blue-700 mt-1">{formatAmount(summary.grossVolume, 'USD')}</p>
+          <p className="text-2xl font-bold text-blue-700 mt-1">{formatAmount(summary.grossVolume, 'INR')}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
           <p className="text-xs uppercase tracking-wide text-gray-400">Successful</p>
@@ -169,7 +169,7 @@ const AdminPaymentsPanel = () => {
                   </td>
                   <td className="py-3 text-gray-700">{methodLabels[entry.method] || entry.method}</td>
                   <td className="py-3 text-gray-700">{formatDate(entry.paidAt)}</td>
-                  <td className="py-3 text-gray-800 font-semibold">{formatAmount(entry.amount, entry.currency)}</td>
+                  <td className="py-3 text-gray-800 font-semibold">{formatAmount(entry.amount, 'INR')}</td>
                   <td className="py-3">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
