@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { allToursData } from '../lib/AllToursData';
 import { getWeather } from '../lib/weatherService';
+import { createBookingRequest } from '../lib/bookingRequests';
+import { useAuth } from '../lib/AuthContext';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const bookingSchema = yup.object({
@@ -22,12 +24,15 @@ const bookingSchema = yup.object({
 
 const TourDetailsPage = () => {
   const { destination } = useParams();
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const tour = allToursData.find((tour) => tour.destination.toLowerCase().replace(/\s/g, "-") === destination);
   
   const [randomPrice] = useState(Math.floor(Math.random() * 2000) + 1000);
   const [weather, setWeather] = useState(null);
+  const [bookingMessage, setBookingMessage] = useState(null);
 
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
     defaultValues: {
       travelers: [{ name: '', age: '', gender: '' }],
@@ -50,15 +55,35 @@ const TourDetailsPage = () => {
   }
 
   const onSubmit = (data) => {
-    const bookingData = {
-      tour: {
-        destination: tour.destination,
-        country: tour.country,
-      },
-      ...data
+    if (!isAuthenticated || user?.role !== 'USER') {
+      setBookingMessage({
+        type: 'error',
+        text: 'Please login as a traveler account to place a booking request.',
+      });
+      navigate('/login');
+      return;
     }
-    console.log(bookingData);
-    alert('Booking submitted! Check the console for the data.');
+
+    const bookingRequest = createBookingRequest({
+      travelerName: user.name,
+      travelerEmail: user.email,
+      destination: tour.destination,
+      country: tour.country,
+      travelDate: data.date,
+      transportation: data.transportation,
+      travelers: data.travelers,
+    });
+
+    reset({
+      date: '',
+      transportation: '',
+      travelers: [{ name: '', age: '', gender: '' }],
+    });
+
+    setBookingMessage({
+      type: 'success',
+      text: `Booking request ${bookingRequest.id} submitted. Waiting for admin approval.`,
+    });
   };
 
   return (
@@ -220,6 +245,15 @@ const TourDetailsPage = () => {
                 <button type="submit" className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-accent transition-colors font-semibold">
                   Book Now
                 </button>
+                {bookingMessage && (
+                  <p
+                    className={`text-sm ${
+                      bookingMessage.type === 'success' ? 'text-green-700' : 'text-red-600'
+                    }`}
+                  >
+                    {bookingMessage.text}
+                  </p>
+                )}
               </form>
             </div>
           </div>

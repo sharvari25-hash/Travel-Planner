@@ -1,43 +1,57 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import SectionTitle from '../shared/SectionTitle';
+import { getBookingRequests } from '../../../lib/bookingRequests';
 
-const bookings = [
-  { id: '#56789', user: 'Sarah K.', type: 'Flight', color: 'bg-green-100 text-green-700' },
-  { id: '#56732', user: 'David L.', type: 'Hotel', color: 'bg-red-100 text-red-700' },
-  { id: '#56608', user: 'Lisa M.', type: 'Tour', color: 'bg-gray-700 text-white' },
-];
+const statusStyles = {
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  APPROVED: 'bg-green-100 text-green-700',
+  REJECTED: 'bg-red-100 text-red-700',
+};
 
-const RecentBookingsTable = () => (
-  <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-      <SectionTitle title="Recent Bookings" actions={
-           <div className="flex gap-2 text-gray-400">
-              <span className="cursor-pointer hover:text-blue-600">{'<'}</span>
-              <span className="cursor-pointer hover:text-blue-600">{'>'}</span>
-           </div>
-      }/>
+const RecentBookingsTable = () => {
+  const bookings = useMemo(() => getBookingRequests().slice(0, 4), []);
+
+  return (
+    <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+      <SectionTitle
+        title="Recent Bookings"
+        actions={
+          <div className="text-xs text-gray-400">
+            {bookings.length} requests
+          </div>
+        }
+      />
       <table className="w-full text-left text-sm">
-          <thead className="text-gray-400 border-b">
-              <tr>
-                  <th className="pb-2 font-medium">Booking ID</th>
-                  <th className="pb-2 font-medium">User</th>
-                  <th className="pb-2 font-medium">Status</th>
-              </tr>
-          </thead>
-          <tbody className="divide-y">
-              {bookings.map((booking, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                      <td className="py-3 text-gray-500">{booking.id}</td>
-                      <td className="py-3 font-medium text-gray-700">{booking.user}</td>
-                      <td className="py-3">
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${booking.color}`}>
-                              {booking.type}
-                          </span>
-                      </td>
-                  </tr>
-              ))}
-          </tbody>
+        <thead className="text-gray-400 border-b">
+          <tr>
+            <th className="pb-2 font-medium">Booking ID</th>
+            <th className="pb-2 font-medium">Traveler</th>
+            <th className="pb-2 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {bookings.map((booking) => (
+            <tr key={booking.id} className="hover:bg-gray-50">
+              <td className="py-3 text-gray-500">{booking.id}</td>
+              <td className="py-3 font-medium text-gray-700">{booking.travelerName}</td>
+              <td className="py-3">
+                <span
+                  className={`px-2 py-1 rounded text-xs font-semibold ${
+                    statusStyles[booking.status] || 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {booking.status}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
-  </div>
-);
+      {bookings.length === 0 ? (
+        <p className="text-xs text-gray-500 mt-3">No bookings yet.</p>
+      ) : null}
+    </div>
+  );
+};
 
 export default RecentBookingsTable;
