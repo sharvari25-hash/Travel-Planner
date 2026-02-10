@@ -24,7 +24,7 @@ const seedNotifications = [
     id: 'adm-ntf-1003',
     type: 'USER',
     title: 'User Account Suspended',
-    message: 'User sophia.patel@demo.com was moved to SUSPENDED status.',
+    message: 'User sophia.patel@wanderwise.com was moved to SUSPENDED status.',
     createdAt: '2026-02-09T11:10:00.000Z',
     read: true,
     severity: 'MEDIUM',

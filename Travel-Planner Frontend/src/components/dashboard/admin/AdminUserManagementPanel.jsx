@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
-import { initialAdminUsers } from '../../../lib/mockAdminUsers';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const statusStyles = {
   ACTIVE: 'bg-green-100 text-green-700',
@@ -10,11 +11,16 @@ const statusStyles = {
 };
 
 const normalizeDate = (dateValue) => {
-  if (dateValue === 'Never') {
+  if (!dateValue || dateValue === 'Never') {
     return 'Never';
   }
 
-  return new Date(dateValue).toLocaleDateString('en-US', {
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Never';
+  }
+
+  return parsedDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -33,13 +39,34 @@ const getFiltersFromRoute = (tab) => {
   return { role: 'ALL', status: 'ALL' };
 };
 
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
+const normalizeUser = (entry) => ({
+  ...entry,
+  role: entry.role || 'USER',
+  status: entry.status || 'ACTIVE',
+  tripsBooked: Number(entry.tripsBooked || 0),
+  lastLogin: entry.lastLogin || 'Never',
+  avatar: entry.avatar || `https://i.pravatar.cc/150?u=${entry.email || 'user'}`,
+});
+
 const AdminUserManagementPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const routeFilters = getFiltersFromRoute(tab);
   const isAdmin = user?.role === 'ADMIN';
 
-  const [users, setUsers] = useState(initialAdminUsers);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [activeAction, setActiveAction] = useState(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -73,32 +100,147 @@ const AdminUserManagementPanel = () => {
     [users]
   );
 
-  const updateUserRole = (id, newRole) => {
-    if (!isAdmin) {
+  const fetchUsers = useCallback(async () => {
+    if (!isAdmin || !token) {
+      setUsers([]);
+      setIsLoading(false);
       return;
     }
 
-    setUsers((current) =>
-      current.map((entry) => (entry.id === id ? { ...entry, role: newRole } : entry))
-    );
+    setIsLoading(true);
+    setFetchError(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const payload = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        setFetchError(payload?.message || 'Unable to fetch users');
+        return;
+      }
+
+      if (!Array.isArray(payload)) {
+        setFetchError('Invalid users response from backend');
+        return;
+      }
+
+      setUsers(payload.map(normalizeUser));
+    } catch (_error) {
+      setFetchError('Unable to connect to backend server');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAdmin, token]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const updateUserRole = async (id, newRole) => {
+    if (!isAdmin || !token) {
+      return;
+    }
+
+    setActionError(null);
+    setActiveAction(`role-${id}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${id}/role`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+      const payload = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        setActionError(payload?.message || 'Unable to update role');
+        return;
+      }
+
+      setUsers((current) =>
+        current.map((entry) => (entry.id === id ? normalizeUser(payload) : entry))
+      );
+    } catch (_error) {
+      setActionError('Unable to connect to backend server');
+    } finally {
+      setActiveAction(null);
+    }
   };
 
-  const updateUserStatus = (id, newStatus) => {
-    if (!isAdmin) {
+  const updateUserStatus = async (id, newStatus) => {
+    if (!isAdmin || !token) {
       return;
     }
 
-    setUsers((current) =>
-      current.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
-    );
+    setActionError(null);
+    setActiveAction(`status-${id}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const payload = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        setActionError(payload?.message || 'Unable to update status');
+        return;
+      }
+
+      setUsers((current) =>
+        current.map((entry) => (entry.id === id ? normalizeUser(payload) : entry))
+      );
+    } catch (_error) {
+      setActionError('Unable to connect to backend server');
+    } finally {
+      setActiveAction(null);
+    }
   };
 
-  const removeUser = (id) => {
-    if (!isAdmin) {
+  const removeUser = async (id) => {
+    if (!isAdmin || !token) {
       return;
     }
 
-    setUsers((current) => current.filter((entry) => entry.id !== id));
+    if (String(id) === String(user?.id)) {
+      setActionError('You cannot remove your own account');
+      return;
+    }
+
+    setActionError(null);
+    setActiveAction(`remove-${id}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const payload = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        setActionError(payload?.message || 'Unable to remove user');
+        return;
+      }
+
+      setUsers((current) => current.filter((entry) => entry.id !== id));
+    } catch (_error) {
+      setActionError('Unable to connect to backend server');
+    } finally {
+      setActiveAction(null);
+    }
   };
 
   if (!isAdmin) {
@@ -118,7 +260,7 @@ const AdminUserManagementPanel = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage demo users, roles, and account status from a single admin panel.
+            Manage users, roles, and account status from a single admin panel.
           </p>
         </div>
       </div>
@@ -143,6 +285,17 @@ const AdminUserManagementPanel = () => {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+        {fetchError && (
+          <p className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+            {fetchError}
+          </p>
+        )}
+        {actionError && (
+          <p className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+            {actionError}
+          </p>
+        )}
+
         <div className="flex flex-wrap gap-3 mb-4">
           <input
             type="text"
@@ -187,7 +340,13 @@ const AdminUserManagementPanel = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredUsers.map((entry) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-sm text-gray-500">
+                    Loading users...
+                  </td>
+                </tr>
+              ) : filteredUsers.map((entry) => (
                 <tr key={entry.id} className="hover:bg-gray-50">
                   <td className="py-3">
                     <div className="flex items-center gap-3">
@@ -206,6 +365,7 @@ const AdminUserManagementPanel = () => {
                     <select
                       value={entry.role}
                       onChange={(event) => updateUserRole(entry.id, event.target.value)}
+                      disabled={activeAction === `role-${entry.id}`}
                       className="border border-gray-200 rounded-lg px-2 py-1 text-xs bg-white"
                     >
                       <option value="ADMIN">ADMIN</option>
@@ -216,6 +376,7 @@ const AdminUserManagementPanel = () => {
                     <select
                       value={entry.status}
                       onChange={(event) => updateUserStatus(entry.id, event.target.value)}
+                      disabled={activeAction === `status-${entry.id}`}
                       className={`px-2 py-1 rounded-lg text-xs font-semibold border border-transparent ${
                         statusStyles[entry.status] || 'bg-gray-100 text-gray-700'
                       }`}
@@ -232,9 +393,10 @@ const AdminUserManagementPanel = () => {
                       <button
                         type="button"
                         onClick={() => removeUser(entry.id)}
-                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700"
+                        disabled={activeAction === `remove-${entry.id}` || String(entry.id) === String(user?.id)}
+                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Remove
+                        {String(entry.id) === String(user?.id) ? 'Current User' : 'Remove'}
                       </button>
                     </div>
                   </td>
@@ -244,7 +406,7 @@ const AdminUserManagementPanel = () => {
           </table>
         </div>
 
-        {filteredUsers.length === 0 && (
+        {!isLoading && filteredUsers.length === 0 && (
           <p className="text-sm text-gray-500 py-6 text-center">
             No users match your current filters.
           </p>

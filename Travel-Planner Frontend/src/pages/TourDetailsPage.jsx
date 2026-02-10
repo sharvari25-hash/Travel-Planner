@@ -5,11 +5,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { getWeather } from '../lib/weatherService';
 import { useAuth } from '../lib/AuthContext';
-import { useToursCatalog } from '../lib/toursCatalog';
 import { formatInr, getTourPricePerTraveler } from '../lib/pricing';
 import { Calendar, Users, Globe, PlusCircle, XCircle } from 'lucide-react';
 
 const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
+
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
 
 const bookingSchema = yup.object({
   date: yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
@@ -28,7 +36,9 @@ const TourDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const toursCatalog = useToursCatalog();
+  const [toursCatalog, setToursCatalog] = useState([]);
+  const [isTourLoading, setIsTourLoading] = useState(true);
+  const [tourFetchError, setTourFetchError] = useState(null);
   const requestedTourPath = useMemo(
     () => [destination, subDestination].filter(Boolean).join('/'),
     [destination, subDestination]
@@ -44,6 +54,39 @@ const TourDetailsPage = () => {
   const [weather, setWeather] = useState(null);
   const canBookAsTraveler = isAuthenticated && user?.role === 'USER';
   const tourPricePerTraveler = useMemo(() => getTourPricePerTraveler(tour), [tour]);
+
+  useEffect(() => {
+    const loadTours = async () => {
+      setIsTourLoading(true);
+      setTourFetchError(null);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/tours`);
+        const payload = await parseJsonSafe(response);
+
+        if (!response.ok) {
+          setTourFetchError(payload?.message || 'Unable to load tour data.');
+          setToursCatalog([]);
+          return;
+        }
+
+        if (!Array.isArray(payload)) {
+          setTourFetchError('Invalid tour response from backend.');
+          setToursCatalog([]);
+          return;
+        }
+
+        setToursCatalog(payload);
+      } catch (_error) {
+        setTourFetchError('Unable to connect to backend server.');
+        setToursCatalog([]);
+      } finally {
+        setIsTourLoading(false);
+      }
+    };
+
+    loadTours();
+  }, []);
 
   const { register, control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(bookingSchema),
@@ -62,6 +105,14 @@ const TourDetailsPage = () => {
       setWeather(getWeather(tour.destination));
     }
   }, [tour]);
+
+  if (isTourLoading) {
+    return <div className="h-screen flex items-center justify-center">Loading tour details...</div>;
+  }
+
+  if (tourFetchError) {
+    return <div className="h-screen flex items-center justify-center">{tourFetchError}</div>;
+  }
 
   if (!tour) {
     return <div className="h-screen flex items-center justify-center">Tour not found!</div>;

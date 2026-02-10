@@ -12,7 +12,7 @@ export const initialAdminUsers = [
   {
     id: 'usr-1002',
     name: 'Liam Carter',
-    email: 'liam.carter@demo.com',
+    email: 'liam.carter@wanderwise.com',
     role: 'USER',
     status: 'ACTIVE',
     tripsBooked: 6,
@@ -22,7 +22,7 @@ export const initialAdminUsers = [
   {
     id: 'usr-1003',
     name: 'Sophia Patel',
-    email: 'sophia.patel@demo.com',
+    email: 'sophia.patel@wanderwise.com',
     role: 'USER',
     status: 'SUSPENDED',
     tripsBooked: 2,
@@ -32,7 +32,7 @@ export const initialAdminUsers = [
   {
     id: 'usr-1004',
     name: 'Noah Kim',
-    email: 'noah.kim@demo.com',
+    email: 'noah.kim@wanderwise.com',
     role: 'USER',
     status: 'DISABLED',
     tripsBooked: 0,
@@ -42,7 +42,7 @@ export const initialAdminUsers = [
   {
     id: 'usr-1005',
     name: 'Mia Rodriguez',
-    email: 'mia.rodriguez@demo.com',
+    email: 'mia.rodriguez@wanderwise.com',
     role: 'ADMIN',
     status: 'ACTIVE',
     tripsBooked: 11,
@@ -51,11 +51,11 @@ export const initialAdminUsers = [
   },
 ];
 
-export const additionalDemoUsers = [
+export const additionalAdminUsers = [
   {
     id: 'usr-2001',
     name: 'Ethan Walker',
-    email: 'ethan.walker@demo.com',
+    email: 'ethan.walker@wanderwise.com',
     role: 'USER',
     status: 'ACTIVE',
     tripsBooked: 3,
@@ -65,7 +65,7 @@ export const additionalDemoUsers = [
   {
     id: 'usr-2002',
     name: 'Olivia Nguyen',
-    email: 'olivia.nguyen@demo.com',
+    email: 'olivia.nguyen@wanderwise.com',
     role: 'USER',
     status: 'SUSPENDED',
     tripsBooked: 5,
@@ -75,7 +75,7 @@ export const additionalDemoUsers = [
   {
     id: 'usr-2003',
     name: 'Mason Johnson',
-    email: 'mason.johnson@demo.com',
+    email: 'mason.johnson@wanderwise.com',
     role: 'USER',
     status: 'DISABLED',
     tripsBooked: 0,

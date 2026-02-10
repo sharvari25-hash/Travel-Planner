@@ -16,15 +16,7 @@ const navItems = [
     path: '/tours',
   },
   { name: 'Contact Us', path: '/contact-us' },
-  { 
-    name: 'Legal & Policy', 
-    path: '/legal-and-policy',
-    dropdown: [
-        { name: 'Privacy Policy', path: '/privacy-policy' },
-        { name: 'Terms & Conditions', path: '/terms-conditions' },
-        { name: 'Refund Policy', path: '/refund-policy' }
-    ]
-  },
+  { name: 'Legal & Policy', path: '/legal-and-policy' },
 ];
 
 const Header = () => {

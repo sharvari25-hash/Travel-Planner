@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/AuthContext';
 
 const schema = yup.object({
   name: yup.string().required('Name is required'),
@@ -14,13 +15,26 @@ const schema = yup.object({
 }).required();
 
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema)
   });
+  const { signup, isAuthLoading } = useAuth();
+  const navigate = useNavigate();
+  const [signupError, setSignupError] = useState(null);
 
-  const onSubmit = (data) => {
-    console.log('Signup successful', data);
-    // Handle signup logic here
+  const onSubmit = async (data) => {
+    setSignupError(null);
+    const payload = { ...data };
+    delete payload.confirmPassword;
+    const result = await signup(payload);
+
+    if (result.success) {
+      const signedInUser = result.user;
+      navigate(signedInUser?.role === 'ADMIN' ? '/admin/dashboard' : '/user/dashboard');
+      return;
+    }
+
+    setSignupError(result.message || 'Unable to create account');
   };
 
   return (
@@ -87,10 +101,12 @@ const Signup = () => {
           </div>
           <button
             type="submit"
+            disabled={isSubmitting || isAuthLoading}
             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-full transition-colors"
           >
-            Sign Up
+            {isSubmitting || isAuthLoading ? 'Creating account...' : 'Sign Up'}
           </button>
+          {signupError && <p className="text-red-500 text-sm text-center">{signupError}</p>}
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account? <Link to="/login" className="text-primary hover:underline">Login</Link>

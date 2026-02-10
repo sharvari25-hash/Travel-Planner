@@ -11,25 +11,27 @@ const schema = yup.object({
 }).required();
 
 const Login = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema)
   });
   const navigate = useNavigate();
-  const { login, user, isAuthenticated, logout } = useAuth();
+  const { login, user, isAuthenticated, logout, isAuthLoading } = useAuth();
   const [loginError, setLoginError] = useState(null);
 
-  const onSubmit = (data) => {
-    const success = login(data.email, data.password);
-    if (success) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user.role === 'ADMIN') {
+  const onSubmit = async (data) => {
+    setLoginError(null);
+    const result = await login(data.email, data.password);
+    if (result.success) {
+      const loggedInUser = result.user;
+      if (loggedInUser?.role === 'ADMIN') {
         navigate('/admin/dashboard');
       } else {
         navigate('/user/dashboard');
       }
-    } else {
-      setLoginError('Invalid email or password');
+      return;
     }
+
+    setLoginError(result.message || 'Invalid email or password');
   };
 
   const handleLogout = () => {
@@ -76,11 +78,6 @@ const Login = () => {
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded-lg text-sm">
-          <p className="font-bold">Demo Credentials:</p>
-          <p><b>Admin:</b> admin@demo.com / password</p>
-          <p><b>Traveler:</b> traveler@demo.com / password</p>
-        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -103,9 +100,10 @@ const Login = () => {
           {loginError && <p className="text-red-500 text-sm text-center">{loginError}</p>}
           <button
             type="submit"
+            disabled={isSubmitting || isAuthLoading}
             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-full transition-colors"
           >
-            Login
+            {isSubmitting || isAuthLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         {!isAuthenticated && (

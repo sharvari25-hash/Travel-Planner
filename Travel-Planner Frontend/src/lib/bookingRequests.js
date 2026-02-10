@@ -3,8 +3,8 @@ const STORAGE_KEY = 'adminBookingRequests';
 const seedBookingRequests = [
   {
     id: 'BK-10021',
-    travelerName: 'Demo Traveler',
-    travelerEmail: 'traveler@demo.com',
+    travelerName: 'Aarav Mehta',
+    travelerEmail: 'aarav.mehta@wanderwise.com',
     destination: 'Kyoto',
     country: 'Japan',
     travelDate: '2026-03-24',
@@ -17,7 +17,7 @@ const seedBookingRequests = [
   {
     id: 'BK-10019',
     travelerName: 'Liam Carter',
-    travelerEmail: 'liam.carter@demo.com',
+    travelerEmail: 'liam.carter@wanderwise.com',
     destination: 'Bali',
     country: 'Indonesia',
     travelDate: '2026-03-18',
@@ -30,7 +30,7 @@ const seedBookingRequests = [
   {
     id: 'BK-10015',
     travelerName: 'Sophia Patel',
-    travelerEmail: 'sophia.patel@demo.com',
+    travelerEmail: 'sophia.patel@wanderwise.com',
     destination: 'Istanbul',
     country: 'Turkey',
     travelDate: '2026-03-01',

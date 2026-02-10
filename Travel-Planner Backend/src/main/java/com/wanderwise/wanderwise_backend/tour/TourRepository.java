@@ -1,0 +1,11 @@
+package com.wanderwise.wanderwise_backend.tour;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TourRepository extends JpaRepository<Tour, Long> {
+    List<Tour> findAllByOrderByDestinationAsc();
+
+    Optional<Tour> findBySlug(String slug);
+}

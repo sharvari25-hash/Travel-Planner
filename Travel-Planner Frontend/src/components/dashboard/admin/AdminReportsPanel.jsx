@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
 import { getBookingRequests } from '../../../lib/bookingRequests';
 import { getPaymentHistory } from '../../../lib/paymentHistory';
-import { additionalDemoUsers, initialAdminUsers } from '../../../lib/mockAdminUsers';
+import { additionalAdminUsers, initialAdminUsers } from '../../../lib/mockAdminUsers';
 import { formatInr } from '../../../lib/pricing';
 
 const REPORT_TABS = [
@@ -40,7 +40,7 @@ const AdminReportsPanel = () => {
 
   const bookings = useMemo(() => getBookingRequests(), []);
   const payments = useMemo(() => getPaymentHistory(), []);
-  const users = useMemo(() => [...initialAdminUsers, ...additionalDemoUsers], []);
+  const users = useMemo(() => [...initialAdminUsers, ...additionalAdminUsers], []);
 
   const thresholdTimestamp = useMemo(
     () => nowTimestamp - Number(rangeDays) * 24 * 60 * 60 * 1000,
