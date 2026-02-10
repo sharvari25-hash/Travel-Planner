@@ -30,7 +30,17 @@ const TravelerSidebar = () => {
       ],
     },
     { icon: MdExplore, text: 'Explore', to: '/tours', exact: true },
-    { icon: FaBell, text: 'Notifications' },
+    {
+      icon: FaBell,
+      text: 'Notifications',
+      to: '/user/dashboard/notifications',
+      submenu: [
+        { text: 'All', to: '/user/dashboard/notifications', exact: true },
+        { text: 'Unread', to: '/user/dashboard/notifications/unread' },
+        { text: 'Bookings', to: '/user/dashboard/notifications/bookings' },
+        { text: 'Payments', to: '/user/dashboard/notifications/payments' },
+      ],
+    },
     { icon: FaCog, text: 'Settings', to: '/user/settings', exact: true },
   ];
 

@@ -21,7 +21,7 @@ const SettingsSidebar = () => {
         <SidebarItem icon={MdDashboard} text="Dashboard" to="/user/dashboard" active={location.pathname === '/user/dashboard'} />
         <SidebarItem icon={MdExplore} text="My Trips" to="/user/dashboard/my-trips" active={location.pathname.startsWith('/user/dashboard/my-trips')} />
         <SidebarItem icon={MdExplore} text="Explore" to="/tours" active={location.pathname === '/tours'} />
-        <SidebarItem icon={FaBell} text="Notifications" />
+        <SidebarItem icon={FaBell} text="Notifications" to="/user/dashboard/notifications" active={location.pathname.startsWith('/user/dashboard/notifications')} />
         <SidebarItem icon={FaCog} text="Settings" to="/user/settings" active={location.pathname === '/user/settings'} />
       </nav>
 

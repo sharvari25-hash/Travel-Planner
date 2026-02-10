@@ -20,6 +20,7 @@ import MyTrips from './pages/MyTrips';
 import TripDetails from './pages/TripDetails';
 import NotFound from './pages/NotFound';
 import DemoPayment from './pages/DemoPayment';
+import TravelerNotifications from './pages/TravelerNotifications';
 
 function App() {
   return (
@@ -95,6 +96,22 @@ function App() {
               <TripDetails />
             </ProtectedRoute>
           } 
+        />
+        <Route
+          path="/user/dashboard/notifications"
+          element={
+            <ProtectedRoute role="USER">
+              <TravelerNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/dashboard/notifications/:tab"
+          element={
+            <ProtectedRoute role="USER">
+              <TravelerNotifications />
+            </ProtectedRoute>
+          }
         />
         <Route 
           path="/admin/dashboard/*" 
