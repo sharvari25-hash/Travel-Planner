@@ -1,5 +1,7 @@
 package com.wanderwise.wanderwise_backend.user;
 
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationService;
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationType;
 import com.wanderwise.wanderwise_backend.user.dto.UpdateNotificationSettingsRequest;
 import com.wanderwise.wanderwise_backend.user.dto.UpdatePreferenceSettingsRequest;
 import com.wanderwise.wanderwise_backend.user.dto.UpdateProfileSettingsRequest;
@@ -22,6 +24,7 @@ public class UserSettingsService {
     private static final Set<String> SUPPORTED_TIME_FORMATS = Set.of("12_HOUR", "24_HOUR");
 
     private final UserRepository userRepository;
+    private final TravelerNotificationService travelerNotificationService;
 
     @Transactional
     public UserSettingsResponse getCurrentUserSettings(String userEmail) {
@@ -41,6 +44,12 @@ public class UserSettingsService {
         user.setMobileNumber(request.mobileNumber().trim());
 
         User savedUser = userRepository.save(user);
+        travelerNotificationService.createNotification(
+                savedUser.getEmail(),
+                TravelerNotificationType.SYSTEM,
+                "Profile Updated",
+                "Your profile details were saved successfully."
+        );
         return UserSettingsResponse.fromUser(savedUser);
     }
 

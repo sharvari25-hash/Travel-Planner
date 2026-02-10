@@ -1,62 +1,13 @@
-const STORAGE_KEY = 'travelerNotifications';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 export const TRAVELER_NOTIFICATIONS_UPDATED_EVENT = 'traveler-notifications-updated';
 
-const seedNotifications = [
-  {
-    id: 'ntf-1001',
-    type: 'BOOKING',
-    title: 'Booking Request Submitted',
-    message: 'Your Tokyo tour request was sent to admin for approval.',
-    createdAt: '2026-02-10T09:10:00.000Z',
-    read: false,
-  },
-  {
-    id: 'ntf-1002',
-    type: 'PAYMENT',
-    title: 'Payment Successful',
-    message: 'Payment for Kyoto booking was successful.',
-    createdAt: '2026-02-09T17:20:00.000Z',
-    read: false,
-  },
-  {
-    id: 'ntf-1003',
-    type: 'TRIP',
-    title: 'Upcoming Trip Reminder',
-    message: 'Your Bali trip starts in 3 days. Check your itinerary.',
-    createdAt: '2026-02-08T11:00:00.000Z',
-    read: true,
-  },
-  {
-    id: 'ntf-1004',
-    type: 'BOOKING',
-    title: 'Booking Approved',
-    message: 'Your Santorini booking has been approved by admin.',
-    createdAt: '2026-02-07T15:40:00.000Z',
-    read: true,
-  },
-  {
-    id: 'ntf-1005',
-    type: 'SYSTEM',
-    title: 'Profile Updated',
-    message: 'Your profile details were saved successfully.',
-    createdAt: '2026-02-06T08:30:00.000Z',
-    read: true,
-  },
-];
-
-const canUseStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
-
-const parseStoredList = (rawValue) => {
+const parseJsonSafe = async (response) => {
   try {
-    const parsed = JSON.parse(rawValue);
-    return Array.isArray(parsed) ? parsed : null;
+    return await response.json();
   } catch (_error) {
     return null;
   }
 };
-
-const sortByDateDesc = (list) =>
-  [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
 const emitUpdated = () => {
   if (typeof window === 'undefined') {
@@ -66,46 +17,74 @@ const emitUpdated = () => {
   window.dispatchEvent(new Event(TRAVELER_NOTIFICATIONS_UPDATED_EVENT));
 };
 
-const writeNotifications = (list) => {
-  const normalized = sortByDateDesc(list);
-  if (canUseStorage()) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-    emitUpdated();
+const buildAuthHeader = (token) => ({
+  Authorization: `Bearer ${token}`,
+});
+
+const parseListOrThrow = (payload) => {
+  if (!Array.isArray(payload)) {
+    throw new Error('Invalid notifications response from backend.');
   }
-  return normalized;
+  return payload;
 };
 
-export const getTravelerNotifications = () => {
-  if (!canUseStorage()) {
-    return sortByDateDesc(seedNotifications);
+export const getTravelerNotifications = async (token) => {
+  if (!token) {
+    return [];
   }
 
-  const storedValue = window.localStorage.getItem(STORAGE_KEY);
-  if (!storedValue) {
-    return writeNotifications(seedNotifications);
+  const response = await fetch(`${API_BASE_URL}/api/notifications/me`, {
+    headers: buildAuthHeader(token),
+  });
+
+  const payload = await parseJsonSafe(response);
+  if (!response.ok) {
+    throw new Error(payload?.message || 'Unable to load notifications.');
   }
 
-  const parsed = parseStoredList(storedValue);
-  if (!parsed) {
-    return writeNotifications(seedNotifications);
+  return parseListOrThrow(payload);
+};
+
+export const markTravelerNotificationRead = async (token, notificationId) => {
+  const response = await fetch(`${API_BASE_URL}/api/notifications/me/${notificationId}/read`, {
+    method: 'PATCH',
+    headers: buildAuthHeader(token),
+  });
+
+  const payload = await parseJsonSafe(response);
+  if (!response.ok) {
+    throw new Error(payload?.message || 'Unable to mark notification as read.');
   }
 
-  return sortByDateDesc(parsed);
+  emitUpdated();
+  return payload;
 };
 
-export const markTravelerNotificationRead = (notificationId) => {
-  const updated = getTravelerNotifications().map((entry) =>
-    entry.id === notificationId ? { ...entry, read: true } : entry
-  );
-  return writeNotifications(updated);
+export const markAllTravelerNotificationsRead = async (token) => {
+  const response = await fetch(`${API_BASE_URL}/api/notifications/me/read-all`, {
+    method: 'PATCH',
+    headers: buildAuthHeader(token),
+  });
+
+  const payload = await parseJsonSafe(response);
+  if (!response.ok) {
+    throw new Error(payload?.message || 'Unable to mark all notifications as read.');
+  }
+
+  emitUpdated();
+  return parseListOrThrow(payload);
 };
 
-export const markAllTravelerNotificationsRead = () => {
-  const updated = getTravelerNotifications().map((entry) => ({ ...entry, read: true }));
-  return writeNotifications(updated);
-};
+export const deleteTravelerNotification = async (token, notificationId) => {
+  const response = await fetch(`${API_BASE_URL}/api/notifications/me/${notificationId}`, {
+    method: 'DELETE',
+    headers: buildAuthHeader(token),
+  });
 
-export const deleteTravelerNotification = (notificationId) => {
-  const updated = getTravelerNotifications().filter((entry) => entry.id !== notificationId);
-  return writeNotifications(updated);
+  const payload = await parseJsonSafe(response);
+  if (!response.ok) {
+    throw new Error(payload?.message || 'Unable to delete notification.');
+  }
+
+  emitUpdated();
 };

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wanderwise.wanderwise_backend.booking.dto.BookingResponse;
 import com.wanderwise.wanderwise_backend.booking.dto.CreateBookingRequest;
 import com.wanderwise.wanderwise_backend.booking.dto.UpdateBookingStatusRequest;
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationService;
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationType;
 import com.wanderwise.wanderwise_backend.user.User;
 import com.wanderwise.wanderwise_backend.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,7 @@ public class BookingService {
 
     private final BookingRequestRepository bookingRequestRepository;
     private final UserRepository userRepository;
+    private final TravelerNotificationService travelerNotificationService;
 
     @Transactional
     public BookingResponse createBooking(String userEmail, CreateBookingRequest request) {
@@ -55,6 +58,13 @@ public class BookingService {
                 .build();
 
         BookingRequest saved = bookingRequestRepository.save(booking);
+        travelerNotificationService.createNotification(
+                saved.getUserEmail(),
+                TravelerNotificationType.BOOKING,
+                "Booking Request Submitted",
+                "Your " + saved.getDestination() + " booking request (" + saved.getBookingCode()
+                        + ") was sent for admin approval."
+        );
         return toBookingResponse(saved);
     }
 
@@ -76,6 +86,7 @@ public class BookingService {
     public BookingResponse updateBookingStatus(Long bookingRecordId, UpdateBookingStatusRequest request) {
         BookingRequest booking = bookingRequestRepository.findById(bookingRecordId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+        BookingStatus previousStatus = booking.getStatus();
 
         if (request.status() == BookingStatus.PENDING_PAYMENT) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot set admin booking status to PENDING_PAYMENT");
@@ -84,6 +95,16 @@ public class BookingService {
         booking.setStatus(request.status());
         booking.setAdminNote(request.adminNote());
         BookingRequest saved = bookingRequestRepository.save(booking);
+
+        if (previousStatus != request.status()) {
+            travelerNotificationService.createNotification(
+                    saved.getUserEmail(),
+                    TravelerNotificationType.BOOKING,
+                    getStatusTitle(saved.getStatus()),
+                    getStatusMessage(saved)
+            );
+        }
+
         return toBookingResponse(saved);
     }
 
@@ -141,5 +162,35 @@ public class BookingService {
 
     private BookingResponse toBookingResponse(BookingRequest booking) {
         return BookingResponse.fromEntity(booking, readTravelers(booking.getTravelersJson()));
+    }
+
+    private String getStatusTitle(BookingStatus status) {
+        if (status == BookingStatus.APPROVED) {
+            return "Booking Approved";
+        }
+
+        if (status == BookingStatus.REJECTED) {
+            return "Booking Rejected";
+        }
+
+        return "Booking Status Updated";
+    }
+
+    private String getStatusMessage(BookingRequest booking) {
+        if (booking.getStatus() == BookingStatus.APPROVED) {
+            return "Your booking " + booking.getBookingCode() + " for " + booking.getDestination()
+                    + " has been approved by admin.";
+        }
+
+        if (booking.getStatus() == BookingStatus.REJECTED) {
+            String note = booking.getAdminNote() == null || booking.getAdminNote().isBlank()
+                    ? ""
+                    : " Note: " + booking.getAdminNote().trim();
+            return "Your booking " + booking.getBookingCode() + " for " + booking.getDestination()
+                    + " was rejected." + note;
+        }
+
+        return "Booking " + booking.getBookingCode() + " for " + booking.getDestination()
+                + " is now in " + booking.getStatus().name() + " status.";
     }
 }

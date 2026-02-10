@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle, FaSignOutAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
@@ -8,26 +8,41 @@ import {
 } from '../../../lib/travelerNotifications';
 
 const TravelerHeader = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(() => getTravelerNotifications());
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const syncNotifications = () => setNotifications(getTravelerNotifications());
+    let isMounted = true;
 
+    const syncNotifications = async () => {
+      if (!token) {
+        if (isMounted) {
+          setUnreadCount(0);
+        }
+        return;
+      }
+
+      try {
+        const list = await getTravelerNotifications(token);
+        if (isMounted) {
+          setUnreadCount(list.filter((entry) => !entry.read).length);
+        }
+      } catch (_error) {
+        if (isMounted) {
+          setUnreadCount(0);
+        }
+      }
+    };
+
+    syncNotifications();
     window.addEventListener(TRAVELER_NOTIFICATIONS_UPDATED_EVENT, syncNotifications);
-    window.addEventListener('storage', syncNotifications);
 
     return () => {
+      isMounted = false;
       window.removeEventListener(TRAVELER_NOTIFICATIONS_UPDATED_EVENT, syncNotifications);
-      window.removeEventListener('storage', syncNotifications);
     };
-  }, []);
-
-  const unreadCount = useMemo(
-    () => notifications.filter((entry) => !entry.read).length,
-    [notifications]
-  );
+  }, [token]);
 
   const handleLogout = () => {
     logout();

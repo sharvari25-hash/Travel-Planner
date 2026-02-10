@@ -3,6 +3,8 @@ package com.wanderwise.wanderwise_backend.payment;
 import com.wanderwise.wanderwise_backend.booking.BookingRequest;
 import com.wanderwise.wanderwise_backend.booking.BookingService;
 import com.wanderwise.wanderwise_backend.booking.BookingStatus;
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationService;
+import com.wanderwise.wanderwise_backend.notification.TravelerNotificationType;
 import com.wanderwise.wanderwise_backend.payment.dto.CreatePaymentRequest;
 import com.wanderwise.wanderwise_backend.payment.dto.PaymentResponse;
 import jakarta.transaction.Transactional;
@@ -19,6 +21,7 @@ public class PaymentService {
 
     private final PaymentRecordRepository paymentRecordRepository;
     private final BookingService bookingService;
+    private final TravelerNotificationService travelerNotificationService;
 
     @Transactional
     public PaymentResponse createPayment(String userEmail, CreatePaymentRequest request) {
@@ -55,6 +58,22 @@ public class PaymentService {
 
         booking.setStatus(BookingStatus.PENDING);
         bookingService.saveBooking(booking);
+
+        travelerNotificationService.createNotification(
+                userEmail,
+                TravelerNotificationType.PAYMENT,
+                "Payment Successful",
+                "Payment " + savedPayment.getPaymentCode() + " for booking "
+                        + savedPayment.getBookingCode() + " was successful."
+        );
+
+        travelerNotificationService.createNotification(
+                userEmail,
+                TravelerNotificationType.BOOKING,
+                "Booking Submitted for Approval",
+                "Your booking " + savedPayment.getBookingCode()
+                        + " is now pending admin approval."
+        );
 
         return PaymentResponse.fromEntity(savedPayment);
     }

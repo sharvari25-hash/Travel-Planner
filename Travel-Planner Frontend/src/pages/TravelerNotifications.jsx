@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaBell, FaCheck, FaCheckCircle, FaCreditCard, FaSuitcase, FaTrash } from 'react-icons/fa';
 import TravelerSidebar from '../components/dashboard/traveler/TravelerSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
+import { useAuth } from '../lib/AuthContext';
 import {
   deleteTravelerNotification,
   getTravelerNotifications,
@@ -56,12 +57,44 @@ const formatDate = (value) =>
 
 const TravelerNotifications = () => {
   const { tab } = useParams();
-  const [notifications, setNotifications] = useState(() => getTravelerNotifications());
+  const { token, user } = useAuth();
+  const isTraveler = user?.role === 'USER';
+
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [activeActionKey, setActiveActionKey] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
   const routeFilter = getRouteFilter(tab);
   const activeTypeFilter = routeFilter === 'ALL' ? typeFilter : routeFilter;
+
+  const loadNotifications = useCallback(async () => {
+    if (!isTraveler || !token) {
+      setNotifications([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setFetchError('');
+
+    try {
+      const payload = await getTravelerNotifications(token);
+      setNotifications(Array.isArray(payload) ? payload : []);
+    } catch (error) {
+      setFetchError(error?.message || 'Unable to load notifications.');
+      setNotifications([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isTraveler, token]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   const summary = useMemo(
     () => ({
@@ -95,16 +128,64 @@ const TravelerNotifications = () => {
     });
   }, [notifications, searchTerm, activeTypeFilter]);
 
-  const handleMarkRead = (id) => {
-    setNotifications(markTravelerNotificationRead(id));
+  const handleMarkRead = async (notificationId) => {
+    if (!token) {
+      return;
+    }
+
+    setActionError('');
+    setActiveActionKey(`read-${notificationId}`);
+
+    try {
+      const updated = await markTravelerNotificationRead(token, notificationId);
+      setNotifications((current) =>
+        current.map((entry) =>
+          entry.notificationId === notificationId ? updated : entry
+        )
+      );
+    } catch (error) {
+      setActionError(error?.message || 'Unable to mark notification as read.');
+    } finally {
+      setActiveActionKey(null);
+    }
   };
 
-  const handleMarkAllRead = () => {
-    setNotifications(markAllTravelerNotificationsRead());
+  const handleMarkAllRead = async () => {
+    if (!token) {
+      return;
+    }
+
+    setActionError('');
+    setActiveActionKey('mark-all');
+
+    try {
+      const updated = await markAllTravelerNotificationsRead(token);
+      setNotifications(updated);
+    } catch (error) {
+      setActionError(error?.message || 'Unable to mark all notifications as read.');
+    } finally {
+      setActiveActionKey(null);
+    }
   };
 
-  const handleDelete = (id) => {
-    setNotifications(deleteTravelerNotification(id));
+  const handleDelete = async (notificationId) => {
+    if (!token) {
+      return;
+    }
+
+    setActionError('');
+    setActiveActionKey(`delete-${notificationId}`);
+
+    try {
+      await deleteTravelerNotification(token, notificationId);
+      setNotifications((current) =>
+        current.filter((entry) => entry.notificationId !== notificationId)
+      );
+    } catch (error) {
+      setActionError(error?.message || 'Unable to delete notification.');
+    } finally {
+      setActiveActionKey(null);
+    }
   };
 
   return (
@@ -123,6 +204,7 @@ const TravelerNotifications = () => {
             <button
               type="button"
               onClick={handleMarkAllRead}
+              disabled={Boolean(activeActionKey)}
               className="px-3 py-2 rounded-lg text-xs font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Mark All as Read
@@ -149,6 +231,16 @@ const TravelerNotifications = () => {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            {fetchError ? (
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+                {fetchError}
+              </p>
+            ) : null}
+            {actionError ? (
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+                {actionError}
+              </p>
+            ) : null}
             <div className="flex flex-wrap gap-3">
               <input
                 type="text"
@@ -174,66 +266,74 @@ const TravelerNotifications = () => {
           </div>
 
           <div className="space-y-3">
-            {filteredNotifications.map((entry) => {
-              const Icon = typeIcons[entry.type] || FaBell;
+            {isLoading ? (
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
+                Loading notifications...
+              </div>
+            ) : (
+              filteredNotifications.map((entry) => {
+                const Icon = typeIcons[entry.type] || FaBell;
 
-              return (
-                <article
-                  key={entry.id}
-                  className={`bg-white rounded-xl border shadow-sm p-4 ${
-                    entry.read ? 'border-gray-100' : 'border-blue-200'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
-                      <Icon size={14} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-semibold text-gray-800">{entry.title}</h3>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            typeStyles[entry.type] || 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          {typeLabels[entry.type] || entry.type}
-                        </span>
-                        {!entry.read ? (
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                            Unread
-                          </span>
-                        ) : null}
+                return (
+                  <article
+                    key={entry.notificationId}
+                    className={`bg-white rounded-xl border shadow-sm p-4 ${
+                      entry.read ? 'border-gray-100' : 'border-blue-200'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <Icon size={14} />
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{entry.message}</p>
-                      <p className="text-xs text-gray-400 mt-2">{formatDate(entry.createdAt)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {!entry.read ? (
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-semibold text-gray-800">{entry.title}</h3>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              typeStyles[entry.type] || 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {typeLabels[entry.type] || entry.type}
+                          </span>
+                          {!entry.read ? (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                              Unread
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">{entry.message}</p>
+                        <p className="text-xs text-gray-400 mt-2">{formatDate(entry.createdAt)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!entry.read ? (
+                          <button
+                            type="button"
+                            disabled={Boolean(activeActionKey)}
+                            onClick={() => handleMarkRead(entry.notificationId)}
+                            className="px-2 py-1 rounded-md text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 inline-flex items-center gap-1"
+                          >
+                            <FaCheck size={10} />
+                            Mark Read
+                          </button>
+                        ) : null}
                         <button
                           type="button"
-                          onClick={() => handleMarkRead(entry.id)}
-                          className="px-2 py-1 rounded-md text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 inline-flex items-center gap-1"
+                          disabled={Boolean(activeActionKey)}
+                          onClick={() => handleDelete(entry.notificationId)}
+                          className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 inline-flex items-center gap-1"
                         >
-                          <FaCheck size={10} />
-                          Mark Read
+                          <FaTrash size={10} />
+                          Delete
                         </button>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(entry.id)}
-                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 inline-flex items-center gap-1"
-                      >
-                        <FaTrash size={10} />
-                        Delete
-                      </button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
+                  </article>
+                );
+              })
+            )}
           </div>
 
-          {filteredNotifications.length === 0 ? (
+          {!isLoading && filteredNotifications.length === 0 ? (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
               No notifications found for this view.
             </div>
