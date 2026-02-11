@@ -100,18 +100,10 @@ public class AdminDashboardService {
 
     private List<AdminDashboardOverviewResponse.UserRowPayload> buildUsers(List<User> users) {
         return users.stream()
-                .sorted((left, right) -> {
-                    if (left.getLastLogin() == null && right.getLastLogin() == null) {
-                        return 0;
-                    }
-                    if (left.getLastLogin() == null) {
-                        return 1;
-                    }
-                    if (right.getLastLogin() == null) {
-                        return -1;
-                    }
-                    return right.getLastLogin().compareTo(left.getLastLogin());
-                })
+                .sorted((left, right) -> Long.compare(
+                        right.getId() != null ? right.getId() : 0L,
+                        left.getId() != null ? left.getId() : 0L
+                ))
                 .limit(5)
                 .map(user -> {
                     String email = user.getEmail() != null ? user.getEmail() : "";
@@ -129,7 +121,7 @@ public class AdminDashboardService {
 
     private List<AdminDashboardOverviewResponse.RecentBookingPayload> buildRecentBookings(List<BookingRequest> bookings) {
         return bookings.stream()
-                .limit(4)
+                .limit(5)
                 .map(entry -> new AdminDashboardOverviewResponse.RecentBookingPayload(
                         entry.getId(),
                         entry.getBookingCode(),

@@ -15,6 +15,8 @@ const AdminHeader = () => {
   const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const adminAvatar = user?.avatar || `https://i.pravatar.cc/150?u=${user?.email || 'admin'}`;
+  const adminName = user?.name || 'Admin';
 
   useEffect(() => {
     let isMounted = true;
@@ -77,11 +79,21 @@ const AdminHeader = () => {
             <span className="text-xs text-green-700 font-medium">API Status: All Systems Operational</span>
         </div>
         <div className="flex items-center gap-3 pl-6 border-l">
-          <img src="https://i.pravatar.cc/150?img=68" alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-          <div className="text-sm hidden lg:block">
-            <span className="font-semibold block text-gray-700">Admin</span>
-            <span className="text-gray-400 text-xs">Dashboard</span>
-          </div>
+          <Link
+            to="/admin/dashboard/settings"
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+            title="Open admin settings"
+          >
+            <img
+              src={adminAvatar}
+              alt={`${adminName} avatar`}
+              className="w-8 h-8 rounded-full border border-gray-200"
+            />
+            <div className="text-sm hidden lg:block">
+              <span className="font-semibold block text-gray-700">{adminName}</span>
+              <span className="text-gray-400 text-xs">Admin Dashboard</span>
+            </div>
+          </Link>
           <button
             type="button"
             onClick={handleLogout}
