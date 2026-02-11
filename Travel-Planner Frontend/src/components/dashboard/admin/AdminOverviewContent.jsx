@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StatCard from '../shared/StatCard';
 import BookingsOverviewChart from './BookingsOverviewChart';
 import UserManagementTable from './UserManagementTable';
@@ -31,6 +32,7 @@ const DEFAULT_OVERVIEW = {
 };
 
 const AdminOverviewContent = () => {
+  const navigate = useNavigate();
   const { user, token } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
 
@@ -132,7 +134,11 @@ const AdminOverviewContent = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <UserManagementTable users={overview.users} />
               <RecentBookingsTable bookings={overview.recentBookings} />
-              <BudgetSummary budget={overview.budget} />
+              <BudgetSummary
+                budget={overview.budget}
+                onView={() => navigate('/admin/dashboard/budget-payments')}
+                onEdit={() => navigate('/admin/dashboard/settings')}
+              />
               <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                 <SectionTitle title="System Snapshot" />
                 <div className="space-y-3 text-sm">
