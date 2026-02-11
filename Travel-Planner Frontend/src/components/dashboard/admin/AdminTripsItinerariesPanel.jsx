@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
+import { formatInr, getTourPricePerTraveler } from '../../../lib/pricing';
 import {
   createTourInCatalog,
   deleteTourFromCatalog,
@@ -15,6 +16,7 @@ const emptyTourForm = {
   country: '',
   category: 'Adventure',
   duration: 5,
+  pricePerTraveler: '',
   description: '',
   img: '',
   planText: '',
@@ -47,6 +49,10 @@ const mapTourToForm = (tour) => ({
   country: tour.country,
   category: tour.category,
   duration: tour.duration,
+  pricePerTraveler:
+    Number.isFinite(Number(tour.pricePerTraveler)) && Number(tour.pricePerTraveler) > 0
+      ? String(tour.pricePerTraveler)
+      : '',
   description: tour.description,
   img: tour.img,
   planText: Array.isArray(tour.plan) ? tour.plan.join('\n') : '',
@@ -159,6 +165,9 @@ const AdminTripsItinerariesPanel = () => {
     const category = tourForm.category.trim();
     const img = tourForm.img.trim();
     const duration = Math.max(1, Number(tourForm.duration) || 1);
+    const parsedPrice = Number(tourForm.pricePerTraveler);
+    const pricePerTraveler =
+      Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : null;
     const plan = parsePlanText(tourForm.planText);
 
     if (!destination || !country || !description || !img) {
@@ -181,6 +190,7 @@ const AdminTripsItinerariesPanel = () => {
       country,
       category,
       duration,
+      pricePerTraveler,
       description,
       img,
       plan,
@@ -400,6 +410,12 @@ const AdminTripsItinerariesPanel = () => {
                   <p className="text-xs text-gray-500">Planned Activities</p>
                   <p className="text-sm font-semibold text-gray-800">{selectedTour.plan.length}</p>
                 </div>
+                <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+                  <p className="text-xs text-gray-500">Budget Per Traveler</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {formatInr(getTourPricePerTraveler(selectedTour))}
+                  </p>
+                </div>
               </div>
 
               <div>
@@ -474,6 +490,18 @@ const AdminTripsItinerariesPanel = () => {
                     max="30"
                     value={tourForm.duration}
                     onChange={(event) => setFormField('duration', event.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-gray-600">Budget Per Traveler (INR)</span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="500"
+                    value={tourForm.pricePerTraveler}
+                    onChange={(event) => setFormField('pricePerTraveler', event.target.value)}
+                    placeholder="Leave blank for auto"
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </label>

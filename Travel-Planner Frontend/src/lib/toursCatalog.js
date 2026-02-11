@@ -58,6 +58,15 @@ const toSafeNumber = (value, fallback) => {
   return Number.isFinite(numeric) ? numeric : fallback;
 };
 
+const toOptionalNumber = (value) => {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+};
+
 const buildLocationKey = (destination, country) =>
   `${String(destination || '').trim().toLowerCase()}|${String(country || '').trim().toLowerCase()}`;
 
@@ -89,6 +98,7 @@ const normalizeTour = (tour, index = 0) => {
   const country = String(tour?.country || '').trim();
   const category = String(tour?.category || 'Adventure').trim();
   const duration = Math.max(1, toSafeNumber(tour?.duration, 5));
+  const pricePerTraveler = toOptionalNumber(tour?.pricePerTraveler);
   const locationKey = buildLocationKey(destination, country);
   const imageOverride = IMAGE_OVERRIDES[locationKey];
   const existingId = tour?.id;
@@ -104,6 +114,7 @@ const normalizeTour = (tour, index = 0) => {
     category,
     description: String(tour?.description || '').trim(),
     duration,
+    pricePerTraveler,
     img: imageOverride || String(tour?.img || '').trim(),
     slug: String(tour?.slug || '').trim(),
     plan: normalizePlan(tour?.plan, duration, destination),
