@@ -1,6 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { submitContactMessage } from '../lib/contactMessages';
 
 const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  const setField = (field, value) => {
+    setFormData((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const payload = {
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim(),
+    };
+
+    if (!payload.fullName || !payload.email || !payload.subject || !payload.message) {
+      setSubmitError('Please complete all fields before sending your message.');
+      setSubmitMessage('');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+    setSubmitMessage('');
+
+    try {
+      const response = await submitContactMessage(payload);
+      setSubmitMessage(response?.message || 'Your message was sent successfully.');
+      setFormData({
+        fullName: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error) {
+      setSubmitError(error?.message || 'Unable to send your message right now.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 pt-32 pb-12">
       <div className="max-w-4xl mx-auto">
@@ -61,14 +115,17 @@ const ContactUs = () => {
           {/* Contact Form */}
           <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-100">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Send us a Message</h2>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input 
                   type="text" 
                   id="name" 
+                  value={formData.fullName}
+                  onChange={(event) => setField('fullName', event.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="John Doe"
+                  required
                 />
               </div>
               
@@ -77,8 +134,11 @@ const ContactUs = () => {
                 <input 
                   type="email" 
                   id="email" 
+                  value={formData.email}
+                  onChange={(event) => setField('email', event.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="john@example.com"
+                  required
                 />
               </div>
 
@@ -86,13 +146,16 @@ const ContactUs = () => {
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
                 <select 
                   id="subject"
+                  value={formData.subject}
+                  onChange={(event) => setField('subject', event.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white"
+                  required
                 >
                   <option value="">Select a subject</option>
-                  <option value="booking">Booking Inquiry</option>
-                  <option value="support">Customer Support</option>
-                  <option value="feedback">Feedback</option>
-                  <option value="other">Other</option>
+                  <option value="Booking Inquiry">Booking Inquiry</option>
+                  <option value="Customer Support">Customer Support</option>
+                  <option value="Feedback">Feedback</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
               
@@ -101,17 +164,27 @@ const ContactUs = () => {
                 <textarea 
                   id="message" 
                   rows="4" 
+                  value={formData.message}
+                  onChange={(event) => setField('message', event.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="How can we help you?"
+                  required
                 ></textarea>
               </div>
               
               <button 
                 type="submit" 
+                disabled={isSubmitting}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-300 shadow-md"
               >
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
+              {submitError ? (
+                <p className="text-sm text-red-600">{submitError}</p>
+              ) : null}
+              {submitMessage ? (
+                <p className="text-sm text-green-700">{submitMessage}</p>
+              ) : null}
             </form>
           </div>
         </div>

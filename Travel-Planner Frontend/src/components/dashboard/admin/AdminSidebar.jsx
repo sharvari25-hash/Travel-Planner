@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar } from 'react-icons/fa';
+import { FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar, FaEnvelope } from 'react-icons/fa';
 import { MdDashboard, MdPeople, MdReceipt } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../shared/SidebarItem';
@@ -85,6 +85,15 @@ const AdminSidebar = () => {
         { text: 'Users', to: '/admin/dashboard/notifications/users' },
         { text: 'Security', to: '/admin/dashboard/notifications/security' },
         { text: 'System', to: '/admin/dashboard/notifications/system' },
+      ],
+    },
+    {
+      icon: FaEnvelope,
+      text: 'Messages',
+      to: '/admin/dashboard/messages',
+      submenu: [
+        { text: 'All Messages', to: '/admin/dashboard/messages', exact: true },
+        { text: 'Unread', to: '/admin/dashboard/messages/unread' },
       ],
     },
     {

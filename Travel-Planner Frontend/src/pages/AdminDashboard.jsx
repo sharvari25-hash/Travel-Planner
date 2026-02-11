@@ -11,6 +11,7 @@ import AdminTripsItinerariesPanel from '../components/dashboard/admin/AdminTrips
 import AdminReportsPanel from '../components/dashboard/admin/AdminReportsPanel';
 import AdminNotificationsPanel from '../components/dashboard/admin/AdminNotificationsPanel';
 import AdminRecommendationsPanel from '../components/dashboard/admin/AdminRecommendationsPanel';
+import AdminMessagesPanel from '../components/dashboard/admin/AdminMessagesPanel';
 
 export default function TravelAdminDashboard() {
   return (
@@ -33,6 +34,8 @@ export default function TravelAdminDashboard() {
             <Route path="recommendations/:tab" element={<AdminRecommendationsPanel />} />
             <Route path="notifications" element={<AdminNotificationsPanel />} />
             <Route path="notifications/:tab" element={<AdminNotificationsPanel />} />
+            <Route path="messages" element={<AdminMessagesPanel />} />
+            <Route path="messages/:tab" element={<AdminMessagesPanel />} />
             <Route path="reports" element={<AdminReportsPanel />} />
             <Route path="reports/:tab" element={<AdminReportsPanel />} />
             <Route path="settings" element={<AdminSettingsPanel />} />

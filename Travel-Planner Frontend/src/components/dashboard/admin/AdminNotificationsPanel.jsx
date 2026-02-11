@@ -16,6 +16,12 @@ import {
   markAdminNotificationRead,
   markAllAdminNotificationsRead,
 } from '../../../lib/adminNotifications';
+import {
+  deleteAdminContactMessage,
+  getAdminContactMessages,
+  markAdminContactMessageRead,
+  markAllAdminContactMessagesRead,
+} from '../../../lib/contactMessages';
 
 const typeStyles = {
   BOOKING: 'bg-blue-100 text-blue-700',
@@ -82,14 +88,76 @@ const formatDate = (value) =>
     day: 'numeric',
   });
 
+const sortByDateDesc = (list) =>
+  [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+const mapContactMessageToNotification = (entry) => ({
+  id: `contact-${entry.messageId}`,
+  type: 'SYSTEM',
+  title: `Contact Inquiry: ${entry.subject}`,
+  message: `${entry.fullName} (${entry.email}) - ${entry.message}`,
+  createdAt: entry.createdAt,
+  read: Boolean(entry.read),
+  severity: entry.read ? 'LOW' : 'HIGH',
+  source: 'CONTACT',
+  contactMessageId: entry.messageId,
+});
+
 const AdminNotificationsPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
 
-  const [notifications, setNotifications] = useState(() => getAdminNotifications());
+  const [localNotifications, setLocalNotifications] = useState(() => getAdminNotifications());
+  const [contactMessages, setContactMessages] = useState([]);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+  const [fetchError, setFetchError] = useState('');
+  const [actionError, setActionError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const loadContactMessages = async () => {
+      if (!isAdmin || !token) {
+        if (isMounted) {
+          setContactMessages([]);
+        }
+        return;
+      }
+
+      setIsLoadingContacts(true);
+      setFetchError('');
+
+      try {
+        const payload = await getAdminContactMessages(token);
+        if (isMounted) {
+          setContactMessages(payload);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setFetchError(error?.message || 'Unable to load contact inquiries.');
+          setContactMessages([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingContacts(false);
+        }
+      }
+    };
+
+    loadContactMessages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin, token]);
+
+  const notifications = useMemo(() => {
+    const mappedContacts = contactMessages.map(mapContactMessageToNotification);
+    return sortByDateDesc([...mappedContacts, ...localNotifications]);
+  }, [contactMessages, localNotifications]);
 
   const routeFilter = getRouteFilter(tab);
   const activeTypeFilter = routeFilter === 'ALL' ? typeFilter : routeFilter;
@@ -126,16 +194,68 @@ const AdminNotificationsPanel = () => {
     });
   }, [notifications, searchTerm, activeTypeFilter]);
 
-  const handleMarkRead = (id) => {
-    setNotifications(markAdminNotificationRead(id));
+  const handleMarkRead = async (entry) => {
+    setActionError('');
+
+    if (entry.source === 'CONTACT') {
+      if (!token) {
+        setActionError('Your session has expired. Please login again.');
+        return;
+      }
+
+      try {
+        const updated = await markAdminContactMessageRead(token, entry.contactMessageId);
+        setContactMessages((current) =>
+          current.map((item) =>
+            item.messageId === entry.contactMessageId ? updated : item
+          )
+        );
+      } catch (error) {
+        setActionError(error?.message || 'Unable to mark contact inquiry as read.');
+      }
+      return;
+    }
+
+    setLocalNotifications(markAdminNotificationRead(entry.id));
   };
 
-  const handleMarkAllRead = () => {
-    setNotifications(markAllAdminNotificationsRead());
+  const handleMarkAllRead = async () => {
+    setActionError('');
+    setLocalNotifications(markAllAdminNotificationsRead());
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const updated = await markAllAdminContactMessagesRead(token);
+      setContactMessages(updated);
+    } catch (error) {
+      setActionError(error?.message || 'Unable to mark all contact inquiries as read.');
+    }
   };
 
-  const handleDelete = (id) => {
-    setNotifications(deleteAdminNotification(id));
+  const handleDelete = async (entry) => {
+    setActionError('');
+
+    if (entry.source === 'CONTACT') {
+      if (!token) {
+        setActionError('Your session has expired. Please login again.');
+        return;
+      }
+
+      try {
+        await deleteAdminContactMessage(token, entry.contactMessageId);
+        setContactMessages((current) =>
+          current.filter((item) => item.messageId !== entry.contactMessageId)
+        );
+      } catch (error) {
+        setActionError(error?.message || 'Unable to delete contact inquiry.');
+      }
+      return;
+    }
+
+    setLocalNotifications(deleteAdminNotification(entry.id));
   };
 
   if (!isAdmin) {
@@ -166,6 +286,18 @@ const AdminNotificationsPanel = () => {
           Mark All as Read
         </button>
       </div>
+
+      {fetchError ? (
+        <div className="bg-white rounded-xl border border-red-200 shadow-sm p-4 text-sm text-red-700">
+          {fetchError}
+        </div>
+      ) : null}
+
+      {actionError ? (
+        <div className="bg-white rounded-xl border border-red-200 shadow-sm p-4 text-sm text-red-700">
+          {actionError}
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
@@ -213,6 +345,12 @@ const AdminNotificationsPanel = () => {
       </div>
 
       <div className="space-y-3">
+        {isLoadingContacts ? (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-sm text-gray-500">
+            Loading contact inquiries...
+          </div>
+        ) : null}
+
         {filteredNotifications.map((entry) => {
           const Icon = typeIcons[entry.type] || FaBell;
 
@@ -257,7 +395,7 @@ const AdminNotificationsPanel = () => {
                   {!entry.read ? (
                     <button
                       type="button"
-                      onClick={() => handleMarkRead(entry.id)}
+                      onClick={() => handleMarkRead(entry)}
                       className="px-2 py-1 rounded-md text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 inline-flex items-center gap-1"
                     >
                       <FaCheck size={10} />
@@ -266,7 +404,7 @@ const AdminNotificationsPanel = () => {
                   ) : null}
                   <button
                     type="button"
-                    onClick={() => handleDelete(entry.id)}
+                    onClick={() => handleDelete(entry)}
                     className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 inline-flex items-center gap-1"
                   >
                     <FaTrash size={10} />
