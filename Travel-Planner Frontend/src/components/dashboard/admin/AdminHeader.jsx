@@ -1,11 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaBell, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../../../lib/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  ADMIN_NOTIFICATIONS_UPDATED_EVENT,
+  getAdminNotifications,
+} from '../../../lib/adminNotifications';
+import {
+  CONTACT_MESSAGES_UPDATED_EVENT,
+  getAdminContactMessages,
+} from '../../../lib/contactMessages';
 
 const AdminHeader = () => {
-  const { logout } = useAuth();
+  const { logout, token, user } = useAuth();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncUnread = async () => {
+      const localUnread = getAdminNotifications().filter((entry) => !entry.read).length;
+
+      if (!token || user?.role !== 'ADMIN') {
+        if (isMounted) {
+          setUnreadCount(localUnread);
+        }
+        return;
+      }
+
+      try {
+        const contactMessages = await getAdminContactMessages(token);
+        const contactUnread = contactMessages.filter((entry) => !entry.read).length;
+        if (isMounted) {
+          setUnreadCount(localUnread + contactUnread);
+        }
+      } catch (_error) {
+        if (isMounted) {
+          setUnreadCount(localUnread);
+        }
+      }
+    };
+
+    syncUnread();
+    window.addEventListener(ADMIN_NOTIFICATIONS_UPDATED_EVENT, syncUnread);
+    window.addEventListener(CONTACT_MESSAGES_UPDATED_EVENT, syncUnread);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener(ADMIN_NOTIFICATIONS_UPDATED_EVENT, syncUnread);
+      window.removeEventListener(CONTACT_MESSAGES_UPDATED_EVENT, syncUnread);
+    };
+  }, [token, user?.role]);
 
   const handleLogout = () => {
     logout();
@@ -18,10 +64,14 @@ const AdminHeader = () => {
          <h2 className="font-bold text-xl">Wanderwise Admin</h2>
       </div>
       <div className="flex items-center gap-6">
-        <div className="relative">
-            <FaBell className="text-gray-400 text-xl" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">2</span>
-        </div>
+        <Link to="/admin/dashboard/notifications/unread" className="relative cursor-pointer">
+          <FaBell className="text-gray-500 text-xl hover:text-blue-600 transition-colors" />
+          {unreadCount > 0 ? (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] min-w-4 h-4 px-1 flex items-center justify-center rounded-full">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          ) : null}
+        </Link>
         <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full border border-green-100">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <span className="text-xs text-green-700 font-medium">API Status: All Systems Operational</span>
