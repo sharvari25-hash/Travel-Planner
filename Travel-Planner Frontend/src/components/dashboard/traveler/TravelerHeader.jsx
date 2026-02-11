@@ -7,8 +7,11 @@ import {
   TRAVELER_NOTIFICATIONS_UPDATED_EVENT,
 } from '../../../lib/travelerNotifications';
 
+const SUPPORT_PHONE = import.meta.env.VITE_SUPPORT_PHONE || '+91 98765 43210';
+const SUPPORT_TEL_LINK = SUPPORT_PHONE.replace(/[^\d+]/g, '');
+
 const TravelerHeader = () => {
-  const { logout, token } = useAuth();
+  const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -49,6 +52,13 @@ const TravelerHeader = () => {
     navigate('/login');
   };
 
+  const handleOpenSettings = () => {
+    navigate('/user/settings');
+  };
+
+  const profileAvatar = user?.avatar || `https://i.pravatar.cc/150?u=${user?.email || 'traveler'}`;
+  const profileAlt = user?.name ? `${user.name} profile` : 'Profile';
+
   return (
     <header className="bg-white px-8 py-5 flex justify-between items-center border-b border-gray-100 shrink-0">
       <div className="flex items-center gap-4 w-[40rem] max-w-full">
@@ -78,14 +88,30 @@ const TravelerHeader = () => {
           ) : null}
         </Link>
         <div className="flex items-center gap-4 text-gray-400 border-l pl-6">
-          <FaPhoneAlt className="hover:text-gray-600 cursor-pointer" size={14} />
-          <FaInfoCircle className="hover:text-gray-600 cursor-pointer" size={16} />
+          <a
+            href={`tel:${SUPPORT_TEL_LINK}`}
+            aria-label={`Call support ${SUPPORT_PHONE}`}
+            title={`Call support: ${SUPPORT_PHONE}`}
+            className="hover:text-gray-600 transition-colors"
+          >
+            <FaPhoneAlt className="cursor-pointer" size={14} />
+          </a>
+          <Link
+            to="/contact-us"
+            aria-label="Open support information"
+            title="Support information"
+            className="hover:text-gray-600 transition-colors"
+          >
+            <FaInfoCircle className="cursor-pointer" size={16} />
+          </Link>
         </div>
-        <img
-          src="https://i.pravatar.cc/150?img=12"
-          alt="Profile"
-          className="w-9 h-9 rounded-full border-2 border-white shadow-sm cursor-pointer"
-        />
+        <button type="button" onClick={handleOpenSettings} title="Open settings">
+          <img
+            src={profileAvatar}
+            alt={profileAlt}
+            className="w-9 h-9 rounded-full border-2 border-white shadow-sm cursor-pointer"
+          />
+        </button>
         <button
           type="button"
           onClick={handleLogout}
