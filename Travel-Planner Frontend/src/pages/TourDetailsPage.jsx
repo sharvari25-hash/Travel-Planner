@@ -76,7 +76,7 @@ const TourDetailsPage = () => {
 
   useEffect(() => {
     if (tour) {
-      setWeather(getWeather(tour.destination));
+      setWeather(getWeather(tour.destination, tour.weatherProfile));
     }
   }, [tour]);
 

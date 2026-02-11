@@ -1,5 +1,5 @@
 // Mock Weather Service
-// Returns mock data based on the static profiles defined in AllToursData.js
+// Returns mock data based on weather profiles in the tours catalog.
 
 import { getToursCatalog } from './toursCatalog';
 
@@ -64,7 +64,7 @@ const getCondition = (val, temp, defaultCondName) => {
   return validConditions[Math.abs(val) % validConditions.length];
 };
 
-export const getWeather = (destination) => {
+export const getWeather = (destination, weatherProfileOverride = null) => {
   const hash = getHash(destination);
   const tours = getToursCatalog();
 
@@ -72,7 +72,7 @@ export const getWeather = (destination) => {
   const tour = tours.find((t) => t.destination === destination);
 
   // Default fallback if tour not found
-  const profile = tour?.weatherProfile || {
+  const profile = weatherProfileOverride || tour?.weatherProfile || {
     baseTemp: 20,
     baseHumidity: 50,
     baseWind: 10,

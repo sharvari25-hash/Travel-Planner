@@ -1,9 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
-import { getBookingRequests } from '../../../lib/bookingRequests';
-import { getPaymentHistory } from '../../../lib/paymentHistory';
-import { additionalAdminUsers, initialAdminUsers } from '../../../lib/mockAdminUsers';
 import { formatInr } from '../../../lib/pricing';
 
 const REPORT_TABS = [
@@ -12,6 +9,16 @@ const REPORT_TABS = [
   { id: 'bookings', label: 'Bookings', to: '/admin/dashboard/reports/bookings' },
   { id: 'users', label: 'Users', to: '/admin/dashboard/reports/users' },
 ];
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
+
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
 
 const normalizeReportTab = (tab) => {
   if (!tab) {
@@ -31,16 +38,104 @@ const toPercent = (value, total) => {
 };
 
 const AdminReportsPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
   const activeTab = normalizeReportTab(tab);
   const [rangeDays, setRangeDays] = useState(90);
   const nowTimestamp = useMemo(() => Date.now(), []);
+  const [bookings, setBookings] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
-  const bookings = useMemo(() => getBookingRequests(), []);
-  const payments = useMemo(() => getPaymentHistory(), []);
-  const users = useMemo(() => [...initialAdminUsers, ...additionalAdminUsers], []);
+  const fetchReportsData = useCallback(async () => {
+    if (!isAdmin || !token) {
+      setBookings([]);
+      setPayments([]);
+      setUsers([]);
+      setFetchError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setFetchError(null);
+
+    try {
+      const [bookingsResponse, paymentsResponse, usersResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/bookings/admin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+        fetch(`${API_BASE_URL}/api/payments/admin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+        fetch(`${API_BASE_URL}/api/admin/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
+
+      const [bookingsPayload, paymentsPayload, usersPayload] = await Promise.all([
+        parseJsonSafe(bookingsResponse),
+        parseJsonSafe(paymentsResponse),
+        parseJsonSafe(usersResponse),
+      ]);
+
+      if (!bookingsResponse.ok) {
+        setFetchError(bookingsPayload?.message || 'Unable to load booking reports data.');
+        setBookings([]);
+        setPayments([]);
+        setUsers([]);
+        return;
+      }
+
+      if (!paymentsResponse.ok) {
+        setFetchError(paymentsPayload?.message || 'Unable to load payment reports data.');
+        setBookings([]);
+        setPayments([]);
+        setUsers([]);
+        return;
+      }
+
+      if (!usersResponse.ok) {
+        setFetchError(usersPayload?.message || 'Unable to load user reports data.');
+        setBookings([]);
+        setPayments([]);
+        setUsers([]);
+        return;
+      }
+
+      if (!Array.isArray(bookingsPayload) || !Array.isArray(paymentsPayload) || !Array.isArray(usersPayload)) {
+        setFetchError('Invalid reports response from backend.');
+        setBookings([]);
+        setPayments([]);
+        setUsers([]);
+        return;
+      }
+
+      setBookings(bookingsPayload);
+      setPayments(paymentsPayload);
+      setUsers(usersPayload);
+    } catch (_error) {
+      setFetchError('Unable to connect to backend server.');
+      setBookings([]);
+      setPayments([]);
+      setUsers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAdmin, token]);
+
+  useEffect(() => {
+    fetchReportsData();
+  }, [fetchReportsData]);
 
   const thresholdTimestamp = useMemo(
     () => nowTimestamp - Number(rangeDays) * 24 * 60 * 60 * 1000,
@@ -196,16 +291,26 @@ const AdminReportsPanel = () => {
             Analyze booking, revenue, and user performance from one place.
           </p>
         </div>
-        <select
-          value={String(rangeDays)}
-          onChange={(event) => setRangeDays(Number(event.target.value))}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-        >
-          <option value="7">Last 7 days</option>
-          <option value="30">Last 30 days</option>
-          <option value="90">Last 90 days</option>
-          <option value="365">Last 12 months</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={String(rangeDays)}
+            onChange={(event) => setRangeDays(Number(event.target.value))}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+          >
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last 12 months</option>
+          </select>
+          <button
+            type="button"
+            onClick={fetchReportsData}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -227,6 +332,12 @@ const AdminReportsPanel = () => {
           );
         })}
       </div>
+
+      {fetchError ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+          {fetchError}
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">

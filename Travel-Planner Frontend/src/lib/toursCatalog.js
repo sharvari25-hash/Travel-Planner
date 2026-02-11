@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { allToursData } from './AllToursData';
 
 const STORAGE_KEY = 'adminToursCatalog';
 export const TOURS_CATALOG_UPDATED_EVENT = 'tours-catalog-updated';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const defaultWeatherProfile = {
   baseTemp: 20,
@@ -10,6 +10,8 @@ const defaultWeatherProfile = {
   baseWind: 10,
   defaultCondition: 'Partly Cloudy',
 };
+
+let backendSyncPromise = null;
 
 const IMAGE_OVERRIDES = {
   'orlando, fl|usa':
@@ -75,6 +77,13 @@ const normalizePlan = (plan, duration, destination) => {
   return [...list, ...fallback.slice(list.length, duration)];
 };
 
+const normalizeWeatherProfile = (weatherProfile) => ({
+  baseTemp: toSafeNumber(weatherProfile?.baseTemp, defaultWeatherProfile.baseTemp),
+  baseHumidity: toSafeNumber(weatherProfile?.baseHumidity, defaultWeatherProfile.baseHumidity),
+  baseWind: toSafeNumber(weatherProfile?.baseWind, defaultWeatherProfile.baseWind),
+  defaultCondition: String(weatherProfile?.defaultCondition || defaultWeatherProfile.defaultCondition).trim(),
+});
+
 const normalizeTour = (tour, index = 0) => {
   const destination = String(tour?.destination || '').trim();
   const country = String(tour?.country || '').trim();
@@ -82,8 +91,10 @@ const normalizeTour = (tour, index = 0) => {
   const duration = Math.max(1, toSafeNumber(tour?.duration, 5));
   const locationKey = buildLocationKey(destination, country);
   const imageOverride = IMAGE_OVERRIDES[locationKey];
+  const existingId = tour?.id;
+  const hasExistingId = existingId !== null && existingId !== undefined && String(existingId).trim() !== '';
   const id =
-    tour?.id ||
+    (hasExistingId ? String(existingId) : null) ||
     `tour-${slugify(destination)}-${slugify(country)}-${String(index + 1).padStart(2, '0')}`;
 
   return {
@@ -94,18 +105,14 @@ const normalizeTour = (tour, index = 0) => {
     description: String(tour?.description || '').trim(),
     duration,
     img: imageOverride || String(tour?.img || '').trim(),
+    slug: String(tour?.slug || '').trim(),
     plan: normalizePlan(tour?.plan, duration, destination),
-    weatherProfile: {
-      ...defaultWeatherProfile,
-      ...(tour?.weatherProfile || {}),
-    },
+    weatherProfile: normalizeWeatherProfile(tour?.weatherProfile),
   };
 };
 
 const normalizeTours = (list) =>
   Array.isArray(list) ? list.map((tour, index) => normalizeTour(tour, index)) : [];
-
-const seedTours = normalizeTours(allToursData);
 
 const canUseStorage = () =>
   typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
@@ -138,22 +145,72 @@ const writeToursCatalog = (list) => {
   return normalized;
 };
 
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
+const fetchToursFromBackend = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/tours`);
+    const payload = await parseJsonSafe(response);
+
+    if (!response.ok || !Array.isArray(payload)) {
+      return null;
+    }
+
+    return normalizeTours(payload);
+  } catch (_error) {
+    return null;
+  }
+};
+
 export const getToursCatalog = () => {
   if (!canUseStorage()) {
-    return seedTours;
+    return [];
   }
 
   const storedValue = window.localStorage.getItem(STORAGE_KEY);
   if (!storedValue) {
-    return writeToursCatalog(seedTours);
+    return [];
   }
 
   const parsed = parseStoredList(storedValue);
   if (!parsed) {
-    return writeToursCatalog(seedTours);
+    window.localStorage.removeItem(STORAGE_KEY);
+    return [];
   }
 
   return normalizeTours(parsed);
+};
+
+export const syncToursCatalogFromBackend = async ({ force = false } = {}) => {
+  const cachedTours = getToursCatalog();
+  if (!force && cachedTours.length > 0) {
+    return cachedTours;
+  }
+
+  if (backendSyncPromise && !force) {
+    return backendSyncPromise;
+  }
+
+  backendSyncPromise = (async () => {
+    const backendTours = await fetchToursFromBackend();
+    if (!backendTours) {
+      return cachedTours;
+    }
+
+    return writeToursCatalog(backendTours);
+  })();
+
+  try {
+    return await backendSyncPromise;
+  } finally {
+    backendSyncPromise = null;
+  }
 };
 
 export const createTourInCatalog = (tourInput) => {
@@ -208,7 +265,15 @@ export const useToursCatalog = () => {
     window.addEventListener(TOURS_CATALOG_UPDATED_EVENT, syncTours);
     window.addEventListener('storage', syncTours);
 
+    let isActive = true;
+    syncToursCatalogFromBackend().then((freshTours) => {
+      if (isActive) {
+        setTours(freshTours);
+      }
+    });
+
     return () => {
+      isActive = false;
       window.removeEventListener(TOURS_CATALOG_UPDATED_EVENT, syncTours);
       window.removeEventListener('storage', syncTours);
     };
