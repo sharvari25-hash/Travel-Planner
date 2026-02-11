@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
 import {
   createTourInCatalog,
+  deleteTourFromCatalog,
   updateTourInCatalog,
   useToursCatalog,
 } from '../../../lib/toursCatalog';
@@ -58,7 +59,7 @@ const parsePlanText = (text) =>
     .filter(Boolean);
 
 const AdminTripsItinerariesPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { tab } = useParams();
   const isAdmin = user?.role === 'ADMIN';
 
@@ -69,6 +70,7 @@ const AdminTripsItinerariesPanel = () => {
   const [editorMode, setEditorMode] = useState('view');
   const [tourForm, setTourForm] = useState(emptyTourForm);
   const [saveMessage, setSaveMessage] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const routeCategory = getCategoryFromRoute(tab);
   const activeCategoryFilter = routeCategory === 'All' ? categoryFilter : routeCategory;
@@ -198,6 +200,40 @@ const AdminTripsItinerariesPanel = () => {
     setEditorMode('view');
   };
 
+  const handleDeleteSelected = async () => {
+    if (!selectedTour || !token) {
+      return;
+    }
+
+    const isConfirmed = window.confirm(
+      `Delete "${selectedTour.destination}, ${selectedTour.country}" from tours?`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setSaveMessage('');
+
+    try {
+      const deletedTourId = selectedTour.id;
+      const updatedTours = await deleteTourFromCatalog(deletedTourId, token);
+      setSaveMessage('Trip deleted successfully.');
+      setEditorMode('view');
+
+      if (updatedTours.length === 0) {
+        setSelectedTourId('');
+      } else if (selectedTourId === deletedTourId) {
+        setSelectedTourId(updatedTours[0].id);
+      }
+    } catch (error) {
+      setSaveMessage(error?.message || 'Unable to delete selected trip.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -233,6 +269,14 @@ const AdminTripsItinerariesPanel = () => {
             className="px-3 py-2 rounded-lg text-xs font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Edit Selected
+          </button>
+          <button
+            type="button"
+            onClick={handleDeleteSelected}
+            disabled={!selectedTour || editorMode !== 'view' || isDeleting}
+            className="px-3 py-2 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Selected'}
           </button>
         </div>
       </div>

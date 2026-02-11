@@ -1,10 +1,10 @@
-import React from 'react';
-import { FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar, FaEnvelope } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import { FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar, FaEnvelope, FaTimes } from 'react-icons/fa';
 import { MdDashboard, MdPeople, MdReceipt } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../shared/SidebarItem';
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
 
   const normalizePath = (path) => {
@@ -16,6 +16,11 @@ const AdminSidebar = () => {
   };
 
   const currentPath = normalizePath(location.pathname);
+
+  useEffect(() => {
+    onMobileClose();
+  }, [currentPath, onMobileClose]);
+
   const navItems = [
     { icon: MdDashboard, text: 'Dashboard', to: '/admin/dashboard', exact: true },
     {
@@ -115,55 +120,105 @@ const AdminSidebar = () => {
     return exact ? currentPath === targetPath : currentPath.startsWith(targetPath);
   };
 
-  return (
-    <aside className="w-64 bg-primary text-white flex-shrink-0 hidden md:block">
-      <div className="p-6 flex items-center gap-2 border-b border-white/15">
-        <img
-          src="/wanderwise-mark.svg"
-          alt="WanderWise Logo"
-          className="h-8 w-8 rounded-lg"
-        />
-        <span className="text-lg font-bold">WanderWise</span>
-      </div>
-      
-      <nav className="mt-6">
-        {navItems.map((item) => {
-          const itemActive = isActive(item);
+  const renderNavigation = (onItemSelect) => (
+    <nav className="mt-6 flex-1 overflow-y-auto pb-6">
+      {navItems.map((item) => {
+        const itemActive = isActive(item);
 
-          return (
-            <div key={item.text}>
-              <SidebarItem
-                icon={item.icon}
-                text={item.text}
-                to={item.to}
-                hasSubmenu={item.hasSubmenu || Boolean(item.submenu?.length)}
-                active={itemActive}
+        return (
+          <div key={item.text}>
+            <SidebarItem
+              icon={item.icon}
+              text={item.text}
+              to={item.to}
+              hasSubmenu={item.hasSubmenu || Boolean(item.submenu?.length)}
+              active={itemActive}
+              onClick={onItemSelect}
+            />
+            {item.submenu?.length ? (
+              <div className={`pl-10 pr-4 pb-2 space-y-1 ${itemActive ? 'block' : 'hidden'}`}>
+                {item.submenu.map((subItem) => {
+                  const subActive = isActive(subItem);
+                  return (
+                    <Link
+                      key={subItem.text}
+                      to={subItem.to}
+                      onClick={onItemSelect}
+                      className={`block text-xs rounded px-3 py-2 transition-colors ${
+                        subActive
+                          ? 'bg-accent text-white font-medium'
+                          : 'text-white/75 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      {subItem.text}
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </nav>
+  );
+
+  return (
+    <>
+      <aside className="w-64 bg-primary text-white flex-shrink-0 hidden md:flex md:flex-col md:sticky md:top-0 md:h-screen">
+        <div className="p-6 flex items-center gap-2 border-b border-white/15">
+          <img
+            src="/wanderwise-mark.svg"
+            alt="WanderWise Logo"
+            className="h-8 w-8 rounded-lg"
+          />
+          <span className="text-lg font-bold">WanderWise</span>
+        </div>
+        {renderNavigation()}
+      </aside>
+
+      <div
+        className={`fixed inset-0 z-40 md:hidden ${isMobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        aria-hidden={!isMobileOpen}
+      >
+        <button
+          type="button"
+          onClick={onMobileClose}
+          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+            isMobileOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          aria-label="Close sidebar backdrop"
+        />
+
+        <aside
+          className={`absolute left-0 top-0 h-full w-72 max-w-[85vw] bg-primary text-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+            isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin navigation menu"
+        >
+          <div className="p-6 flex items-center justify-between border-b border-white/15">
+            <div className="flex items-center gap-2">
+              <img
+                src="/wanderwise-mark.svg"
+                alt="WanderWise Logo"
+                className="h-8 w-8 rounded-lg"
               />
-              {item.submenu?.length ? (
-                <div className={`pl-10 pr-4 pb-2 space-y-1 ${itemActive ? 'block' : 'hidden'}`}>
-                  {item.submenu.map((subItem) => {
-                    const subActive = isActive(subItem);
-                    return (
-                      <Link
-                        key={subItem.text}
-                        to={subItem.to}
-                        className={`block text-xs rounded px-3 py-2 transition-colors ${
-                          subActive
-                            ? 'bg-accent text-white font-medium'
-                            : 'text-white/75 hover:bg-white/10 hover:text-white'
-                        }`}
-                      >
-                        {subItem.text}
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : null}
+              <span className="text-lg font-bold">WanderWise</span>
             </div>
-          );
-        })}
-      </nav>
-    </aside>
+            <button
+              type="button"
+              onClick={onMobileClose}
+              className="inline-flex items-center justify-center h-8 w-8 rounded-md text-white/90 hover:bg-white/10"
+              aria-label="Close navigation menu"
+            >
+              <FaTimes size={14} />
+            </button>
+          </div>
+          {renderNavigation(onMobileClose)}
+        </aside>
+      </div>
+    </>
   );
 };
 

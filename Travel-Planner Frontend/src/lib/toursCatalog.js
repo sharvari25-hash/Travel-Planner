@@ -252,6 +252,33 @@ export const updateTourInCatalog = (tourId, updates) => {
   return updatedList.find((entry) => entry.id === tourId) || null;
 };
 
+export const deleteTourFromCatalog = async (tourId, token) => {
+  const normalizedTourId = String(tourId);
+  const numericTourId = Number(normalizedTourId);
+  const isBackendTourId = Number.isInteger(numericTourId) && numericTourId > 0;
+
+  if (isBackendTourId) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/tours/${numericTourId}`, {
+      method: 'DELETE',
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+    });
+
+    const payload = await parseJsonSafe(response);
+    if (!response.ok) {
+      throw new Error(payload?.message || 'Unable to delete tour.');
+    }
+  }
+
+  const current = getToursCatalog();
+  const updatedList = current.filter((entry) => String(entry.id) !== normalizedTourId);
+  writeToursCatalog(updatedList);
+  return updatedList;
+};
+
 export const useToursCatalog = () => {
   const [tours, setTours] = useState(() => getToursCatalog());
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import AdminSidebar from '../components/dashboard/admin/AdminSidebar';
 import AdminHeader from '../components/dashboard/admin/AdminHeader';
@@ -14,12 +14,28 @@ import AdminRecommendationsPanel from '../components/dashboard/admin/AdminRecomm
 import AdminMessagesPanel from '../components/dashboard/admin/AdminMessagesPanel';
 
 export default function TravelAdminDashboard() {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const handleToggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen((current) => !current);
+  }, []);
+
+  const handleCloseMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-[#F3F6FD] font-sans">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto">
-        <AdminHeader />
-        <div className="p-8">
+      <AdminSidebar
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={handleCloseMobileSidebar}
+      />
+      <main className="flex-1 min-w-0 overflow-y-auto">
+        <AdminHeader
+          onMenuToggle={handleToggleMobileSidebar}
+          isMenuOpen={isMobileSidebarOpen}
+        />
+        <div className="p-4 md:p-8">
           <Routes>
             <Route index element={<AdminOverviewContent />} />
             <Route path="user-management" element={<AdminUserManagementPanel />} />

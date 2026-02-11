@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaBell, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaBell, FaSignOutAlt, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../../lib/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -11,7 +11,7 @@ import {
   getAdminContactMessages,
 } from '../../../lib/contactMessages';
 
-const AdminHeader = () => {
+const AdminHeader = ({ onMenuToggle = () => {}, isMenuOpen = false }) => {
   const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -61,11 +61,19 @@ const AdminHeader = () => {
   };
 
   return (
-    <header className="bg-white px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
-      <div className="flex items-center gap-2 text-gray-700">
-         <h2 className="font-bold text-xl">Wanderwise Admin</h2>
+    <header className="bg-white px-4 md:px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-20">
+      <div className="flex items-center gap-2 text-gray-700 min-w-0">
+         <button
+           type="button"
+           onClick={onMenuToggle}
+           className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+           aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+         >
+           {isMenuOpen ? <FaTimes size={14} /> : <FaBars size={14} />}
+         </button>
+         <h2 className="font-bold text-base sm:text-xl truncate">Wanderwise Admin</h2>
       </div>
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 md:gap-6">
         <Link to="/admin/dashboard/notifications/unread" className="relative cursor-pointer">
           <FaBell className="text-gray-500 text-xl hover:text-blue-600 transition-colors" />
           {unreadCount > 0 ? (
@@ -74,11 +82,11 @@ const AdminHeader = () => {
             </span>
           ) : null}
         </Link>
-        <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full border border-green-100">
+        <div className="hidden xl:flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full border border-green-100">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <span className="text-xs text-green-700 font-medium">API Status: All Systems Operational</span>
         </div>
-        <div className="flex items-center gap-3 pl-6 border-l">
+        <div className="flex items-center gap-2 md:gap-3 md:pl-6 md:border-l">
           <Link
             to="/admin/dashboard/settings"
             className="flex items-center gap-3 hover:opacity-90 transition-opacity"
@@ -97,10 +105,10 @@ const AdminHeader = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 px-2.5 md:px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors"
           >
             <FaSignOutAlt size={12} />
-            Logout
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>

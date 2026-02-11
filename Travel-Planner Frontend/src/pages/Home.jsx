@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useToursCatalog } from '../lib/toursCatalog';
+import { submitContactMessage } from '../lib/contactMessages';
 
 // --- Data & Config ---
 
@@ -226,13 +228,32 @@ const ReviewsSection = () => {
 };
 
 const ContactSection = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState('');
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = (data) => {
-    alert("Thank you for your inquiry! (Demo)");
-    console.log(data);
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    setSubmitError('');
+    setSubmitSuccess('');
+    try {
+      const payload = {
+        fullName: (data.firstName || '').trim() || 'Website Visitor',
+        email: data.email.trim(),
+        subject: 'Homepage Inquiry',
+        message: data.message.trim(),
+      };
+      const response = await submitContactMessage(payload);
+      setSubmitSuccess(response?.message || 'Thank you. Your inquiry has been sent.');
+      reset();
+    } catch (error) {
+      setSubmitError(error?.message || 'Unable to submit your inquiry right now.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -286,10 +307,17 @@ const ContactSection = () => {
 
               <button 
                 type="submit" 
-                className="bg-primary hover:bg-[#8B728E] text-white font-medium py-4 rounded-full transition-colors mt-2"
+                disabled={isSubmitting}
+                className="bg-primary hover:bg-[#8B728E] text-white font-medium py-4 rounded-full transition-colors mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Submit Your Inquiry
+                {isSubmitting ? 'Submitting...' : 'Submit Your Inquiry'}
               </button>
+              {submitError ? (
+                <p className="text-sm text-red-600 text-left">{submitError}</p>
+              ) : null}
+              {submitSuccess ? (
+                <p className="text-sm text-green-700 text-left">{submitSuccess}</p>
+              ) : null}
             </form>
           </div>
         </FadeIn>
