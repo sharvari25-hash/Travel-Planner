@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPlane, FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar } from 'react-icons/fa';
+import { FaMoneyBillWave, FaBell, FaCog, FaSuitcase, FaChartBar } from 'react-icons/fa';
 import { MdDashboard, MdPeople, MdReceipt } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../shared/SidebarItem';
@@ -109,8 +109,12 @@ const AdminSidebar = () => {
   return (
     <aside className="w-64 bg-primary text-white flex-shrink-0 hidden md:block">
       <div className="p-6 flex items-center gap-2 border-b border-white/15">
-        <FaPlane className="text-2xl text-accent" />
-        <span className="text-lg font-bold">Wanderwise</span>
+        <img
+          src="/wanderwise-mark.svg"
+          alt="WanderWise Logo"
+          className="h-8 w-8 rounded-lg"
+        />
+        <span className="text-lg font-bold">WanderWise</span>
       </div>
       
       <nav className="mt-6">

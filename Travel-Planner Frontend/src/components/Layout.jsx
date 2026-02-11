@@ -53,11 +53,15 @@ const Header = () => {
     )}>
       <div className="max-w-[1240px] mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0">
-           {/* Rebranded Logo Text/Placeholder */}
-           <div className="text-white font-primary font-bold text-3xl tracking-tight">
-             Wander<span className="text-accent">Wise</span>
-           </div>
+        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
+          <img
+            src="/wanderwise-mark.svg"
+            alt="WanderWise Logo"
+            className="h-10 w-10 rounded-xl"
+          />
+          <div className="text-white font-primary font-bold text-3xl tracking-tight">
+            Wander<span className="text-accent">Wise</span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

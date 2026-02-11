@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPlane, FaSuitcase, FaBell, FaCog } from 'react-icons/fa';
+import { FaSuitcase, FaBell, FaCog } from 'react-icons/fa';
 import { MdDashboard, MdExplore } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import SidebarItem from '../shared/SidebarItem';
@@ -84,9 +84,11 @@ const TravelerSidebar = () => {
   return (
     <aside className="w-64 bg-primary text-white flex-shrink-0 flex flex-col hidden md:flex">
       <div className="p-8 flex items-center gap-3">
-        <div className="bg-white/10 p-2 rounded-lg">
-          <FaPlane className="text-xl text-accent" />
-        </div>
+        <img
+          src="/wanderwise-mark.svg"
+          alt="WanderWise Logo"
+          className="h-9 w-9 rounded-lg"
+        />
         <span className="text-xl font-bold tracking-wide">WanderWise</span>
       </div>
       

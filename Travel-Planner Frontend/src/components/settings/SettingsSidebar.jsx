@@ -10,10 +10,11 @@ const SettingsSidebar = () => {
   return (
     <aside className="w-64 bg-primary text-white flex-shrink-0 flex flex-col hidden md:flex relative">
       <div className="p-8 flex items-center gap-3">
-         <div className="bg-white/10 p-2 rounded-lg">
-           {/* Logo Icon */}
-           <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-         </div>
+         <img
+           src="/wanderwise-mark.svg"
+           alt="WanderWise Logo"
+           className="h-9 w-9 rounded-lg"
+         />
          <span className="text-xl font-bold tracking-wide">WanderWise</span>
        </div>
       
