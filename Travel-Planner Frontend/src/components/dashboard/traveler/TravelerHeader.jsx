@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../lib/AuthContext';
 import {
@@ -10,7 +10,7 @@ import {
 const SUPPORT_PHONE = import.meta.env.VITE_SUPPORT_PHONE || '+91 98765 43210';
 const SUPPORT_TEL_LINK = SUPPORT_PHONE.replace(/[^\d+]/g, '');
 
-const TravelerHeader = () => {
+const TravelerHeader = ({ onMenuToggle, isMenuOpen = false }) => {
   const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -60,8 +60,18 @@ const TravelerHeader = () => {
   const profileAlt = user?.name ? `${user.name} profile` : 'Profile';
 
   return (
-    <header className="bg-white px-8 py-5 flex justify-between items-center border-b border-gray-100 shrink-0">
+    <header className="bg-white px-4 md:px-8 py-4 md:py-5 flex justify-between items-center border-b border-gray-100 shrink-0">
       <div className="flex items-center gap-4 w-[40rem] max-w-full">
+        {onMenuToggle ? (
+          <button
+            type="button"
+            onClick={onMenuToggle}
+            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          >
+            {isMenuOpen ? <FaTimes size={14} /> : <FaBars size={14} />}
+          </button>
+        ) : null}
         <div className="relative flex-1">
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input

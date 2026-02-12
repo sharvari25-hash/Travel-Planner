@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import TravelerSidebar from '../components/dashboard/traveler/TravelerSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
 import ActiveTripsWidget from '../components/dashboard/traveler/ActiveTripsWidget';
@@ -18,6 +18,15 @@ export default function UserTravelDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const handleToggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen((current) => !current);
+  }, []);
+
+  const handleCloseMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,9 +72,15 @@ export default function UserTravelDashboard() {
 
   return (
     <div className="flex h-screen bg-[#F3F6FD] font-sans overflow-hidden">
-      <TravelerSidebar />
+      <TravelerSidebar
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={handleCloseMobileSidebar}
+      />
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TravelerHeader />
+        <TravelerHeader
+          onMenuToggle={handleToggleMobileSidebar}
+          isMenuOpen={isMobileSidebarOpen}
+        />
         <div className="flex-1 overflow-y-auto p-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-800">Welcome, {travelerName}!</h1>

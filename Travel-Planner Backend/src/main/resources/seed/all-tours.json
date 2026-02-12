@@ -430,5 +430,216 @@
       "baseWind": 5,
       "defaultCondition": "Sunny"
     }
+  },
+  {
+    "country": "Belgium",
+    "destination": "Boom (Tomorrowland)",
+    "category": "Culture",
+    "description": "Experience Tomorrowland with massive stages, global DJs, and a high-energy crowd.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Brussels and transfer to Boom",
+      "Day 2: Tomorrowland opening day highlights",
+      "Day 3: Full festival experience and themed stages",
+      "Day 4: Recovery brunch and Antwerp city walk",
+      "Day 5: Souvenir shopping and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 22,
+      "baseHumidity": 65,
+      "baseWind": 12,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "USA",
+    "destination": "Indio, California",
+    "category": "Culture",
+    "description": "A desert festival getaway with headline artists, art installations, and sunset sets.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Palm Springs and hotel check-in",
+      "Day 2: Festival grounds orientation and first performances",
+      "Day 3: Full day of live music and food pop-ups",
+      "Day 4: Poolside recovery and evening headline set",
+      "Day 5: Brunch and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 34,
+      "baseHumidity": 30,
+      "baseWind": 14,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Germany",
+    "destination": "Munich (Oktoberfest)",
+    "category": "Culture",
+    "description": "Traditional Bavarian tents, parades, music, and authentic Oktoberfest cuisine.",
+    "duration": 4,
+    "img": "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Munich and old town walk",
+      "Day 2: Oktoberfest tent reservation and fairground rides",
+      "Day 3: Bavarian parade route and beer garden evening",
+      "Day 4: Local market visit and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 17,
+      "baseHumidity": 70,
+      "baseWind": 10,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "Brazil",
+    "destination": "Rio de Janeiro (Carnival)",
+    "category": "Culture",
+    "description": "Samba schools, street blocos, and iconic Carnival celebrations in Rio.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and Copacabana promenade",
+      "Day 2: Sambadrome parade night",
+      "Day 3: Bloco street parties and local food tour",
+      "Day 4: Sugarloaf cable car and sunset samba show",
+      "Day 5: Beach morning and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 30,
+      "baseHumidity": 78,
+      "baseWind": 16,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "India",
+    "destination": "Jaipur (Holi Festival)",
+    "category": "Culture",
+    "description": "Celebrate Holi with color events, folk music, and heritage palaces in Jaipur.",
+    "duration": 5,
+    "img": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Holi_Festival_In_India.jpg",
+    "plan": [
+      "Day 1: Arrival and evening market walk",
+      "Day 2: Amer Fort and City Palace guided tour",
+      "Day 3: Holi celebration event with local hosts",
+      "Day 4: Traditional Rajasthani dinner and cultural show",
+      "Day 5: Handicraft shopping and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 29,
+      "baseHumidity": 40,
+      "baseWind": 12,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Peru",
+    "destination": "Cusco & Machu Picchu",
+    "category": "Adventure",
+    "description": "High-altitude trails, Incan history, and unforgettable sunrise views at Machu Picchu.",
+    "duration": 6,
+    "img": "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Cusco and acclimatization",
+      "Day 2: Sacred Valley village tour",
+      "Day 3: Train to Aguas Calientes",
+      "Day 4: Machu Picchu guided circuit",
+      "Day 5: Cusco culinary tour and free time",
+      "Day 6: Departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 16,
+      "baseHumidity": 55,
+      "baseWind": 18,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "UAE",
+    "destination": "Dubai",
+    "category": "Couple",
+    "description": "Luxury skyline views, desert adventures, and premium waterfront dining.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and Dubai Marina cruise",
+      "Day 2: Burj Khalifa and Dubai Mall exploration",
+      "Day 3: Desert safari with dune bashing",
+      "Day 4: Palm Jumeirah beach day and dinner",
+      "Day 5: Souk visit and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 35,
+      "baseHumidity": 45,
+      "baseWind": 20,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "South Africa",
+    "destination": "Cape Town",
+    "category": "Adventure",
+    "description": "Table Mountain, coastal drives, and world-class wildlife and vineyards nearby.",
+    "duration": 6,
+    "img": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and V&A Waterfront",
+      "Day 2: Table Mountain cableway and city tour",
+      "Day 3: Cape Peninsula and penguin colony visit",
+      "Day 4: Winelands day trip",
+      "Day 5: Optional shark cage or safari excursion",
+      "Day 6: Departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 21,
+      "baseHumidity": 68,
+      "baseWind": 22,
+      "defaultCondition": "Windy"
+    }
+  },
+  {
+    "country": "Finland",
+    "destination": "Rovaniemi",
+    "category": "Family",
+    "description": "Arctic adventures with Santa Village, husky rides, and northern lights chasing.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and Santa Claus Village",
+      "Day 2: Reindeer farm and Arctic museum",
+      "Day 3: Husky sledding and snow activities",
+      "Day 4: Northern lights tour at night",
+      "Day 5: Departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": -2,
+      "baseHumidity": 80,
+      "baseWind": 14,
+      "defaultCondition": "Snowy"
+    }
+  },
+  {
+    "country": "Jordan",
+    "destination": "Petra & Wadi Rum",
+    "category": "Adventure",
+    "description": "Explore Petra's rose-red canyons and camp under the stars in Wadi Rum.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Amman and transfer to Petra",
+      "Day 2: Full-day Petra site exploration",
+      "Day 3: Jeep safari in Wadi Rum",
+      "Day 4: Desert camp experience and stargazing",
+      "Day 5: Return to Amman and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 24,
+      "baseHumidity": 30,
+      "baseWind": 15,
+      "defaultCondition": "Sunny"
+    }
   }
 ]

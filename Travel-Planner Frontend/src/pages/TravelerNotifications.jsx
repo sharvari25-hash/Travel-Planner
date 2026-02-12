@@ -67,6 +67,15 @@ const TravelerNotifications = () => {
   const [activeActionKey, setActiveActionKey] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const handleToggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen((current) => !current);
+  }, []);
+
+  const handleCloseMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
 
   const routeFilter = getRouteFilter(tab);
   const activeTypeFilter = routeFilter === 'ALL' ? typeFilter : routeFilter;
@@ -190,9 +199,15 @@ const TravelerNotifications = () => {
 
   return (
     <div className="flex h-screen bg-[#F3F6FD] font-sans overflow-hidden">
-      <TravelerSidebar />
+      <TravelerSidebar
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={handleCloseMobileSidebar}
+      />
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TravelerHeader />
+        <TravelerHeader
+          onMenuToggle={handleToggleMobileSidebar}
+          isMenuOpen={isMobileSidebarOpen}
+        />
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
