@@ -25,38 +25,42 @@ export default function TravelAdminDashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#F3F6FD] font-sans">
+    <div className="relative flex h-screen overflow-hidden bg-[#f1f5ff] font-secondary text-slate-900">
+      <div className="pointer-events-none absolute -left-20 -top-24 h-96 w-96 rounded-full bg-primary/25 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute bottom-[-9rem] right-[-6rem] h-[30rem] w-[30rem] rounded-full bg-accent/25 blur-3xl" aria-hidden="true" />
       <AdminSidebar
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={handleCloseMobileSidebar}
       />
-      <main className="flex-1 min-w-0 overflow-y-auto">
+      <main className="relative z-10 flex min-w-0 flex-1 flex-col overflow-hidden">
         <AdminHeader
           onMenuToggle={handleToggleMobileSidebar}
           isMenuOpen={isMobileSidebarOpen}
         />
-        <div className="p-4 md:p-8">
-          <Routes>
-            <Route index element={<AdminOverviewContent />} />
-            <Route path="user-management" element={<AdminUserManagementPanel />} />
-            <Route path="user-management/:tab" element={<AdminUserManagementPanel />} />
-            <Route path="trips-itineraries" element={<AdminTripsItinerariesPanel />} />
-            <Route path="trips-itineraries/:tab" element={<AdminTripsItinerariesPanel />} />
-            <Route path="bookings" element={<AdminBookingsPanel />} />
-            <Route path="bookings/:tab" element={<AdminBookingsPanel />} />
-            <Route path="budget-payments" element={<AdminPaymentsPanel />} />
-            <Route path="budget-payments/:tab" element={<AdminPaymentsPanel />} />
-            <Route path="recommendations" element={<AdminRecommendationsPanel />} />
-            <Route path="recommendations/:tab" element={<AdminRecommendationsPanel />} />
-            <Route path="notifications" element={<AdminNotificationsPanel />} />
-            <Route path="notifications/:tab" element={<AdminNotificationsPanel />} />
-            <Route path="messages" element={<AdminMessagesPanel />} />
-            <Route path="messages/:tab" element={<AdminMessagesPanel />} />
-            <Route path="reports" element={<AdminReportsPanel />} />
-            <Route path="reports/:tab" element={<AdminReportsPanel />} />
-            <Route path="settings" element={<AdminSettingsPanel />} />
-            <Route path="*" element={<AdminOverviewContent />} />
-          </Routes>
+        <div className="flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8">
+          <div className="mx-auto w-full max-w-[1380px]">
+            <Routes>
+              <Route index element={<AdminOverviewContent />} />
+              <Route path="user-management" element={<AdminUserManagementPanel />} />
+              <Route path="user-management/:tab" element={<AdminUserManagementPanel />} />
+              <Route path="trips-itineraries" element={<AdminTripsItinerariesPanel />} />
+              <Route path="trips-itineraries/:tab" element={<AdminTripsItinerariesPanel />} />
+              <Route path="bookings" element={<AdminBookingsPanel />} />
+              <Route path="bookings/:tab" element={<AdminBookingsPanel />} />
+              <Route path="budget-payments" element={<AdminPaymentsPanel />} />
+              <Route path="budget-payments/:tab" element={<AdminPaymentsPanel />} />
+              <Route path="recommendations" element={<AdminRecommendationsPanel />} />
+              <Route path="recommendations/:tab" element={<AdminRecommendationsPanel />} />
+              <Route path="notifications" element={<AdminNotificationsPanel />} />
+              <Route path="notifications/:tab" element={<AdminNotificationsPanel />} />
+              <Route path="messages" element={<AdminMessagesPanel />} />
+              <Route path="messages/:tab" element={<AdminMessagesPanel />} />
+              <Route path="reports" element={<AdminReportsPanel />} />
+              <Route path="reports/:tab" element={<AdminReportsPanel />} />
+              <Route path="settings" element={<AdminSettingsPanel />} />
+              <Route path="*" element={<AdminOverviewContent />} />
+            </Routes>
+          </div>
         </div>
       </main>
     </div>
