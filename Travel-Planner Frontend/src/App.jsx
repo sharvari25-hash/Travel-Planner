@@ -14,6 +14,7 @@ import AboutUs from './pages/AboutUs';
 import OurServices from './pages/OurServices';
 import ContactUs from './pages/ContactUs';
 import LegalAndPolicy from './pages/LegalAndPolicy';
+import Review from './pages/Review';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -55,6 +56,7 @@ function App() {
         {/* Contact Page */}
         <Route path="/contact-us" element={<Layout><ContactUs /></Layout>} />
         <Route path="/legal-and-policy" element={<Layout><LegalAndPolicy /></Layout>} />
+        <Route path="/review" element={<Layout><Review /></Layout>} />
         
         <Route 
           path="/profile" 

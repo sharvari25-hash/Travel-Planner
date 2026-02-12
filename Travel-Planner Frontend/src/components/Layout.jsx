@@ -262,7 +262,7 @@ const Footer = () => {
             <li><Link to="/legal-and-policy">Legal & Policy</Link></li>
           </ul>
           <div className="pt-4">
-             <a href="#" className="font-bold underline text-sm">Give us a review!!</a>
+             <Link to="/review" className="font-bold underline text-sm">Give us a review!!</Link>
           </div>
         </div>
 
