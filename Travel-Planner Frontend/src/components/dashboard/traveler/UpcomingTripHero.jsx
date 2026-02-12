@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaPlane, FaSuitcase, FaWallet } from 'react-icons/fa';
 import { formatInr } from '../../../lib/pricing';
 
+const FALLBACK_HERO_IMAGE =
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1800&q=70';
+const MotionSection = motion.div;
+
 const formatDateLabel = (value) => {
   const parsedDate = new Date(value);
   if (Number.isNaN(parsedDate.getTime())) {
@@ -20,94 +24,102 @@ const formatDateLabel = (value) => {
 const UpcomingTripHero = ({ upcomingTrip }) => {
   if (!upcomingTrip) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="lg:col-span-2 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm min-h-[500px] flex flex-col justify-center"
+      <MotionSection
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="relative flex min-h-[500px] flex-col justify-center overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.12)] backdrop-blur-sm lg:col-span-2"
       >
-        <h2 className="text-3xl font-bold text-gray-800">No Upcoming Trip</h2>
-        <p className="text-gray-500 mt-2">
-          Start a new journey from the tours page and your next trip will appear here.
-        </p>
-        <Link
-          to="/tours"
-          className="mt-6 inline-flex w-max items-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          Explore Tours
-        </Link>
-      </motion.div>
+        <div className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-accent/20 blur-3xl" aria-hidden="true" />
+
+        <div className="relative">
+          <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            Upcoming Trip
+          </span>
+          <h2 className="mt-4 font-primary text-3xl font-semibold text-slate-900">No Upcoming Trip</h2>
+          <p className="mt-2 max-w-md text-sm text-slate-600">
+            Start a new journey from the tours page and your next trip will appear here.
+          </p>
+          <Link
+            to="/tours"
+            className="mt-6 inline-flex w-max items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
+          >
+            Explore Tours
+          </Link>
+        </div>
+      </MotionSection>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="lg:col-span-2 relative rounded-3xl overflow-hidden shadow-sm group min-h-[500px]"
+    <MotionSection
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className="group relative min-h-[500px] overflow-hidden rounded-3xl shadow-[0_24px_60px_rgba(15,23,42,0.14)] lg:col-span-2"
     >
       <img
-        src={upcomingTrip.imageUrl}
+        src={upcomingTrip.imageUrl || FALLBACK_HERO_IMAGE}
         alt={`${upcomingTrip.destination}, ${upcomingTrip.country}`}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/75" />
 
-      <div className="absolute top-8 left-8 text-white">
-        <h2 className="text-3xl font-bold">
+      <div className="absolute left-8 top-8 text-white">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+          <FaCalendarAlt className="text-[11px]" />
+          {upcomingTrip.daysLeft} {upcomingTrip.daysLeft === 1 ? 'Day' : 'Days'} Left
+        </span>
+        <h2 className="mt-3 font-primary text-3xl font-semibold">
           {upcomingTrip.destination}, {upcomingTrip.country}
         </h2>
-        <div className="flex items-center gap-2 mt-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full w-max">
-          <FaCalendarAlt className="text-sm" />
-          <span className="text-sm font-medium">
-            {upcomingTrip.daysLeft} {upcomingTrip.daysLeft === 1 ? 'Day' : 'Days'} Left
-          </span>
-        </div>
       </div>
 
-      <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+      <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/40 bg-white/92 p-5 shadow-xl backdrop-blur-sm">
+        <div className="mb-5 grid grid-cols-1 gap-4 border-b border-slate-200/70 pb-5 md:grid-cols-2">
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">Booking</p>
-            <p className="text-lg font-bold text-gray-800">{upcomingTrip.bookingId}</p>
-            <p className="text-sm text-gray-500 mt-1">Status: {upcomingTrip.bookingStatus}</p>
+            <p className="text-[11px] uppercase tracking-wide text-slate-500">Booking</p>
+            <p className="mt-0.5 text-lg font-semibold text-slate-900">{upcomingTrip.bookingId}</p>
+            <p className="mt-1 text-xs text-slate-500">Status: {upcomingTrip.bookingStatus}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">Travel Dates</p>
-            <p className="text-lg font-bold text-gray-800">
+            <p className="text-[11px] uppercase tracking-wide text-slate-500">Travel Dates</p>
+            <p className="mt-0.5 text-lg font-semibold text-slate-900">
               {formatDateLabel(upcomingTrip.startDate)} - {formatDateLabel(upcomingTrip.endDate)}
             </p>
-            <p className="text-sm text-gray-500 mt-1">Transport: {upcomingTrip.transportation}</p>
+            <p className="mt-1 text-xs text-slate-500">Transport: {upcomingTrip.transportation}</p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 border-t pt-5">
+        <div className="flex flex-wrap gap-2.5">
           <Link
             to={`/user/dashboard/my-trips/${upcomingTrip.id}`}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium text-sm transition-colors shadow-lg shadow-blue-200"
+            className="inline-flex items-center rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90"
           >
             View Itinerary
           </Link>
           <Link
             to="/user/dashboard/my-trips"
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-5 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
           >
             <FaSuitcase size={12} /> My Trips
           </Link>
-          <div className="bg-blue-50 text-blue-600 px-5 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2">
+          <div className="inline-flex items-center gap-2 rounded-xl bg-sky-50 px-4 py-2.5 text-sm font-medium text-sky-700">
             <FaPlane size={12} /> {upcomingTrip.status}
           </div>
         </div>
 
-        <div className="flex justify-between items-center mt-6 pt-2">
-          <div className="text-sm font-medium text-gray-500 flex items-center gap-2">
+        <div className="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
             <FaWallet /> Budget
           </div>
-          <span className="text-xl font-bold text-gray-800">
+          <span className="font-primary text-lg font-semibold text-slate-900">
             {formatInr(upcomingTrip.spentBudget)} / {formatInr(upcomingTrip.totalBudget)}
           </span>
         </div>
       </div>
-    </motion.div>
+    </MotionSection>
   );
 };
 

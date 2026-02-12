@@ -11,12 +11,24 @@ const RemainingBudgetWidget = ({ overview }) => {
 
   return (
     <StatCard>
-      <div className="flex items-center gap-2 text-blue-600 font-bold mb-2">
-        <FaWallet /> Remaining Budget
+      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+        <FaWallet className="text-[11px]" /> Remaining Budget
       </div>
-      <h3 className="text-3xl font-bold text-gray-800">{formatInr(remainingBudget)}</h3>
-      <div className="w-full bg-gray-100 rounded-full h-2 mt-3 overflow-hidden">
-        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${usedPercent}%` }}></div>
+
+      <h3 className="font-primary text-3xl font-semibold text-slate-900">{formatInr(remainingBudget)}</h3>
+      <p className="mt-1 text-xs text-slate-500">
+        Spent {formatInr(spentBudget)} of {formatInr(totalBudget)}
+      </p>
+
+      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+        <div
+          className="h-2.5 rounded-full bg-gradient-to-r from-primary to-[#4f7df0]"
+          style={{ width: `${usedPercent}%` }}
+        />
+      </div>
+      <div className="mt-2 flex items-center justify-between text-[11px] font-medium text-slate-500">
+        <span>Used {Math.round(usedPercent)}%</span>
+        <span>{Math.max(0, 100 - Math.round(usedPercent))}% left</span>
       </div>
     </StatCard>
   );

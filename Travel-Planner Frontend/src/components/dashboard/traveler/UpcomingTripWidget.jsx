@@ -16,29 +16,33 @@ const formatDateLabel = (value) => {
 
 const UpcomingTripWidget = ({ upcomingTrip }) => (
   <StatCard>
-    <div className="flex items-center gap-2 text-blue-600 font-bold mb-1">
-      <FaPlane className="transform -rotate-45" /> Upcoming Trip
+    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
+      <FaPlane className="-rotate-45 text-[11px]" /> Upcoming Trip
     </div>
-    <div className="mt-2">
+
+    <div>
       {upcomingTrip ? (
         <>
-          <h3 className="font-bold text-gray-800">
+          <h3 className="font-primary text-lg font-semibold text-slate-900">
             {upcomingTrip.destination}, {upcomingTrip.country}
           </h3>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-3xl font-bold text-gray-800">{upcomingTrip.daysLeft}</span>
-            <span className="text-gray-500 text-sm">
+          <div className="mt-2 flex items-end gap-2">
+            <span className="font-primary text-4xl font-semibold leading-none text-slate-900">
+              {upcomingTrip.daysLeft}
+            </span>
+            <span className="text-sm text-slate-500">
               {upcomingTrip.daysLeft === 1 ? 'Day Left' : 'Days Left'}
             </span>
           </div>
-          <div className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
             <span>{formatDateLabel(upcomingTrip.startDate)}</span>
-            <span className="text-blue-400">to</span>
+            <span className="text-slate-400">to</span>
             <span>{formatDateLabel(upcomingTrip.endDate)}</span>
           </div>
         </>
       ) : (
-        <p className="text-sm text-gray-400">No upcoming trip found.</p>
+        <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">No upcoming trip found.</p>
       )}
     </div>
   </StatCard>

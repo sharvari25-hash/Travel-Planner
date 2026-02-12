@@ -86,7 +86,7 @@ const TravelerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
   };
 
   const renderNavigation = (onItemSelect) => (
-    <nav className="flex-1 mt-2 space-y-1 overflow-y-auto pb-4">
+    <nav className="flex-1 overflow-y-auto pb-5">
       {navItems.map((item) => {
         const itemActive = isActive(item);
 
@@ -99,9 +99,14 @@ const TravelerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
               hasSubmenu={Boolean(item.submenu?.length)}
               active={itemActive}
               onClick={onItemSelect}
+              variant="traveler"
             />
             {item.submenu?.length ? (
-              <div className={`pl-10 pr-4 pb-2 space-y-1 ${itemActive ? 'block' : 'hidden'}`}>
+              <div
+                className={`mx-4 mb-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/15 via-white/10 to-white/5 px-3 py-3 space-y-1 ${
+                  itemActive ? 'block' : 'hidden'
+                }`}
+              >
                 {item.submenu.map((subItem) => {
                   const subActive = isActive(subItem);
                   return (
@@ -109,9 +114,9 @@ const TravelerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
                       key={subItem.text}
                       to={subItem.to}
                       onClick={onItemSelect}
-                      className={`block text-xs rounded px-3 py-2 transition-colors ${
+                      className={`block rounded-lg px-3 py-2 text-xs transition-colors ${
                         subActive
-                          ? 'bg-accent text-white font-medium'
+                          ? 'bg-white text-primary font-semibold'
                           : 'text-white/75 hover:bg-white/10 hover:text-white'
                       }`}
                     >
@@ -129,17 +134,32 @@ const TravelerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
 
   return (
     <>
-      <aside className="w-64 bg-primary text-white flex-shrink-0 hidden md:flex md:flex-col md:sticky md:top-0 md:h-screen">
-      <div className="p-8 flex items-center gap-3">
-        <img
-          src="/wanderwise-mark.svg"
-          alt="WanderWise Logo"
-          className="h-9 w-9 rounded-lg"
-        />
-        <span className="text-xl font-bold tracking-wide">WanderWise</span>
-      </div>
-      
-      {renderNavigation()}
+      <aside className="relative hidden w-72 shrink-0 overflow-hidden bg-gradient-to-b from-[#4b1f65] via-primary to-[#223458] text-white shadow-[8px_0_28px_rgba(20,20,40,0.24)] md:sticky md:top-0 md:flex md:h-screen md:flex-col">
+        <div className="pointer-events-none absolute -left-24 top-[-3.5rem] h-44 w-44 rounded-full bg-white/15 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-16 right-[-3rem] h-40 w-40 rounded-full bg-accent/20 blur-3xl" aria-hidden="true" />
+
+        <div className="relative border-b border-white/15 px-7 py-7">
+          <div className="flex items-center gap-3">
+            <img
+              src="/wanderwise-mark.svg"
+              alt="WanderWise Logo"
+              className="h-10 w-10 rounded-xl border border-white/25 bg-white/10 p-1"
+            />
+            <div>
+              <span className="font-primary block text-lg font-semibold tracking-wide">WanderWise</span>
+              <span className="text-[11px] text-white/75">Traveler Console</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-3 px-2">{renderNavigation()}</div>
+
+        <div className="relative mx-4 mb-5 rounded-2xl border border-white/20 bg-white/10 p-3.5 text-xs text-white/80 backdrop-blur-sm">
+          <p className="font-medium text-white">Plan smarter</p>
+          <p className="mt-1 leading-relaxed">
+            Use saved places and budget widgets to build your next itinerary faster.
+          </p>
+        </div>
       </aside>
 
       <div
@@ -149,39 +169,41 @@ const TravelerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
         <button
           type="button"
           onClick={onMobileClose}
-          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-slate-900/55 transition-opacity duration-300 ${
             isMobileOpen ? 'opacity-100' : 'opacity-0'
           }`}
           aria-label="Close sidebar backdrop"
         />
 
         <aside
-          className={`absolute left-0 top-0 h-full w-72 max-w-[85vw] bg-primary text-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+          className={`absolute left-0 top-0 flex h-full w-72 max-w-[85vw] flex-col overflow-hidden bg-gradient-to-b from-[#4b1f65] via-primary to-[#223458] text-white shadow-2xl transform transition-transform duration-300 ease-out ${
             isMobileOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           role="dialog"
           aria-modal="true"
           aria-label="Traveler navigation menu"
         >
-          <div className="p-6 flex items-center justify-between border-b border-white/15">
-            <div className="flex items-center gap-2">
-              <img
-                src="/wanderwise-mark.svg"
-                alt="WanderWise Logo"
-                className="h-8 w-8 rounded-lg"
-              />
-              <span className="text-lg font-bold">WanderWise</span>
+          <div className="border-b border-white/15 px-6 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/wanderwise-mark.svg"
+                  alt="WanderWise Logo"
+                  className="h-8 w-8 rounded-lg border border-white/25 bg-white/10 p-1"
+                />
+                <span className="text-lg font-semibold">WanderWise</span>
+              </div>
+              <button
+                type="button"
+                onClick={onMobileClose}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-white/90 hover:bg-white/10"
+                aria-label="Close navigation menu"
+              >
+                <FaTimes size={14} />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={onMobileClose}
-              className="inline-flex items-center justify-center h-8 w-8 rounded-md text-white/90 hover:bg-white/10"
-              aria-label="Close navigation menu"
-            >
-              <FaTimes size={14} />
-            </button>
           </div>
-          {renderNavigation(onMobileClose)}
+          <div className="mt-3 px-2">{renderNavigation(onMobileClose)}</div>
         </aside>
       </div>
     </>
