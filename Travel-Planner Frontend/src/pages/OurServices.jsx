@@ -14,7 +14,7 @@ const FadeIn = ({ children, delay = 0 }) => (
 
 const ServiceCard = ({ icon: Icon, title, description, delay }) => (
   <FadeIn delay={delay}>
-    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+    <div className="glass-card p-8 hover:shadow-xl transition-all duration-300 group">
       <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
         <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors" />
       </div>
@@ -59,7 +59,7 @@ const OurServices = () => {
   ];
 
   return (
-    <div className="bg-gray-50 pt-32 pb-20">
+    <div className="page-shell pt-32 pb-20">
       {/* Header */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
         <FadeIn>

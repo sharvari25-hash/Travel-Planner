@@ -81,19 +81,19 @@ const TourDetailsPage = () => {
   }, [tour]);
 
   if (isTourLoading) {
-    return <div className="h-screen flex items-center justify-center">Loading tour details...</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">Loading tour details...</div>;
   }
 
   if (tourFetchError) {
-    return <div className="h-screen flex items-center justify-center">{tourFetchError}</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">{tourFetchError}</div>;
   }
 
   if (!tour) {
-    return <div className="h-screen flex items-center justify-center">Tour not found!</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">Tour not found!</div>;
   }
 
   return (
-    <div className="bg-white">
+    <div className="page-shell">
       {/* Hero Section */}
       <section className="relative h-[60vh] w-full flex items-center justify-center text-center text-white">
         <img src={tour.img} alt={tour.destination} className="absolute inset-0 w-full h-full object-cover" />
@@ -105,7 +105,7 @@ const TourDetailsPage = () => {
       </section>
 
       {/* Tour Info Bar */}
-      <section className="bg-gray-100 py-8">
+      <section className="bg-white/70 backdrop-blur-sm py-8">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="flex flex-col items-center">
             <Calendar className="w-8 h-8 text-primary mb-2" />
@@ -137,7 +137,7 @@ const TourDetailsPage = () => {
             
             {/* Weather Widget */}
             {weather && (
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+              <div className="glass-card p-6 mb-8">
                 <h3 className="text-2xl font-primary font-semibold mb-4">Local Weather Forecast</h3>
                 <div className="flex items-center gap-6 mb-6">
                   <div className="text-5xl">{weather.current.icon}</div>
@@ -180,13 +180,13 @@ const TourDetailsPage = () => {
 
           {/* Right Side - Booking CTA */}
           <div className="md:col-span-1">
-            <div className="bg-gray-50 p-8 rounded-lg shadow-lg sticky top-24">
+            <div className="glass-card p-8 sticky top-24">
               <h3 className="text-2xl font-primary font-semibold mb-4">Book This Tour</h3>
               <p className="text-gray-600 text-sm mb-6">
                 Continue to the booking form to select travel date, transportation, and traveler details.
               </p>
 
-              <div className="mb-6 rounded-lg bg-white border border-gray-200 px-4 py-3">
+              <div className="mb-6 rounded-xl border border-white/70 bg-white/80 px-4 py-3">
                 <p className="text-xs uppercase tracking-wide text-gray-500">Starting Price</p>
                 <p className="text-2xl font-bold text-primary mt-1">{formatInr(tourPricePerTraveler)}</p>
                 <p className="text-xs text-gray-500">per traveler</p>

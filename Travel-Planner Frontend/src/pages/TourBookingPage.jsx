@@ -161,21 +161,21 @@ const TourBookingPage = () => {
   };
 
   if (isTourLoading) {
-    return <div className="h-screen flex items-center justify-center">Loading booking form...</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">Loading booking form...</div>;
   }
 
   if (tourFetchError) {
-    return <div className="h-screen flex items-center justify-center">{tourFetchError}</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">{tourFetchError}</div>;
   }
 
   if (!tour) {
-    return <div className="h-screen flex items-center justify-center">Tour not found!</div>;
+    return <div className="page-shell flex min-h-screen items-center justify-center">Tour not found!</div>;
   }
 
   return (
-    <div className="bg-gray-50 pt-32 pb-20">
+    <div className="page-shell pt-32 pb-20">
       <section className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div className="glass-card p-6 md:p-8">
           <div className="mb-6">
             <h1 className="text-3xl md:text-4xl font-primary font-bold text-primary">Book This Tour</h1>
             <p className="text-gray-600 mt-2">
@@ -215,7 +215,7 @@ const TourBookingPage = () => {
             <div className="space-y-4">
               <h4 className="text-lg font-medium text-gray-800">Travelers</h4>
               {fields.map((field, index) => (
-                <div key={field.id} className="p-4 border rounded-md bg-white space-y-3">
+                <div key={field.id} className="p-4 border border-white/70 rounded-xl bg-white/80 space-y-3">
                   <div className="flex justify-between items-center">
                     <h5 className="font-semibold">Traveler {index + 1}</h5>
                     {fields.length > 1 && (

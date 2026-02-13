@@ -39,8 +39,8 @@ const policySections = [
 
 const LegalAndPolicy = () => {
   return (
-    <div className="bg-gray-50 pt-32 pb-20">
-      <section className="max-w-[1240px] mx-auto px-4">
+    <div className="page-shell pt-32 pb-20">
+      <section className="page-container max-w-[1240px]">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h1 className="text-5xl md:text-6xl font-primary font-bold text-primary mb-5">
             Legal & Policy
@@ -58,7 +58,7 @@ const LegalAndPolicy = () => {
               <article
                 key={section.id}
                 id={section.id}
-                className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 md:p-8"
+                className="glass-card p-6 md:p-8"
               >
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">

@@ -80,7 +80,7 @@ const HeroSection = () => {
 
 const HotDealsSection = ({ tours }) => {
   return (
-    <section className="bg-[#f0eef2] py-20">
+    <section className="bg-white/70 backdrop-blur-sm py-20">
       <div className="max-w-[1240px] mx-auto px-4">
         <FadeIn>
           <h2 className="text-center font-primary font-semibold text-5xl text-accent mb-6">Hot Deals</h2>
@@ -119,7 +119,7 @@ const HotDealsSection = ({ tours }) => {
 
 const ExploreSection = () => {
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white/70 backdrop-blur-sm py-20">
       <div className="max-w-[1240px] mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
         {/* Left Text */}
         <div className="md:col-span-4 flex flex-col justify-center">
@@ -165,7 +165,7 @@ const ExploreSection = () => {
 
 const GallerySection = () => {
   return (
-    <section className="bg-[#f0eef2] py-20">
+    <section className="bg-white/60 backdrop-blur-sm py-20">
       <div className="max-w-[1240px] mx-auto px-4">
         <FadeIn className="text-center mb-16">
           <h3 className="font-primary font-semibold text-5xl mb-6">Tour Highlights</h3>
@@ -193,7 +193,7 @@ const GallerySection = () => {
 
 const ReviewsSection = () => {
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white/70 backdrop-blur-sm py-20">
       <div className="max-w-[1240px] mx-auto px-4">
         <FadeIn className="text-center mb-16">
           <h3 className="font-primary font-semibold text-5xl mb-6">Customer reviews</h3>
@@ -273,7 +273,7 @@ const ContactSection = () => {
           <h3 className="text-white font-primary font-semibold text-5xl mb-6">Contact Us</h3>
           <p className="text-white text-lg mb-12">Get in touch for inquiries about our exciting tour options.</p>
           
-          <div className="bg-white rounded-[20px] p-8 md:p-12 shadow-2xl">
+          <div className="glass-card rounded-[20px] p-8 md:p-12 shadow-2xl">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
               <div className="text-left">
                 <label className="block text-sm font-medium text-dark mb-1">Your First Name</label>
@@ -330,7 +330,7 @@ const Home = () => {
   const toursCatalog = useToursCatalog();
 
   return (
-    <div className="overflow-hidden">
+    <div className="page-shell overflow-hidden">
       <HeroSection />
       <HotDealsSection tours={toursCatalog} />
       <ExploreSection />

@@ -99,10 +99,10 @@ const Review = () => {
   };
 
   return (
-    <div className="bg-gray-50 pt-32 pb-20">
-      <section className="max-w-[1240px] mx-auto px-4">
+    <div className="page-shell pt-32 pb-20">
+      <section className="page-container max-w-[1240px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+          <article className="glass-card p-6 md:p-8">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-semibold">
               <MessageSquareHeart size={16} />
               Traveler Feedback
@@ -115,7 +115,7 @@ const Review = () => {
               destination planning, support quality, and booking flow.
             </p>
 
-            <div className="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-5">
+            <div className="mt-8 rounded-xl border border-white/70 bg-white/80 p-5">
               <p className="text-sm text-gray-500">Average Rating</p>
               <div className="flex items-center gap-3 mt-2">
                 <div className="flex text-yellow-500">
@@ -138,7 +138,7 @@ const Review = () => {
 
             <div className="mt-8 space-y-4">
               {reviews.map((review) => (
-                <div key={review.id} className="border border-gray-100 rounded-xl p-4">
+                <div key={review.id} className="border border-white/70 rounded-xl bg-white/80 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-semibold text-gray-800">{review.name}</p>
                     <div className="flex text-yellow-500">
@@ -158,7 +158,7 @@ const Review = () => {
             </div>
           </article>
 
-          <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+          <article className="glass-card p-6 md:p-8">
             <h2 className="text-2xl md:text-3xl font-primary font-semibold text-gray-900">
               Share Your Experience
             </h2>

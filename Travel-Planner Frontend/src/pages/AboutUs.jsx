@@ -14,7 +14,7 @@ const FadeIn = ({ children, delay = 0 }) => (
 
 const AboutUs = () => {
   return (
-    <div className="bg-white pt-32 pb-20">
+    <div className="page-shell pt-32 pb-20">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center max-w-3xl mx-auto">
@@ -30,7 +30,7 @@ const AboutUs = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gray-50 py-16 mb-20">
+      <section className="bg-white/70 backdrop-blur-sm py-16 mb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <FadeIn delay={0.1}>
@@ -83,21 +83,21 @@ const AboutUs = () => {
         </FadeIn>
         <div className="grid md:grid-cols-3 gap-8">
           <FadeIn delay={0.1}>
-            <div className="bg-gray-50 p-8 rounded-xl text-center hover:shadow-lg transition-shadow">
+            <div className="glass-card p-8 text-center hover:shadow-lg transition-shadow">
               <Users className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Customer First</h3>
               <p className="text-gray-600">Your satisfaction is our top priority. We go above and beyond to ensure your trip is perfect.</p>
             </div>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <div className="bg-gray-50 p-8 rounded-xl text-center hover:shadow-lg transition-shadow">
+            <div className="glass-card p-8 text-center hover:shadow-lg transition-shadow">
               <Award className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Excellence</h3>
               <p className="text-gray-600">We partner with only the best hotels, guides, and transport providers to guarantee quality.</p>
             </div>
           </FadeIn>
           <FadeIn delay={0.3}>
-            <div className="bg-gray-50 p-8 rounded-xl text-center hover:shadow-lg transition-shadow">
+            <div className="glass-card p-8 text-center hover:shadow-lg transition-shadow">
               <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Passion</h3>
               <p className="text-gray-600">We are travelers ourselves. We put our heart and soul into planning every itinerary.</p>

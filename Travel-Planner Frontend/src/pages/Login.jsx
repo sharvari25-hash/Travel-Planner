@@ -42,8 +42,8 @@ const Login = () => {
     const dashboardPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/user/dashboard';
 
     return (
-      <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className="page-shell flex items-center justify-center min-h-screen px-4">
+        <div className="glass-card w-full max-w-md p-8">
           <h2 className="text-2xl font-bold mb-4 text-center">Already Logged In</h2>
           <p className="text-sm text-gray-600 text-center mb-6">
             You are signed in as {user.name}.
@@ -57,7 +57,7 @@ const Login = () => {
             </Link>
             <Link
               to="/"
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full text-center transition-colors"
+              className="w-full bg-white/80 hover:bg-white text-slate-700 font-bold py-2 px-4 rounded-full text-center transition-colors border border-white/70"
             >
               Go to Home
             </Link>
@@ -75,8 +75,8 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="page-shell flex items-center justify-center min-h-screen px-4">
+      <div className="glass-card w-full max-w-md p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>

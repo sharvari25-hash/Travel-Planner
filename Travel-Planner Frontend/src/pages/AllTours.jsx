@@ -89,8 +89,8 @@ const AllTours = () => {
   };
 
   return (
-    <div className="bg-gray-50 py-20 pt-32">
-      <div className="max-w-[1240px] mx-auto px-4">
+    <div className="page-shell py-20 pt-32">
+      <div className="page-container max-w-[1240px]">
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-7xl font-primary font-bold text-primary mb-4">All Tours</h1>
           <p className="text-lg md:text-xl max-w-2xl mx-auto text-gray-600">
@@ -107,7 +107,7 @@ const AllTours = () => {
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
                 activeCategory === category 
                   ? 'bg-primary text-white' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                  : 'bg-white/80 text-gray-700 border border-white/70 hover:bg-white'
               }`}
             >
               {category}
@@ -129,7 +129,7 @@ const AllTours = () => {
           ) : null}
 
           {!isLoading && !fetchError && currentTours.map((tour) => (
-            <div key={tour.id} className="group flex flex-col overflow-hidden rounded-lg bg-white shadow-lg transition-transform duration-300 hover:-translate-y-2">
+            <div key={tour.id} className="glass-card group flex flex-col overflow-hidden transition-transform duration-300 hover:-translate-y-2">
               <div className="relative overflow-hidden w-full aspect-[4/3]">
                 <img 
                   src={tour.img}
@@ -164,7 +164,7 @@ const AllTours = () => {
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 mx-1 rounded-md bg-white/80 border border-white/70 text-gray-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
@@ -174,7 +174,7 @@ const AllTours = () => {
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
-            className="px-4 py-2 mx-1 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 mx-1 rounded-md bg-white/80 border border-white/70 text-gray-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>

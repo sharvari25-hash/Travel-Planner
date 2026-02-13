@@ -9,8 +9,8 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="page-shell flex items-center justify-center min-h-screen px-4">
+      <div className="glass-card w-full max-w-md p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">User Profile</h2>
         <div className="flex flex-col gap-4">
           <div>

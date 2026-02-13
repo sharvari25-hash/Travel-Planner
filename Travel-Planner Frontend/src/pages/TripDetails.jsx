@@ -77,7 +77,7 @@ const TripDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="page-shell flex items-center justify-center min-h-screen">
         <p className="text-sm text-gray-600">Loading trip details...</p>
       </div>
     );
@@ -85,8 +85,8 @@ const TripDetails = () => {
 
   if (!trip || fetchError) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="text-center">
+      <div className="page-shell flex items-center justify-center min-h-screen px-4">
+        <div className="glass-card p-6 text-center">
           <h2 className="text-2xl font-bold text-gray-700 mb-4">
             {fetchError ? 'Unable to load trip' : 'Trip not found'}
           </h2>
@@ -105,7 +105,7 @@ const TripDetails = () => {
   const collaborators = Array.isArray(trip.collaborators) ? trip.collaborators : [];
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="page-shell min-h-screen">
       <div className="relative h-80">
         <img src={trip.imageUrl} alt={trip.destination} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -121,10 +121,10 @@ const TripDetails = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-8">
+      <div className="max-w-7xl mx-auto px-4 pb-10 pt-8 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Main Details */}
-          <div className="lg:col-span-2 bg-white p-8 rounded-lg shadow-lg">
+          <div className="lg:col-span-2 glass-card p-8">
             <div className="flex items-center mb-6">
               <FaMapMarkerAlt className="text-2xl text-blue-600 mr-4" />
               <h2 className="text-3xl font-bold text-gray-800">{trip.destination}, {trip.country}</h2>
@@ -134,15 +134,15 @@ const TripDetails = () => {
               <span>{formatDate(trip.startDate)} to {formatDate(trip.endDate)}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 text-sm">
-              <div className="rounded-lg border border-gray-100 p-3">
+              <div className="rounded-lg border border-white/70 bg-white/70 p-3">
                 <p className="text-gray-500">Booking ID</p>
                 <p className="font-semibold text-gray-800">{trip.bookingId}</p>
               </div>
-              <div className="rounded-lg border border-gray-100 p-3">
+              <div className="rounded-lg border border-white/70 bg-white/70 p-3">
                 <p className="text-gray-500">Booking Status</p>
                 <p className="font-semibold text-gray-800">{trip.bookingStatus}</p>
               </div>
-              <div className="rounded-lg border border-gray-100 p-3">
+              <div className="rounded-lg border border-white/70 bg-white/70 p-3">
                 <p className="text-gray-500">Transportation</p>
                 <p className="font-semibold text-gray-800">{trip.transportation}</p>
               </div>
@@ -161,7 +161,7 @@ const TripDetails = () => {
 
           {/* Right Column - Budget & Collaborators */}
           <div className="space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="glass-card p-6">
               <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><FaRupeeSign className="mr-2 text-green-500"/>Budget Overview</h3>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Spent:</span>
@@ -176,7 +176,7 @@ const TripDetails = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="glass-card p-6">
               <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                 <FaUsers className="mr-2 text-purple-500"/>Travelers
               </h3>

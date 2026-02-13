@@ -121,7 +121,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
   };
 
   const renderNavigation = (onItemSelect) => (
-    <nav className="flex-1 overflow-y-auto pb-5">
+    <nav className="h-full overflow-y-auto pb-5 pr-1">
       {navItems.map((item) => {
         const itemActive = isActive(item);
 
@@ -187,7 +187,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
           </div>
         </div>
 
-        <div className="relative mt-3 px-2">{renderNavigation()}</div>
+        <div className="relative mt-3 flex-1 min-h-0 overflow-hidden px-2">{renderNavigation()}</div>
 
         <div className="relative mx-4 mb-5 rounded-2xl border border-white/20 bg-white/10 p-3.5 text-xs text-white/80 backdrop-blur-sm">
           <p className="font-medium text-white">Operations ready</p>
@@ -238,7 +238,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
               </button>
             </div>
           </div>
-          <div className="mt-3 px-2">{renderNavigation(onMobileClose)}</div>
+          <div className="mt-3 flex-1 min-h-0 overflow-hidden px-2">{renderNavigation(onMobileClose)}</div>
         </aside>
       </div>
     </>

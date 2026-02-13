@@ -245,7 +245,7 @@ export default function SettingsPage() {
   };
 
   const renderAccountTab = () => (
-    <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <section className="glass-card p-6">
       <h2 className="text-lg font-bold text-gray-800 mb-6">Account Settings</h2>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-56 flex flex-col items-center text-center gap-3">
@@ -317,7 +317,7 @@ export default function SettingsPage() {
 
   const renderPreferencesTab = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <section className="glass-card p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-6">Application Settings</h2>
         <div className="space-y-5">
           <label className="block">
@@ -406,7 +406,7 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <section className="glass-card p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-6">Regional Preferences</h2>
         <div className="space-y-3">
           <div className="border border-gray-100 rounded-lg p-3">
@@ -431,7 +431,7 @@ export default function SettingsPage() {
   );
 
   const renderNotificationsTab = () => (
-    <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <section className="glass-card p-6">
       <h2 className="text-lg font-bold text-gray-800 mb-6">Notifications</h2>
       <div className="space-y-5">
         <label className="flex items-center justify-between border border-gray-100 rounded-lg p-4">
@@ -490,7 +490,7 @@ export default function SettingsPage() {
   );
 
   const renderSecurityTab = () => (
-    <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <section className="glass-card p-6">
       <h2 className="text-lg font-bold text-gray-800">Security</h2>
       <p className="text-sm text-gray-500 mt-2">
         Password update and multi-factor settings are not configured yet. Your login is secured with JWT
@@ -516,11 +516,11 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F3F6FD] font-sans">
+    <div className="page-shell flex min-h-screen">
       <SettingsSidebar />
       <main className="flex-1 flex flex-col">
         <TravelerHeader />
-        <div className="p-8 overflow-y-auto">
+        <div className="overflow-y-auto px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
 
           <div className="flex gap-8 border-b border-gray-200 mb-8">
@@ -541,7 +541,7 @@ export default function SettingsPage() {
           ) : null}
 
           {isLoading ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-sm text-gray-500">
+            <div className="glass-card p-6 text-sm text-gray-500">
               Loading settings...
             </div>
           ) : fetchError ? null : (

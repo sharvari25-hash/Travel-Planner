@@ -139,7 +139,7 @@ const MyTrips = ({ statusFilter = 'All' }) => {
   );
 
   return (
-    <div className="flex h-screen bg-[#F3F6FD] font-sans overflow-hidden">
+    <div className="page-shell flex h-screen overflow-hidden">
       <TravelerSidebar
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={handleCloseMobileSidebar}
@@ -149,141 +149,143 @@ const MyTrips = ({ statusFilter = 'All' }) => {
           onMenuToggle={handleToggleMobileSidebar}
           isMenuOpen={isMobileSidebarOpen}
         />
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">My Trips</h1>
-            <p className="text-sm text-gray-500 mt-1">
+        <div className="flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 space-y-6">
+          <div className="mx-auto w-full max-w-[1380px] space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">My Trips</h1>
+              <p className="text-sm text-gray-500 mt-1">
               Track your itineraries, collaborators, and trip budgets in one place.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Total Trips</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{summary.total}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Upcoming</p>
-              <p className="text-2xl font-bold text-blue-700 mt-1">{summary.upcoming}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Completed</p>
-              <p className="text-2xl font-bold text-green-700 mt-1">{summary.completed}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{formatAmount(summary.spent)}</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-            {fetchError ? (
-              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
-                {fetchError}
               </p>
-            ) : null}
-            <div className="flex flex-wrap gap-3">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search by destination, country, or booking ID"
-                className="w-full md:flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <select
-                value={sortBy}
-                onChange={(event) => setSortBy(event.target.value)}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-              >
-                <option value="startDateDesc">Latest Start Date</option>
-                <option value="startDateAsc">Earliest Start Date</option>
-                <option value="budgetHigh">Highest Budget</option>
-              </select>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {isLoading ? (
-              <div className="col-span-full bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
-                Loading trips...
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="glass-card p-4">
+                <p className="text-xs uppercase tracking-wide text-gray-400">Total Trips</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">{summary.total}</p>
               </div>
-            ) : filteredTrips.map((trip) => (
-              <article
-                key={trip.id}
-                className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="relative">
-                  <img src={trip.imageUrl} alt={trip.destination} className="w-full h-48 object-cover" />
-                  <div className="absolute top-3 right-3">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${
-                        statusStyles[trip.status] || 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {getStatusIcon(trip.status)}
-                      {trip.status}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <h2 className="text-lg font-bold text-gray-800">
-                    {trip.destination}, {trip.country}
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-1">Booking ID: {trip.bookingId}</p>
-                  <p className="text-xs text-gray-500 mt-1">Booking Status: {trip.bookingStatus}</p>
-
-                  <div className="mt-3 space-y-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt className="text-gray-400" />
-                      <span>
-                        {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaUsers className="text-gray-400" />
-                      <span>{Number(trip.travelersCount || trip.collaborators?.length || 0)} travelers</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-medium text-gray-500">Budget Used</span>
-                      <span className="font-semibold text-gray-700">
-                        {formatAmount(trip.budget?.spent)} / {formatAmount(trip.budget?.total)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            Number(trip.budget?.total || 0) === 0
-                              ? 0
-                              : (Number(trip.budget?.spent || 0) / Number(trip.budget?.total || 1)) * 100
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <Link
-                    to={`/user/dashboard/my-trips/${trip.id}`}
-                    className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors mt-5 text-sm"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {!isLoading && filteredTrips.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-500">
-              No trips found for this view.
+              <div className="glass-card p-4">
+                <p className="text-xs uppercase tracking-wide text-gray-400">Upcoming</p>
+                <p className="text-2xl font-bold text-blue-700 mt-1">{summary.upcoming}</p>
+              </div>
+              <div className="glass-card p-4">
+                <p className="text-xs uppercase tracking-wide text-gray-400">Completed</p>
+                <p className="text-2xl font-bold text-green-700 mt-1">{summary.completed}</p>
+              </div>
+              <div className="glass-card p-4">
+                <p className="text-xs uppercase tracking-wide text-gray-400">Total Spent</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">{formatAmount(summary.spent)}</p>
+              </div>
             </div>
-          ) : null}
+
+            <div className="glass-card p-4">
+              {fetchError ? (
+                <p className="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm px-3 py-2">
+                  {fetchError}
+                </p>
+              ) : null}
+              <div className="flex flex-wrap gap-3">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search by destination, country, or booking ID"
+                  className="w-full md:flex-1 border border-gray-200/70 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+                <select
+                  value={sortBy}
+                  onChange={(event) => setSortBy(event.target.value)}
+                  className="border border-gray-200/70 rounded-lg px-3 py-2 text-sm bg-white/80"
+                >
+                  <option value="startDateDesc">Latest Start Date</option>
+                  <option value="startDateAsc">Earliest Start Date</option>
+                  <option value="budgetHigh">Highest Budget</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {isLoading ? (
+                <div className="col-span-full glass-card p-8 text-center text-sm text-gray-500">
+                  Loading trips...
+                </div>
+              ) : filteredTrips.map((trip) => (
+                <article
+                  key={trip.id}
+                  className="glass-card overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="relative">
+                    <img src={trip.imageUrl} alt={trip.destination} className="w-full h-48 object-cover" />
+                    <div className="absolute top-3 right-3">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${
+                          statusStyles[trip.status] || 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {getStatusIcon(trip.status)}
+                        {trip.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <h2 className="text-lg font-bold text-gray-800">
+                      {trip.destination}, {trip.country}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">Booking ID: {trip.bookingId}</p>
+                    <p className="text-xs text-gray-500 mt-1">Booking Status: {trip.bookingStatus}</p>
+
+                    <div className="mt-3 space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt className="text-gray-400" />
+                        <span>
+                          {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaUsers className="text-gray-400" />
+                        <span>{Number(trip.travelersCount || trip.collaborators?.length || 0)} travelers</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="flex justify-between text-xs">
+                        <span className="font-medium text-gray-500">Budget Used</span>
+                        <span className="font-semibold text-gray-700">
+                          {formatAmount(trip.budget?.spent)} / {formatAmount(trip.budget?.total)}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              Number(trip.budget?.total || 0) === 0
+                                ? 0
+                                : (Number(trip.budget?.spent || 0) / Number(trip.budget?.total || 1)) * 100
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/user/dashboard/my-trips/${trip.id}`}
+                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors mt-5 text-sm"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {!isLoading && filteredTrips.length === 0 ? (
+              <div className="glass-card p-8 text-center text-sm text-gray-500">
+                No trips found for this view.
+              </div>
+            ) : null}
+          </div>
         </div>
       </main>
     </div>

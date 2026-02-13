@@ -82,8 +82,8 @@ const DemoPayment = () => {
 
   if (!pendingBooking) {
     return (
-      <div className="bg-gray-100 min-h-screen pt-32 pb-16">
-        <div className="max-w-xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+      <div className="page-shell min-h-screen pt-32 pb-16">
+        <div className="max-w-xl mx-auto glass-card p-8 text-center">
           <h1 className="text-2xl font-bold text-gray-800">No Pending Booking Found</h1>
           <p className="text-sm text-gray-500 mt-3">
             Start from a tour page, fill traveler details, then continue to payment.
@@ -183,10 +183,10 @@ const DemoPayment = () => {
     .replace(/\s/g, '-')}`;
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-28 pb-16">
+    <div className="page-shell min-h-screen pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="lg:col-span-2 glass-card p-6">
             <h1 className="text-2xl font-bold text-gray-800">Demo Payment</h1>
             <p className="text-sm text-gray-500 mt-1">
               Complete payment to submit your booking request.
@@ -198,7 +198,7 @@ const DemoPayment = () => {
                 <select
                   value={paymentMethod}
                   onChange={(event) => setPaymentMethod(event.target.value)}
-                  className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+                  className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm bg-white/80"
                 >
                   {Object.entries(paymentMethodLabels).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -217,7 +217,7 @@ const DemoPayment = () => {
                       value={cardHolderName}
                       onChange={(event) => setCardHolderName(event.target.value)}
                       placeholder="Full Name"
-                      className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                      className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm"
                     />
                   </label>
 
@@ -228,7 +228,7 @@ const DemoPayment = () => {
                       value={cardNumber}
                       onChange={(event) => setCardNumber(event.target.value)}
                       placeholder="XXXX XXXX XXXX XXXX"
-                      className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                      className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm"
                     />
                   </label>
                 </>
@@ -242,7 +242,7 @@ const DemoPayment = () => {
                     value={upiId}
                     onChange={(event) => setUpiId(event.target.value)}
                     placeholder="example@upi"
-                    className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm"
                   />
                 </label>
               ) : null}
@@ -255,7 +255,7 @@ const DemoPayment = () => {
                     value={bankReference}
                     onChange={(event) => setBankReference(event.target.value)}
                     placeholder="Reference number"
-                    className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm"
                   />
                 </label>
               ) : null}
@@ -266,7 +266,7 @@ const DemoPayment = () => {
                   type="email"
                   value={pendingBooking.travelerEmail || ''}
                   readOnly
-                  className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50"
+                  className="mt-2 w-full border border-gray-200/70 rounded-lg px-3 py-2 text-sm bg-white/70"
                 />
               </label>
 
@@ -284,7 +284,7 @@ const DemoPayment = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 h-fit">
+          <div className="glass-card p-6 h-fit">
             <h2 className="text-lg font-bold text-gray-800">Booking Summary</h2>
             <div className="space-y-2 mt-4 text-sm text-gray-600">
               <p>
