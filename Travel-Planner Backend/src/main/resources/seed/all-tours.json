@@ -641,5 +641,216 @@
       "baseWind": 15,
       "defaultCondition": "Sunny"
     }
+  },
+  {
+    "country": "Seychelles",
+    "destination": "Mahe Island",
+    "category": "Couple",
+    "description": "Crystal-clear lagoons, private beaches, and romantic island sunsets.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Mahe and beachfront resort check-in",
+      "Day 2: Anse Intendance beach and coastal drive",
+      "Day 3: Island hopping and snorkeling tour",
+      "Day 4: Sunset cruise and Creole dinner",
+      "Day 5: Spa morning and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 29,
+      "baseHumidity": 78,
+      "baseWind": 14,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Philippines",
+    "destination": "Palawan",
+    "category": "Adventure",
+    "description": "Hidden lagoons, limestone cliffs, kayaking routes, and coral reefs.",
+    "duration": 6,
+    "img": "https://upload.wikimedia.org/wikipedia/commons/7/77/El_Nido_Bay%2C_Island_lagoon%2C_Palawan%2C_Philippines.jpg",
+    "plan": [
+      "Day 1: Arrival in El Nido and town walk",
+      "Day 2: Big Lagoon and Secret Lagoon island tour",
+      "Day 3: Reef snorkeling and beach picnic",
+      "Day 4: Kayaking and cliff viewpoint trek",
+      "Day 5: Underground river excursion",
+      "Day 6: Free morning and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 30,
+      "baseHumidity": 82,
+      "baseWind": 12,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "French Polynesia",
+    "destination": "Bora Bora",
+    "category": "Couple",
+    "description": "Overwater villas, turquoise waters, and luxury island experiences.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and overwater bungalow check-in",
+      "Day 2: Lagoon boat safari and snorkeling",
+      "Day 3: Mount Otemanu viewpoint and local lunch",
+      "Day 4: Private beach day and sunset dinner",
+      "Day 5: Morning paddleboarding and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 28,
+      "baseHumidity": 76,
+      "baseWind": 13,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Croatia",
+    "destination": "Hvar Island",
+    "category": "Couple",
+    "description": "Mediterranean island vibes, old town charm, and scenic coves.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival by ferry and old town walk",
+      "Day 2: Pakleni Islands boat trip",
+      "Day 3: Lavender fields and hilltop fortress",
+      "Day 4: Beach clubs and sunset promenade",
+      "Day 5: Brunch and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 25,
+      "baseHumidity": 64,
+      "baseWind": 11,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Indonesia",
+    "destination": "Gili Islands",
+    "category": "Couple",
+    "description": "Car-free islands, sea turtle snorkeling, and laid-back beach cafes.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Gili Trawangan and beach evening",
+      "Day 2: Snorkeling with turtles at Gili Meno",
+      "Day 3: Cycling island loop and sunset point",
+      "Day 4: Glass-bottom boat tour",
+      "Day 5: Leisure morning and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 29,
+      "baseHumidity": 80,
+      "baseWind": 10,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "Thailand",
+    "destination": "Phuket & Phi Phi Islands",
+    "category": "Family",
+    "description": "Island-hopping adventure with kid-friendly beaches and marine life.",
+    "duration": 6,
+    "img": "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Phuket and Patong beachfront stroll",
+      "Day 2: Phi Phi islands speedboat day tour",
+      "Day 3: Phuket aquarium and family beach time",
+      "Day 4: James Bond Island excursion",
+      "Day 5: Old Phuket Town and cultural show",
+      "Day 6: Shopping and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 31,
+      "baseHumidity": 84,
+      "baseWind": 9,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Spain",
+    "destination": "Ibiza",
+    "category": "Culture",
+    "description": "Beach clubs, old-town architecture, and vibrant Mediterranean nightlife.",
+    "duration": 4,
+    "img": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival and Ibiza Old Town walk",
+      "Day 2: Cala Comte beach day and sunset spot",
+      "Day 3: Local market and evening music event",
+      "Day 4: Brunch and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 27,
+      "baseHumidity": 62,
+      "baseWind": 12,
+      "defaultCondition": "Sunny"
+    }
+  },
+  {
+    "country": "Portugal",
+    "destination": "Madeira Island",
+    "category": "Adventure",
+    "description": "Volcanic cliffs, lush levada trails, and dramatic Atlantic viewpoints.",
+    "duration": 6,
+    "img": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Funchal and seafront walk",
+      "Day 2: Cabo Girao skywalk and city viewpoints",
+      "Day 3: Levada hike through Laurisilva forest",
+      "Day 4: Pico do Arieiro sunrise drive",
+      "Day 5: Coastal villages and local cuisine tour",
+      "Day 6: Market visit and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 22,
+      "baseHumidity": 67,
+      "baseWind": 16,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "Belgium",
+    "destination": "Boom (Tomorrowland VIP)",
+    "category": "Culture",
+    "description": "VIP festival access, premium viewing decks, and world-class DJ lineups.",
+    "duration": 5,
+    "img": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Brussels and transfer to Boom",
+      "Day 2: Tomorrowland opening with VIP lounge access",
+      "Day 3: Full-day stage circuit and after-hours zone",
+      "Day 4: Recovery day and Antwerp city stroll",
+      "Day 5: Departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 22,
+      "baseHumidity": 66,
+      "baseWind": 11,
+      "defaultCondition": "Partly Cloudy"
+    }
+  },
+  {
+    "country": "India",
+    "destination": "Goa (Sunburn Festival)",
+    "category": "Culture",
+    "description": "Beachside EDM festival experience with top artists and sunset stages.",
+    "duration": 4,
+    "img": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=60",
+    "plan": [
+      "Day 1: Arrival in Goa and beachfront check-in",
+      "Day 2: Sunburn Festival day one and sunset arena",
+      "Day 3: Sunburn main stage performances and nightlife",
+      "Day 4: Brunch by the beach and departure"
+    ],
+    "weatherProfile": {
+      "baseTemp": 30,
+      "baseHumidity": 75,
+      "baseWind": 10,
+      "defaultCondition": "Sunny"
+    }
   }
 ]
