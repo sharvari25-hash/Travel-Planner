@@ -9,7 +9,7 @@ import {
   FaUserShield,
   FaCog,
 } from 'react-icons/fa';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import {
   deleteAdminNotification,
   getAdminNotifications,

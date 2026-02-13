@@ -3,8 +3,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { motion } from 'framer-motion';
 import SectionTitle from '../shared/SectionTitle';
 
+const MotionDiv = motion.div;
+
 const BookingsOverviewChart = ({ chartData = [] }) => (
-  <motion.div 
+  <MotionDiv
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 min-w-0"
@@ -21,7 +23,7 @@ const BookingsOverviewChart = ({ chartData = [] }) => (
               </BarChart>
           </ResponsiveContainer>
       </div>
-  </motion.div>
+  </MotionDiv>
 );
 
 export default BookingsOverviewChart;

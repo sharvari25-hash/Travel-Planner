@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getMyTripDetails } from '../lib/my-trips';
 import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaRupeeSign } from 'react-icons/fa';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 
 const formatAmount = (amount) =>
   new Intl.NumberFormat('en-IN', {

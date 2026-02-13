@@ -7,6 +7,8 @@ import * as yup from 'yup';
 import { useToursCatalog } from '../lib/toursCatalog';
 import { submitContactMessage } from '../lib/contactMessages';
 
+const MotionDiv = motion.div;
+
 // --- Data & Config ---
 
 const galleryImages = [
@@ -32,7 +34,7 @@ const schema = yup.object({
 const FadeIn = ({ children, delay = 0, className }) => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
   return (
-    <motion.div
+    <MotionDiv
       ref={ref}
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -40,7 +42,7 @@ const FadeIn = ({ children, delay = 0, className }) => {
       className={className}
     >
       {children}
-    </motion.div>
+    </MotionDiv>
   );
 };
 

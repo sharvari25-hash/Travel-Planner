@@ -91,7 +91,7 @@ const Review = () => {
         rating: 0,
         comment: '',
       });
-    } catch (_error) {
+    } catch {
       setSubmitError('Unable to submit your review right now.');
     } finally {
       setIsSubmitting(false);

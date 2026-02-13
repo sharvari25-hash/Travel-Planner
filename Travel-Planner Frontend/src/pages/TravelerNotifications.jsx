@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { FaBell, FaCheck, FaCheckCircle, FaCreditCard, FaSuitcase, FaTrash } from 'react-icons/fa';
 import TravelerSidebar from '../components/dashboard/traveler/TravelerSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 import {
   deleteTravelerNotification,
   getTravelerNotifications,

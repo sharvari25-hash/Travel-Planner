@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import { formatInr } from '../../../lib/pricing';
 
 const REPORT_TABS = [
@@ -15,7 +15,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:808
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -123,7 +123,7 @@ const AdminReportsPanel = () => {
       setBookings(bookingsPayload);
       setPayments(paymentsPayload);
       setUsers(usersPayload);
-    } catch (_error) {
+    } catch {
       setFetchError('Unable to connect to backend server.');
       setBookings([]);
       setPayments([]);

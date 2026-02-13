@@ -24,7 +24,7 @@ import TripDetails from './pages/TripDetails';
 import NotFound from './pages/NotFound';
 import DemoPayment from './pages/DemoPayment';
 import TravelerNotifications from './pages/TravelerNotifications';
-import { useAuth } from './lib/AuthContext';
+import { useAuth } from './lib/useAuth';
 
 const AdminLandingGuard = ({ children }) => {
   const { isAuthenticated, user } = useAuth();

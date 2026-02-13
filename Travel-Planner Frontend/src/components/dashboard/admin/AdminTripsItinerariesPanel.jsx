@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import { formatInr, getTourPricePerTraveler } from '../../../lib/pricing';
 import {
   createTourInCatalog,

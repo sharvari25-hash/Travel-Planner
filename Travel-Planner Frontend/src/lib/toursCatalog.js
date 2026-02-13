@@ -132,7 +132,7 @@ const parseStoredList = (rawValue) => {
   try {
     const parsed = JSON.parse(rawValue);
     return Array.isArray(parsed) ? parsed : null;
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -159,7 +159,7 @@ const writeToursCatalog = (list) => {
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -174,7 +174,7 @@ const fetchToursFromBackend = async () => {
     }
 
     return normalizeTours(payload);
-  } catch (_error) {
+  } catch {
     return null;
   }
 };

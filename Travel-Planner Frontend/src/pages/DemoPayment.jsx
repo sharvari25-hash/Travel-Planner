@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 
 const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
@@ -34,7 +34,7 @@ const formatAmount = (amount, currency) =>
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -55,7 +55,7 @@ const readPendingBooking = (stateValue) => {
 
   try {
     return JSON.parse(raw);
-  } catch (_error) {
+  } catch {
     window.sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
     return null;
   }
@@ -167,7 +167,7 @@ const DemoPayment = () => {
       window.setTimeout(() => {
         navigate('/user/dashboard/my-trips');
       }, 1000);
-    } catch (_error) {
+    } catch {
       setErrorMessage('Unable to connect to backend server.');
     } finally {
       setIsProcessing(false);

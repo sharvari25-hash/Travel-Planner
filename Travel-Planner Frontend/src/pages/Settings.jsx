@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SettingsSidebar from '../components/settings/SettingsSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
 import TabButton from '../components/settings/TabButton';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
@@ -30,7 +30,7 @@ const initialSettingsState = {
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -111,7 +111,7 @@ export default function SettingsPage() {
         }
 
         setSettings(mapSettingsPayload(payload));
-      } catch (_error) {
+      } catch {
         setFetchError('Unable to connect to backend server.');
       } finally {
         setIsLoading(false);
@@ -159,7 +159,7 @@ export default function SettingsPage() {
         avatar: nextSettings.avatar,
       });
       setAccountMessage('Account settings saved successfully.');
-    } catch (_error) {
+    } catch {
       setAccountError('Unable to connect to backend server.');
     } finally {
       setIsSavingAccount(false);
@@ -199,7 +199,7 @@ export default function SettingsPage() {
 
       setSettings(mapSettingsPayload(payload));
       setPreferencesMessage('Preferences saved successfully.');
-    } catch (_error) {
+    } catch {
       setPreferencesError('Unable to connect to backend server.');
     } finally {
       setIsSavingPreferences(false);
@@ -237,7 +237,7 @@ export default function SettingsPage() {
 
       setSettings(mapSettingsPayload(payload));
       setNotificationsMessage('Notification settings saved successfully.');
-    } catch (_error) {
+    } catch {
       setNotificationsError('Unable to connect to backend server.');
     } finally {
       setIsSavingNotifications(false);

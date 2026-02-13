@@ -64,7 +64,7 @@ const parseStoredList = (rawValue) => {
   try {
     const parsed = JSON.parse(rawValue);
     return Array.isArray(parsed) ? parsed : null;
-  } catch (_error) {
+  } catch {
     return null;
   }
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaCheck, FaEnvelope, FaTrash } from 'react-icons/fa';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import {
   deleteAdminContactMessage,
   getAdminContactMessages,

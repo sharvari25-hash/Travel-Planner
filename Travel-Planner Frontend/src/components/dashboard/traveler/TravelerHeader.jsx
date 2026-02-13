@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaSearch, FaBell, FaPhoneAlt, FaInfoCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import {
   getTravelerNotifications,
   TRAVELER_NOTIFICATIONS_UPDATED_EVENT,

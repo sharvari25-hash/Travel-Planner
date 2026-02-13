@@ -4,7 +4,7 @@ export const TRAVELER_NOTIFICATIONS_UPDATED_EVENT = 'traveler-notifications-upda
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };

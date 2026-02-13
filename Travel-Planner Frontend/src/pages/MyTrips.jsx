@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaCheckCircle, FaHourglassHalf, FaPlaneDeparture, FaUsers } from 'react-icons/fa';
 import TravelerSidebar from '../components/dashboard/traveler/TravelerSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 
 const statusStyles = {
   Upcoming: 'bg-blue-100 text-blue-700',

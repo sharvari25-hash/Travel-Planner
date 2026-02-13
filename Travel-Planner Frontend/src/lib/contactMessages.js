@@ -4,7 +4,7 @@ export const CONTACT_MESSAGES_UPDATED_EVENT = 'contact-messages-updated';
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };

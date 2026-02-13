@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import { getAdminRecommendations } from '../../../lib/adminRecommendations';
 
 const RECOMMENDATION_TABS = {

@@ -9,7 +9,7 @@ import SystemAlerts from './SystemAlerts';
 import PopularDestinations from './PopularDestinations';
 import SectionTitle from '../shared/SectionTitle';
 import { formatInr } from '../../../lib/pricing';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import { getAdminDashboardOverview } from '../../../lib/adminDashboard';
 
 const DEFAULT_OVERVIEW = {

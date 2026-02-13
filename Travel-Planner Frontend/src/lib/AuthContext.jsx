@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { AuthContext } from './auth-context';
 
-const AuthContext = createContext(null);
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const readStoredUser = () => {
   try {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
-  } catch (_error) {
+  } catch {
     localStorage.removeItem('user');
     return null;
   }
@@ -16,7 +16,7 @@ const readStoredUser = () => {
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
 
       const profile = persistSession(payload);
       return { success: true, user: profile };
-    } catch (_error) {
+    } catch {
       return {
         success: false,
         message: 'Unable to connect to backend server',
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
 
       const profile = persistSession(payload);
       return { success: true, user: profile };
-    } catch (_error) {
+    } catch {
       return {
         success: false,
         message: 'Unable to connect to backend server',
@@ -165,6 +165,3 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};

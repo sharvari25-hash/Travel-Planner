@@ -4,7 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { PlusCircle, XCircle } from 'lucide-react';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 import { formatInr, getTourPricePerTraveler } from '../lib/pricing';
 
 const PENDING_BOOKING_STORAGE_KEY = 'pendingTourBookingCheckout';
@@ -25,7 +25,7 @@ const bookingSchema = yup.object({
 const parseJsonSafe = async (response) => {
   try {
     return await response.json();
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
@@ -92,7 +92,7 @@ const TourBookingPage = () => {
         }
 
         setToursCatalog(payload);
-      } catch (_error) {
+      } catch {
         setTourFetchError('Unable to connect to backend server.');
         setToursCatalog([]);
       } finally {

@@ -1,28 +1,39 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Map, ShieldCheck, CreditCard, Headphones, Plane, Hotel } from 'lucide-react';
 
+const MotionDiv = motion.div;
+
 const FadeIn = ({ children, delay = 0 }) => (
-  <motion.div
+  <MotionDiv
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.6, delay }}
   >
     {children}
-  </motion.div>
+  </MotionDiv>
 );
 
-const ServiceCard = ({ icon: Icon, title, description, delay }) => (
-  <FadeIn delay={delay}>
-    <div className="glass-card p-8 hover:shadow-xl transition-all duration-300 group">
-      <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
-        <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors" />
+const ServiceCard = ({ icon: Icon, title, description, delay }) => {
+  const iconElement = Icon
+    ? React.createElement(Icon, {
+      className: 'w-7 h-7 text-primary group-hover:text-white transition-colors',
+    })
+    : null;
+
+  return (
+    <FadeIn delay={delay}>
+      <div className="glass-card p-8 hover:shadow-xl transition-all duration-300 group">
+        <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
+          {iconElement}
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
+        <p className="text-gray-600 leading-relaxed">{description}</p>
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
-    </div>
-  </FadeIn>
-);
+    </FadeIn>
+  );
+};
 
 const OurServices = () => {
   const services = [

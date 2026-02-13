@@ -8,7 +8,7 @@ import RemainingBudgetWidget from '../components/dashboard/traveler/RemainingBud
 import UpcomingTripHero from '../components/dashboard/traveler/UpcomingTripHero';
 import ExploreDestinationsWidget from '../components/dashboard/traveler/ExploreDestinationsWidget';
 import BudgetSummaryWidget from '../components/dashboard/traveler/BudgetSummaryWidget';
-import { useAuth } from '../lib/AuthContext';
+import { useAuth } from '../lib/useAuth';
 import { getTravelerDashboard } from '../lib/travelerDashboard';
 import { formatInr } from '../lib/pricing';
 

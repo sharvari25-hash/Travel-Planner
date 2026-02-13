@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaBars, FaBell, FaSignOutAlt, FaTimes } from 'react-icons/fa';
-import { useAuth } from '../../../lib/AuthContext';
+import { useAuth } from '../../../lib/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ADMIN_NOTIFICATIONS_UPDATED_EVENT,
@@ -37,7 +37,7 @@ const AdminHeader = ({ onMenuToggle = () => {}, isMenuOpen = false }) => {
         if (isMounted) {
           setUnreadCount(localUnread + contactUnread);
         }
-      } catch (_error) {
+      } catch {
         if (isMounted) {
           setUnreadCount(localUnread);
         }

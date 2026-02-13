@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+const MotionDiv = motion.div;
+
 const TabButton = ({ text, active, onClick }) => (
   <button 
     onClick={onClick}
@@ -8,7 +10,7 @@ const TabButton = ({ text, active, onClick }) => (
   >
     {text}
     {active && (
-      <motion.div 
+      <MotionDiv
         layoutId="activeTab"
         className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
       />
