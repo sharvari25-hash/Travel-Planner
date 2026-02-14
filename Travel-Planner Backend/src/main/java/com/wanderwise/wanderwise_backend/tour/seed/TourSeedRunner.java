@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -36,9 +39,23 @@ public class TourSeedRunner implements CommandLineRunner {
             return;
         }
 
+        Set<String> seedSlugs = new HashSet<>();
+        for (TourSeedItem item : seedItems) {
+            seedSlugs.add(Tour.buildSlug(item.destination(), item.country()));
+        }
+
+        List<Tour> existingTours = tourRepository.findAll();
         Map<String, Tour> existingBySlug = new HashMap<>();
-        for (Tour tour : tourRepository.findAll()) {
+        for (Tour tour : existingTours) {
             existingBySlug.put(tour.getSlug(), tour);
+        }
+
+        int removedTomorrowlandVariantCount = 0;
+        for (Tour tour : existingTours) {
+            if (isTomorrowlandTour(tour) && !seedSlugs.contains(tour.getSlug())) {
+                tourRepository.delete(tour);
+                removedTomorrowlandVariantCount += 1;
+            }
         }
 
         int upsertCount = 0;
@@ -60,7 +77,11 @@ public class TourSeedRunner implements CommandLineRunner {
             upsertCount += 1;
         }
 
-        log.info("Tours seed sync complete. Upserted {} records from seed/all-tours.json.", upsertCount);
+        log.info(
+                "Tours seed sync complete. Upserted {} records; removed {} outdated Tomorrowland variants.",
+                upsertCount,
+                removedTomorrowlandVariantCount
+        );
     }
 
     private List<TourSeedItem> readSeedItems() throws IOException {
@@ -93,5 +114,10 @@ public class TourSeedRunner implements CommandLineRunner {
                 .baseWind(weatherProfile.baseWind())
                 .defaultCondition(weatherProfile.defaultCondition())
                 .build();
+    }
+
+    private boolean isTomorrowlandTour(Tour tour) {
+        return tour.getDestination() != null
+                && tour.getDestination().toLowerCase(Locale.ROOT).contains("tomorrowland");
     }
 }
