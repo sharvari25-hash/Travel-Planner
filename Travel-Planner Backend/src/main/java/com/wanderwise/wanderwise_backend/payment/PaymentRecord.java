@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -23,7 +24,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "payments")
+@Table(
+        name = "payments",
+        indexes = {
+                @Index(name = "idx_payment_user_paid_at", columnList = "user_email,paid_at"),
+                @Index(name = "idx_payment_status", columnList = "status")
+        }
+)
 public class PaymentRecord {
 
     @Id

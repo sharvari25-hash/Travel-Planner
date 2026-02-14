@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -24,7 +25,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "booking_requests")
+@Table(
+        name = "booking_requests",
+        indexes = {
+                @Index(name = "idx_booking_user_requested_at", columnList = "user_email,requested_at"),
+                @Index(name = "idx_booking_status", columnList = "status"),
+                @Index(name = "idx_booking_destination_country", columnList = "destination,country")
+        }
+)
 public class BookingRequest {
 
     @Id

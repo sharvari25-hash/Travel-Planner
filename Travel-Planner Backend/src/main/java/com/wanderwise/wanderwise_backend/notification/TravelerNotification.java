@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -22,7 +23,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "traveler_notifications")
+@Table(
+        name = "traveler_notifications",
+        indexes = {
+                @Index(name = "idx_notification_user_created_at", columnList = "user_email,created_at"),
+                @Index(name = "idx_notification_user_read", columnList = "user_email,is_read")
+        }
+)
 public class TravelerNotification {
 
     @Id

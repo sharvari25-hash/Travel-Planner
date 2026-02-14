@@ -11,6 +11,18 @@ const statusStyles = {
   Completed: 'bg-green-100 text-green-700',
 };
 
+const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+const INR_FORMATTER = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+});
+
 const getStatusIcon = (status) => {
   if (status === 'Upcoming') {
     return <FaPlaneDeparture className="text-blue-500" />;
@@ -23,19 +35,9 @@ const getStatusIcon = (status) => {
   return <FaHourglassHalf className="text-yellow-500" />;
 };
 
-const formatDate = (dateValue) =>
-  new Date(dateValue).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+const formatDate = (dateValue) => DATE_FORMATTER.format(new Date(dateValue));
 
-const formatAmount = (amount) =>
-  new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(Number(amount || 0));
+const formatAmount = (amount) => INR_FORMATTER.format(Number(amount || 0));
 
 const MyTrips = ({ statusFilter = 'All' }) => {
   const { token, user } = useAuth();

@@ -10,7 +10,10 @@ import com.wanderwise.wanderwise_backend.trip.dto.TripSummaryResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,10 +33,11 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public List<TripSummaryResponse> getMyTrips(String userEmail) {
+        Map<String, Optional<Tour>> matchedTours = new HashMap<>();
         return bookingRequestRepository.findAllByUserEmailOrderByRequestedAtDesc(userEmail)
                 .stream()
                 .filter(this::isVisibleTrip)
-                .map(this::toTripSummary)
+                .map(booking -> toTripSummary(booking, matchedTours))
                 .toList();
     }
 
@@ -74,8 +78,8 @@ public class TripService {
         );
     }
 
-    private TripSummaryResponse toTripSummary(BookingRequest booking) {
-        Optional<Tour> optionalTour = findMatchingTour(booking);
+    private TripSummaryResponse toTripSummary(BookingRequest booking, Map<String, Optional<Tour>> matchedTours) {
+        Optional<Tour> optionalTour = findMatchingTour(booking, matchedTours);
         LocalDate endDate = calculateEndDate(booking, optionalTour);
         String tripStatus = toTripTimelineStatus(endDate);
         BigDecimal totalAmount = booking.getTotalAmount();
@@ -103,9 +107,20 @@ public class TripService {
         );
     }
 
+    private Optional<Tour> findMatchingTour(BookingRequest booking, Map<String, Optional<Tour>> matchedTours) {
+        String tourKey = buildTourKey(booking.getDestination(), booking.getCountry());
+        return matchedTours.computeIfAbsent(tourKey, _ignored -> findMatchingTour(booking));
+    }
+
+    private String buildTourKey(String destination, String country) {
+        String normalizedDestination = destination == null ? "" : destination.trim().toLowerCase(Locale.ENGLISH);
+        String normalizedCountry = country == null ? "" : country.trim().toLowerCase(Locale.ENGLISH);
+        return normalizedDestination + "|" + normalizedCountry;
+    }
+
     private LocalDate calculateEndDate(BookingRequest booking, Optional<Tour> optionalTour) {
         int duration = optionalTour.map(Tour::getDuration).filter(value -> value != null && value > 0).orElse(1);
-        return booking.getTravelDate().plusDays(Math.max(0, duration - 1L));
+        return booking.getTravelDate().plusDays(duration - 1L);
     }
 
     private String toTripTimelineStatus(LocalDate endDate) {

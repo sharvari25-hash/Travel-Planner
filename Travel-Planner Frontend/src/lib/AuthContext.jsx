@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { AuthContext } from './auth-context';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
@@ -32,21 +32,23 @@ const mapUserProfile = (user) => ({
 });
 
 export const AuthProvider = ({ children }) => {
-  const storedToken = localStorage.getItem('authToken');
-  const [user, setUser] = useState(() => (storedToken ? readStoredUser() : null));
-  const [token, setToken] = useState(storedToken);
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'));
+  const [user, setUser] = useState(() => {
+    const storedToken = localStorage.getItem('authToken');
+    return storedToken ? readStoredUser() : null;
+  });
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  const persistSession = (payload) => {
+  const persistSession = useCallback((payload) => {
     const profile = mapUserProfile(payload.user);
     setUser(profile);
     setToken(payload.token);
     localStorage.setItem('user', JSON.stringify(profile));
     localStorage.setItem('authToken', payload.token);
     return profile;
-  };
+  }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setIsAuthLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -82,9 +84,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsAuthLoading(false);
     }
-  };
+  }, [persistSession]);
 
-  const signup = async ({ name, email, password, mobileNumber, role }) => {
+  const signup = useCallback(async ({ name, email, password, mobileNumber, role }) => {
     setIsAuthLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
@@ -126,16 +128,16 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsAuthLoading(false);
     }
-  };
+  }, [persistSession]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
-  };
+  }, []);
 
-  const updateUserProfile = (updates) => {
+  const updateUserProfile = useCallback((updates) => {
     setUser((currentUser) => {
       if (!currentUser) {
         return currentUser;
@@ -149,18 +151,21 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(nextUser));
       return nextUser;
     });
-  };
+  }, []);
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!user && !!token,
-    isAuthLoading,
-    login,
-    signup,
-    updateUserProfile,
-    logout,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated: !!user && !!token,
+      isAuthLoading,
+      login,
+      signup,
+      updateUserProfile,
+      logout,
+    }),
+    [user, token, isAuthLoading, login, signup, updateUserProfile, logout]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

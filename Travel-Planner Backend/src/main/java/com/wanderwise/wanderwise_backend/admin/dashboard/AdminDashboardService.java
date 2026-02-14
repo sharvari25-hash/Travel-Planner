@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -99,24 +100,24 @@ public class AdminDashboardService {
     }
 
     private List<AdminDashboardOverviewResponse.UserRowPayload> buildUsers(List<User> users) {
-        return users.stream()
-                .sorted((left, right) -> Long.compare(
-                        right.getId() != null ? right.getId() : 0L,
-                        left.getId() != null ? left.getId() : 0L
-                ))
-                .limit(5)
-                .map(user -> {
-                    String email = user.getEmail() != null ? user.getEmail() : "";
-                    UserStatus status = user.getStatus() != null ? user.getStatus() : UserStatus.ACTIVE;
-                    return new AdminDashboardOverviewResponse.UserRowPayload(
-                            user.getId(),
-                            user.getName(),
-                            email,
-                            status.name(),
-                            "https://i.pravatar.cc/150?u=" + email
-                    );
-                })
-                .toList();
+        int fromIndex = Math.max(0, users.size() - 5);
+        List<AdminDashboardOverviewResponse.UserRowPayload> rows = new ArrayList<>(5);
+
+        for (int index = users.size() - 1; index >= fromIndex; index--) {
+            User user = users.get(index);
+            String email = user.getEmail() != null ? user.getEmail() : "";
+            UserStatus status = user.getStatus() != null ? user.getStatus() : UserStatus.ACTIVE;
+
+            rows.add(new AdminDashboardOverviewResponse.UserRowPayload(
+                    user.getId(),
+                    user.getName(),
+                    email,
+                    status.name(),
+                    "https://i.pravatar.cc/150?u=" + email
+            ));
+        }
+
+        return rows;
     }
 
     private List<AdminDashboardOverviewResponse.RecentBookingPayload> buildRecentBookings(List<BookingRequest> bookings) {
@@ -237,7 +238,7 @@ public class AdminDashboardService {
                 .limit(3)
                 .map(entry -> {
                     String[] parts = entry.getKey().split("\\|", 2);
-                    String destination = parts.length > 0 ? parts[0] : "";
+                    String destination = parts[0];
                     String country = parts.length > 1 ? parts[1] : "";
 
                     return new AdminDashboardOverviewResponse.PopularDestinationPayload(
@@ -259,9 +260,6 @@ public class AdminDashboardService {
         StringBuilder builder = new StringBuilder();
         for (int index = 0; index < words.length; index++) {
             String word = words[index];
-            if (word.isEmpty()) {
-                continue;
-            }
             if (index > 0) {
                 builder.append(' ');
             }

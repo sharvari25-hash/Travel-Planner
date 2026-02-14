@@ -289,19 +289,6 @@ public class AdminRecommendationService {
             ));
         }
 
-        if (recommendations.isEmpty()) {
-            recommendations.add(new AdminRecommendationsResponse.RecommendationItemPayload(
-                    "TIME-1",
-                    "TIMING",
-                    "INFO",
-                    "Collect travel-date history",
-                    "Not enough travel-date data to detect seasonality.",
-                    "Continue ingesting bookings to enable timing insights.",
-                    "Bookings",
-                    "0"
-            ));
-        }
-
         return recommendations;
     }
 
@@ -313,7 +300,7 @@ public class AdminRecommendationService {
 
     private String formatDestination(String destinationKey) {
         String[] parts = destinationKey.split("\\|", 2);
-        String destination = parts.length > 0 ? toTitleCase(parts[0]) : "";
+        String destination = toTitleCase(parts[0]);
         String country = parts.length > 1 ? toTitleCase(parts[1]) : "";
         if (country.isBlank()) {
             return destination;
@@ -330,9 +317,6 @@ public class AdminRecommendationService {
         StringBuilder builder = new StringBuilder();
         for (int index = 0; index < words.length; index++) {
             String word = words[index];
-            if (word.isBlank()) {
-                continue;
-            }
             if (index > 0) {
                 builder.append(' ');
             }

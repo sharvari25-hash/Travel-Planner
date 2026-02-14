@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'adminToursCatalog';
-export const TOURS_CATALOG_UPDATED_EVENT = 'tours-catalog-updated';
+const TOURS_CATALOG_UPDATED_EVENT = 'tours-catalog-updated';
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 
 const defaultWeatherProfile = {
@@ -198,7 +198,7 @@ export const getToursCatalog = () => {
   return normalizeTours(parsed);
 };
 
-export const syncToursCatalogFromBackend = async ({ force = false } = {}) => {
+const syncToursCatalogFromBackend = async ({ force = false } = {}) => {
   const cachedTours = getToursCatalog();
   if (!force && cachedTours.length > 0) {
     return cachedTours;

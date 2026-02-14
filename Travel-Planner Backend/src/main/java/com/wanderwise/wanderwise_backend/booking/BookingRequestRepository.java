@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BookingRequestRepository extends JpaRepository<BookingRequest, Long> {
     boolean existsByBookingCode(String bookingCode);
 
-    Optional<BookingRequest> findByBookingCode(String bookingCode);
-
     List<BookingRequest> findAllByOrderByRequestedAtDesc();
 
     List<BookingRequest> findAllByUserEmailOrderByRequestedAtDesc(String userEmail);

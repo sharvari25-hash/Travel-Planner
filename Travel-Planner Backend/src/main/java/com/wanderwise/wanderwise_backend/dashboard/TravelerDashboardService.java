@@ -65,25 +65,29 @@ public class TravelerDashboardService {
 
     private TravelerDashboardResponse.OverviewPayload buildOverview(List<TripSummaryResponse> trips) {
         int totalTrips = trips.size();
-        int upcomingTrips = (int) trips.stream()
-                .filter(entry -> UPCOMING_STATUS.equalsIgnoreCase(entry.status()))
-                .count();
-        int completedTrips = (int) trips.stream()
-                .filter(entry -> COMPLETED_STATUS.equalsIgnoreCase(entry.status()))
-                .count();
+        int upcomingTrips = 0;
+        int completedTrips = 0;
+        BigDecimal totalBudget = BigDecimal.ZERO;
+        BigDecimal spentBudget = BigDecimal.ZERO;
 
-        BigDecimal totalBudget = trips.stream()
-                .map(entry -> entry.budget() != null && entry.budget().total() != null
-                        ? entry.budget().total()
-                        : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        for (TripSummaryResponse trip : trips) {
+            boolean isUpcoming = UPCOMING_STATUS.equalsIgnoreCase(trip.status());
+            boolean isCompleted = COMPLETED_STATUS.equalsIgnoreCase(trip.status());
+            BigDecimal tripBudget = trip.budget() != null && trip.budget().total() != null
+                    ? trip.budget().total()
+                    : BigDecimal.ZERO;
 
-        BigDecimal spentBudget = trips.stream()
-                .filter(entry -> COMPLETED_STATUS.equalsIgnoreCase(entry.status()))
-                .map(entry -> entry.budget() != null && entry.budget().total() != null
-                        ? entry.budget().total()
-                        : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (isUpcoming) {
+                upcomingTrips++;
+            }
+
+            if (isCompleted) {
+                completedTrips++;
+                spentBudget = spentBudget.add(tripBudget);
+            }
+
+            totalBudget = totalBudget.add(tripBudget);
+        }
 
         BigDecimal remainingBudget = totalBudget.subtract(spentBudget).max(BigDecimal.ZERO);
 
@@ -177,9 +181,8 @@ public class TravelerDashboardService {
     }
 
     private List<TravelerDashboardResponse.ExploreDestinationPayload> buildExploreDestinations() {
-        return tourRepository.findAllByOrderByDestinationAsc()
+        return tourRepository.findTop3ByOrderByDestinationAsc()
                 .stream()
-                .limit(3)
                 .map(this::toExploreDestination)
                 .toList();
     }

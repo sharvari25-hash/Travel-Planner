@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -27,7 +28,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tours")
+@Table(
+        name = "tours",
+        indexes = {
+                @Index(name = "idx_tour_destination", columnList = "destination"),
+                @Index(name = "idx_tour_destination_country", columnList = "destination,country")
+        }
+)
 public class Tour {
 
     @Id
