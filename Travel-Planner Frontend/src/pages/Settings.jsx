@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import SettingsSidebar from '../components/settings/SettingsSidebar';
 import TravelerHeader from '../components/dashboard/traveler/TravelerHeader';
 import TabButton from '../components/settings/TabButton';
@@ -80,6 +80,15 @@ export default function SettingsPage() {
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isSavingPreferences, setIsSavingPreferences] = useState(false);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const handleToggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen((current) => !current);
+  }, []);
+
+  const handleCloseMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
 
   const profileImage = useMemo(
     () => settings.avatar || `https://i.pravatar.cc/150?u=${settings.email || 'wanderwise-user'}`,
@@ -517,9 +526,15 @@ export default function SettingsPage() {
 
   return (
     <div className="page-shell flex min-h-screen">
-      <SettingsSidebar />
+      <SettingsSidebar
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={handleCloseMobileSidebar}
+      />
       <main className="flex-1 flex flex-col">
-        <TravelerHeader />
+        <TravelerHeader
+          onMenuToggle={handleToggleMobileSidebar}
+          isMenuOpen={isMobileSidebarOpen}
+        />
         <div className="overflow-y-auto px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
 
