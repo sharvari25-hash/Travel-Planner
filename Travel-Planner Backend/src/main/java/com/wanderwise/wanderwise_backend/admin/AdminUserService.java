@@ -40,8 +40,13 @@ public class AdminUserService {
     }
 
     @Transactional
-    public AdminUserResponse updateStatus(Long userId, UserStatus status) {
+    public AdminUserResponse updateStatus(Long userId, UserStatus status, String adminEmail) {
         User user = getUserOrThrow(userId);
+        if (user.getEmail() != null
+                && user.getEmail().equalsIgnoreCase(adminEmail)
+                && user.getStatus() != status) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot change your own status");
+        }
         user.setStatus(status);
         return toResponse(userRepository.save(user));
     }

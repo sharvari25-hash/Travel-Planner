@@ -42,9 +42,10 @@ public class AdminUserController {
     @PatchMapping("/{userId}/status")
     public ResponseEntity<AdminUserResponse> updateStatus(
             @PathVariable Long userId,
-            @Valid @RequestBody UpdateUserStatusRequest request
+            @Valid @RequestBody UpdateUserStatusRequest request,
+            Authentication authentication
     ) {
-        return ResponseEntity.ok(adminUserService.updateStatus(userId, request.status()));
+        return ResponseEntity.ok(adminUserService.updateStatus(userId, request.status(), authentication.getName()));
     }
 
     @DeleteMapping("/{userId}")
