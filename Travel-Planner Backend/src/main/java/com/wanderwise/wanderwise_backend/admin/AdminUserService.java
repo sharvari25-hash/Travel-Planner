@@ -28,8 +28,13 @@ public class AdminUserService {
     }
 
     @Transactional
-    public AdminUserResponse updateRole(Long userId, Role role) {
+    public AdminUserResponse updateRole(Long userId, Role role, String adminEmail) {
         User user = getUserOrThrow(userId);
+        if (user.getEmail() != null
+                && user.getEmail().equalsIgnoreCase(adminEmail)
+                && user.getRole() != role) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot change your own role");
+        }
         user.setRole(role);
         return toResponse(userRepository.save(user));
     }
