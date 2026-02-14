@@ -145,6 +145,11 @@ const AdminUserManagementPanel = () => {
       return;
     }
 
+    if (String(id) === String(user?.id)) {
+      setActionError('You cannot change your own role');
+      return;
+    }
+
     setActionError(null);
     setActiveAction(`role-${id}`);
 
@@ -176,6 +181,11 @@ const AdminUserManagementPanel = () => {
 
   const updateUserStatus = async (id, newStatus) => {
     if (!isAdmin || !token) {
+      return;
+    }
+
+    if (String(id) === String(user?.id)) {
+      setActionError('You cannot change your own status');
       return;
     }
 
@@ -346,62 +356,71 @@ const AdminUserManagementPanel = () => {
                     Loading users...
                   </td>
                 </tr>
-              ) : filteredUsers.map((entry) => (
-                <tr key={entry.id} className="hover:bg-gray-50">
-                  <td className="py-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={entry.avatar}
-                        alt={entry.name}
-                        className="w-8 h-8 rounded-full border border-gray-200"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-800">{entry.name}</p>
-                        <p className="text-xs text-gray-500">{entry.email}</p>
+              ) : filteredUsers.map((entry) => {
+                const isCurrentUser = String(entry.id) === String(user?.id);
+                const isRoleUpdating = activeAction === `role-${entry.id}`;
+                const isStatusUpdating = activeAction === `status-${entry.id}`;
+                const isRemoving = activeAction === `remove-${entry.id}`;
+
+                return (
+                  <tr key={entry.id} className="hover:bg-gray-50">
+                    <td className="py-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={entry.avatar}
+                          alt={entry.name}
+                          className="w-8 h-8 rounded-full border border-gray-200"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-800">{entry.name}</p>
+                          <p className="text-xs text-gray-500">{entry.email}</p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <select
-                      value={entry.role}
-                      onChange={(event) => updateUserRole(entry.id, event.target.value)}
-                      disabled={activeAction === `role-${entry.id}`}
-                      className="border border-gray-200 rounded-lg px-2 py-1 text-xs bg-white"
-                    >
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="USER">USER</option>
-                    </select>
-                  </td>
-                  <td className="py-3">
-                    <select
-                      value={entry.status}
-                      onChange={(event) => updateUserStatus(entry.id, event.target.value)}
-                      disabled={activeAction === `status-${entry.id}`}
-                      className={`px-2 py-1 rounded-lg text-xs font-semibold border border-transparent ${
-                        statusStyles[entry.status] || 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="SUSPENDED">SUSPENDED</option>
-                      <option value="DISABLED">DISABLED</option>
-                    </select>
-                  </td>
-                  <td className="py-3 text-gray-700">{entry.tripsBooked}</td>
-                  <td className="py-3 text-gray-700">{normalizeDate(entry.lastLogin)}</td>
-                  <td className="py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => removeUser(entry.id)}
-                        disabled={activeAction === `remove-${entry.id}` || String(entry.id) === String(user?.id)}
-                        className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    </td>
+                    <td className="py-3">
+                      <select
+                        value={entry.role}
+                        onChange={(event) => updateUserRole(entry.id, event.target.value)}
+                        disabled={isRoleUpdating || isCurrentUser}
+                        title={isCurrentUser ? 'You cannot change your own role' : 'Change user role'}
+                        className="border border-gray-200 rounded-lg px-2 py-1 text-xs bg-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
-                        {String(entry.id) === String(user?.id) ? 'Current User' : 'Remove'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="USER">USER</option>
+                      </select>
+                    </td>
+                    <td className="py-3">
+                      <select
+                        value={entry.status}
+                        onChange={(event) => updateUserStatus(entry.id, event.target.value)}
+                        disabled={isStatusUpdating || isCurrentUser}
+                        title={isCurrentUser ? 'You cannot change your own status' : 'Change user status'}
+                        className={`px-2 py-1 rounded-lg text-xs font-semibold border border-transparent disabled:opacity-60 disabled:cursor-not-allowed ${
+                          statusStyles[entry.status] || 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="SUSPENDED">SUSPENDED</option>
+                        <option value="DISABLED">DISABLED</option>
+                      </select>
+                    </td>
+                    <td className="py-3 text-gray-700">{entry.tripsBooked}</td>
+                    <td className="py-3 text-gray-700">{normalizeDate(entry.lastLogin)}</td>
+                    <td className="py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => removeUser(entry.id)}
+                          disabled={isRemoving || isCurrentUser}
+                          className="px-2 py-1 rounded-md text-xs bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isCurrentUser ? 'Current User' : 'Remove'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
